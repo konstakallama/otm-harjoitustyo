@@ -10,13 +10,14 @@ package com.mycompany.roguelike;
  * @author konstakallama
  */
 public class Map {
-    private MapObject[][] objects;
+    private Enemy[][] enemies;
     private MapItem[][] items;
     private Terrain[][] terrain;
     private int floor;
+    private Player player;
 
     public Map(int mapWidth, int mapHeight, Terrain[][] terrain, int floor) {
-        this.objects = new MapObject[mapWidth][mapHeight];
+        this.enemies = new Enemy[mapWidth][mapHeight];
         this.terrain = terrain;
         this.floor = floor;
         this.items = new MapItem[mapWidth][mapHeight];
@@ -25,17 +26,17 @@ public class Map {
     public boolean isOccupied(int x, int y) {
         if (this.terrain[x][y].isOccupied()) {
             return true;
-        } else if (this.objects[x][y] == null) {
+        } else if (this.enemies[x][y] == null) {
             return false;
         }
-        return this.objects[x][y].isOccupied();
+        return this.enemies[x][y].isOccupied();
     }
     
-    public void addObject(int x, int y, MapObject o) {
-        this.objects[x][y] = o;
+    public void addEnemy(int x, int y, Enemy o) {
+        this.enemies[x][y] = o;
     }
     
-    public boolean moveObject(int x, int y, Direction d) {       
+    public boolean moveEnemy(int x, int y, Direction d) {       
         return moveHelper(x, y, d.xVal(), d.yVal());
     }
     
@@ -43,17 +44,17 @@ public class Map {
         if (this.isOccupied(x + dx, y + dy)) {
             return false;
         }
-        this.objects[x + dx][y + dy] = this.objects[x][y];
-        this.objects[x][y] = null;
+        this.enemies[x + dx][y + dy] = this.enemies[x][y];
+        this.enemies[x][y] = null;
         return true;
     }
     
-    public void removeObject(int x, int y) {
-        this.objects[x][y] = null;
+    public void removeEnemy(int x, int y) {
+        this.enemies[x][y] = null;
     }
     
-    public MapObject getObject(int x, int y) {
-        return this.objects[x][y];
+    public Enemy getEnemy(int x, int y) {
+        return this.enemies[x][y];
     }
 
     public int getFloor() {
@@ -73,10 +74,10 @@ public class Map {
     }
     
     public void takeTurns() {
-        for (int i = 0; i < this.objects.length; i++) {
-            for (int j = 0; j < this.objects[0].length; j++) {
-               if (this.objects[i][j].isEnemy()) {
-                   Enemy e = (Enemy) this.objects[i][j];
+        for (int i = 0; i < this.enemies.length; i++) {
+            for (int j = 0; j < this.enemies[0].length; j++) {
+               if (this.enemies[i][j].isEnemy()) {
+                   Enemy e = (Enemy) this.enemies[i][j];
                    e.takeTurn();
                }
             }
@@ -105,6 +106,29 @@ public class Map {
         p.setY(ny);
         return true;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Enemy[][] getEnemies() {
+        return enemies;
+    }
+
+    public MapItem[][] getItems() {
+        return items;
+    }
+
+    public Terrain[][] getTerrain() {
+        return terrain;
+    }
     
+    public boolean hasEnemy(int x, int y) {
+        return this.enemies[x][y] != null;
+    }
     
 }

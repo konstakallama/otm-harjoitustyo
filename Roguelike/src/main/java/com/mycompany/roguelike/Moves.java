@@ -10,7 +10,6 @@ package com.mycompany.roguelike;
  * @author konstakallama
  */
 public abstract class Moves extends MapObject {
-    Stats stats;
 
     public Moves(Map map, int x, int y) {
         super(x, y, map);
@@ -27,7 +26,7 @@ public abstract class Moves extends MapObject {
     }
 
     public boolean move(Direction d) {
-        if (this.map.moveObject(x, y, d)) {
+        if (this.map.moveEnemy(x, y, d)) {
             this.x += d.xVal();
             this.y += d.yVal();
             return true;
@@ -35,13 +34,13 @@ public abstract class Moves extends MapObject {
         return false;   
     }
 
-    public boolean attack(Direction d) {
-        if (map.getObject(x + d.xVal(), y + d.yVal()).hasHP()) {
-            if (f.attackHits(this.stats, map.getObject(x + d.xVal(), y + d.yVal()).getStats())) {
-                f.damageCalculation(this.stats, map.getObject(x + d.xVal(), y + d.yVal()).getStats());
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean attack(Direction d) {
+//        if (map.getEnemy(x + d.xVal(), y + d.yVal()).hasHP()) {
+//            if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
+//                f.damageCalculation(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats());
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }

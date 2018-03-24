@@ -25,10 +25,21 @@ public class Formulas {
     }
 
     boolean attackHits(Stats atkStats, Stats defStats) {
+        return true;
+    }
+
+    boolean damageCalculation(Stats atkStats, Stats defStats) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    void damageCalculation(Stats atkStats, Stats defStats) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    void playerDamageCalculation(Player player, Enemy enemy) {
+//        EnemyStats enemyStats = enemy.getStats();
+//        PlayerStats playerStats = player.getStats();
+//        // Damage calculation
+//        if (enemyStats.isDead()) {           
+//            playerStats.gainExp(enemyStats.getExp());
+//            enemy.die();
+//        }
+        enemy.die();
     }
 }

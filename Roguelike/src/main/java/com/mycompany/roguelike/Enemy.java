@@ -9,8 +9,9 @@ package com.mycompany.roguelike;
  *
  * @author konstakallama
  */
-public abstract class Enemy extends Moves implements TakesTurns {
+public class Enemy extends Moves implements TakesTurns {
     boolean visible;
+    EnemyStats stats;
     
     public Enemy(int x, int y, EnemyType type, Map map, EnemyStats stats, boolean visible) {
         super(map, x, y);
@@ -23,8 +24,7 @@ public abstract class Enemy extends Moves implements TakesTurns {
         return s.getType();
     }
 
-    @Override
-    public Stats getStats() {
+    public EnemyStats getStats() {
         return this.stats;
     }
 
@@ -36,6 +36,15 @@ public abstract class Enemy extends Moves implements TakesTurns {
     @Override
     public boolean isEnemy() {
        return true;
+    }
+
+    void die() {
+        map.removeEnemy(x, y);
+    }
+
+    @Override
+    public void takeTurn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     

@@ -26,9 +26,9 @@ public enum Direction {
     
     public int yVal() {
         if (this == Direction.UP) {
-            return 1;
-        } else if (this == Direction.DOWN) {
             return -1;
+        } else if (this == Direction.DOWN) {
+            return 1;
         } else if (this == Direction.RIGHT) {
             return 0;
         } else {

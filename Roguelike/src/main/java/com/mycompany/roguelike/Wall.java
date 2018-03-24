@@ -27,11 +27,6 @@ public class Wall extends MapObject {
     }
 
     @Override
-    public Stats getStats() {
-        throw new UnsupportedOperationException("Wall has no stats"); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean isVisible() {
         return true;
     }

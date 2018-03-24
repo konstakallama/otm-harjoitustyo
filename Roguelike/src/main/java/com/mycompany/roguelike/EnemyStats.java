@@ -11,11 +11,13 @@ package com.mycompany.roguelike;
  */
 public class EnemyStats extends Stats {
     private EnemyType type;
+    private int exp;
     
 
-    public EnemyStats(int level, int str, int con, int intel, int dex, EnemyType type, Weapon weapon, Armor armor) {
+    public EnemyStats(int level, int str, int con, int intel, int dex, EnemyType type, Weapon weapon, Armor armor, int exp) {
         super(level, str, con, intel, dex, weapon, armor);
         this.type = type;
+        this.exp = exp;
     }
 
     @Override
@@ -25,6 +27,10 @@ public class EnemyStats extends Stats {
 
     public EnemyType getType() {
         return type;
+    }
+    
+    public int getExp() {
+        return this.exp;
     }
     
     

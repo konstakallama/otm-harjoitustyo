@@ -48,7 +48,9 @@ public abstract class MapObject {
     }
     
     public abstract boolean isOccupied();
-    public abstract boolean hasHP();
-    public abstract Stats getStats();
+    public boolean hasHP() {
+        return false;
+    }
+//    public abstract Stats getStats();
     public abstract boolean isVisible();
 }

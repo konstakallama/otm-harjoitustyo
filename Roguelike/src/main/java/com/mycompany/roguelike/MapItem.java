@@ -34,11 +34,6 @@ public class MapItem extends MapObject {
     }
 
     @Override
-    public Stats getStats() {
-        throw new UnsupportedOperationException("Item has no stats"); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean isVisible() {
         return this.visible;
     }

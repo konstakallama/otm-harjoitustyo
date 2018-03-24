@@ -11,9 +11,11 @@ package com.mycompany.roguelike;
  */
 class Player extends Moves {
     private Inventory inventory;
+    private PlayerStats stats;
 
     public Player(Map map, int x, int y, PlayerStats stats, Inventory inventory) {
         super(map, x, y);
+        this.map.setPlayer(this);
         this.stats = stats;
         this.inventory = inventory;
     }
@@ -22,22 +24,20 @@ class Player extends Moves {
         this.map = newMap;
         this.x = startX;
         this.y = startY;
-        this.map.addObject(x, y, this);
+        this.map.setPlayer(this);
     }
 
-    @Override
     public boolean attack(Direction d) {
-        if (map.getObject(x + d.xVal(), y + d.yVal()).hasHP()) {
-            if (f.attackHits(this.stats, map.getObject(x + d.xVal(), y + d.yVal()).getStats())) {
-                f.damageCalculation(this.stats, map.getObject(x + d.xVal(), y + d.yVal()).getStats());
+        if (map.hasEnemy(x + d.xVal(), y + d.yVal())) {
+            if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
+                f.playerDamageCalculation(this, map.getEnemy(x + d.xVal(), y + d.yVal()));               
                 return true;
             }
         }
         return false;
     }
 
-    @Override
-    public Stats getStats() {
+    public PlayerStats getStats() {
         return this.stats;
     }
 
@@ -54,6 +54,7 @@ class Player extends Moves {
     public boolean move(Direction d) {
         return map.movePlayer(this, d);
     }
+    
 
     
 }
