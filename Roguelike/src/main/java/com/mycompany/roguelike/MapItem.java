@@ -9,16 +9,23 @@ package com.mycompany.roguelike;
  *
  * @author konstakallama
  */
-public class Wall extends MapObject {
-
-    public Wall(int x, int y, Map map) {
-        super(x, y, map);
-    }
+public class MapItem extends MapObject {
+    private String name;
+    private boolean visible;
     
+    public MapItem(int x, int y, Map map, String name, boolean visible) {
+        super(x, y, map);
+        this.name = name;
+        this.visible = visible;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     @Override
     public boolean isOccupied() {
-        return true;
+        return false;
     }
 
     @Override
@@ -28,12 +35,14 @@ public class Wall extends MapObject {
 
     @Override
     public Stats getStats() {
-        throw new UnsupportedOperationException("Wall has no stats"); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Item has no stats"); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public boolean isVisible() {
-        return true;
+        return this.visible;
     }
+    
+    
     
 }

@@ -12,4 +12,28 @@ package com.mycompany.roguelike;
 public enum Direction {
     UP, DOWN, RIGHT, LEFT;
     
+    public int xVal() {
+        if (this == Direction.UP) {
+            return 0;
+        } else if (this == Direction.DOWN) {
+            return 0;
+        } else if (this == Direction.RIGHT) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    
+    public int yVal() {
+        if (this == Direction.UP) {
+            return 1;
+        } else if (this == Direction.DOWN) {
+            return -1;
+        } else if (this == Direction.RIGHT) {
+            return 0;
+        } else {
+            return 0;
+        }
+    }
+    
 }

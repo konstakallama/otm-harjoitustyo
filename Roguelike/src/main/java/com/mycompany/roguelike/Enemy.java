@@ -9,7 +9,34 @@ package com.mycompany.roguelike;
  *
  * @author konstakallama
  */
-public interface Enemy extends MapObject {
-    public void takeTurn();
-    public void move(Direction d);
+public abstract class Enemy extends Moves implements TakesTurns {
+    boolean visible;
+    
+    public Enemy(int x, int y, EnemyType type, Map map, EnemyStats stats, boolean visible) {
+        super(map, x, y);
+        this.stats = stats;
+        this.visible = visible;
+    }
+
+    public EnemyType getType() {
+        EnemyStats s = (EnemyStats) this.stats;
+        return s.getType();
+    }
+
+    @Override
+    public Stats getStats() {
+        return this.stats;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return this.visible;
+    }
+    
+    @Override
+    public boolean isEnemy() {
+       return true;
+    }
+    
+    
 }
