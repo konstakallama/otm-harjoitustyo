@@ -130,7 +130,7 @@ public class Main extends Application {
         int x = random.nextInt(50);
         int y = random.nextInt(50);
 
-        while (map.getTerrain(x, y).isOccupied()) {
+        while (map.isOccupied(x, y)) {
             x = random.nextInt(50);
             y = random.nextInt(50);
         }
