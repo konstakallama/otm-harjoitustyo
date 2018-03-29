@@ -5,42 +5,57 @@
  */
 package com.mycompany.roguelike;
 
+import java.util.*;
+
 /**
  *
  * @author konstakallama
  */
 public class Map {
+
     private Enemy[][] enemies;
     private MapItem[][] items;
     private Terrain[][] terrain;
     private int floor;
     private Player player;
+    private int mapW;
+    private int mapH;
 
     public Map(int mapWidth, int mapHeight, Terrain[][] terrain, int floor) {
         this.enemies = new Enemy[mapWidth][mapHeight];
         this.terrain = terrain;
         this.floor = floor;
         this.items = new MapItem[mapWidth][mapHeight];
+        
+        this.mapH = mapHeight;
+        this.mapW = mapWidth;
     }
-    
+
     public boolean isOccupied(int x, int y) {
+        if (this.isOutOfBounds(x, y)) {
+            return true;
+        }
         if (this.terrain[x][y].isOccupied()) {
             return true;
-        } else if (this.enemies[x][y] == null) {
+        }
+        if (this.player.getX() == x && this.player.getY() == y) {
+            return true;
+        }
+        if (this.enemies[x][y] == null) {
             return false;
         }
         return this.enemies[x][y].isOccupied();
     }
-    
+
     public void addEnemy(int x, int y, Enemy o) {
         this.enemies[x][y] = o;
     }
-    
-    public boolean moveEnemy(int x, int y, Direction d) {       
-        return moveHelper(x, y, d.xVal(), d.yVal());
+
+    public boolean moveEnemy(int x, int y, Direction d) {
+        return moveEnemyHelper(x, y, d.xVal(), d.yVal());
     }
-    
-    private boolean moveHelper(int x, int y, int dx, int dy) {
+
+    private boolean moveEnemyHelper(int x, int y, int dx, int dy) {
         if (this.isOccupied(x + dx, y + dy)) {
             return false;
         }
@@ -48,11 +63,11 @@ public class Map {
         this.enemies[x][y] = null;
         return true;
     }
-    
+
     public void removeEnemy(int x, int y) {
         this.enemies[x][y] = null;
     }
-    
+
     public Enemy getEnemy(int x, int y) {
         return this.enemies[x][y];
     }
@@ -60,41 +75,53 @@ public class Map {
     public int getFloor() {
         return floor;
     }
-    
+
     public void addItem(int x, int y, MapItem item) {
         this.items[x][y] = item;
     }
-    
+
     public MapItem getItem(int x, int y) {
         return this.items[x][y];
     }
-    
+
     public void removeItem(int x, int y) {
         this.items[x][y] = null;
     }
-    
-    public void takeTurns() {
+
+    public ArrayList<AttackResult> takeTurns() {
+        ArrayList<AttackResult> l = new ArrayList<>();
+        
         for (int i = 0; i < this.enemies.length; i++) {
-            for (int j = 0; j < this.enemies[0].length; j++) {
-               if (this.enemies[i][j].isEnemy()) {
-                   Enemy e = (Enemy) this.enemies[i][j];
-                   e.takeTurn();
-               }
+            for (int j = 0; j < this.enemies[i].length; j++) {
+                if (this.enemies[i][j] != null) {
+                    l.add(this.enemies[i][j].takeTurn());
+                }
             }
         }
+        
+        for (int i = 0; i < this.enemies.length; i++) {
+            for (int j = 0; j < this.enemies[i].length; j++) {
+                if (this.enemies[i][j] != null) {
+                    this.enemies[i][j].reset();
+                }
+            }
+        }
+        
+        return l;
+
     }
-    
+
     public Terrain getTerrain(int x, int y) {
         return this.terrain[x][y];
     }
-    
+
     public boolean movePlayer(Player p, Direction d) {
-        boolean b = moveHelper(p.getX(), p.getY(), d.xVal(), d.yVal());
-        int nx = p.getX() + d.xVal();
-        int ny = p.getY() + d.yVal();
-        if (!b) {
+        if (this.isOccupied(p.getX() + d.xVal(), p.getY() + d.yVal())) {
             return false;
         }
+        int nx = p.getX() + d.xVal();
+        int ny = p.getY() + d.yVal();
+
         if (this.items[nx][ny] != null) {
             p.pickUp(items[nx][ny]);
         }
@@ -126,9 +153,37 @@ public class Map {
     public Terrain[][] getTerrain() {
         return terrain;
     }
-    
+
     public boolean hasEnemy(int x, int y) {
+        if (this.isOutOfBounds(x, y)) {
+            return false;
+        }
         return this.enemies[x][y] != null;
     }
     
+    public boolean isOutOfBounds(int x, int y) {
+        return x < 0 || x >= this.mapW || y < 0 || y >= this.mapH;
+    }
+    
+    public Direction getPlayerDirection(int x, int y) {
+        if (Math.abs(x - this.player.getX()) >= Math.abs(y - this.player.getY())) {
+            if (x - this.player.getX() < 0) {
+                return Direction.RIGHT;
+            } else {
+                return Direction.LEFT;
+            }
+        } else {
+            if (y - this.player.getY() < 0) {
+                return Direction.DOWN;
+            } else {
+                return Direction.UP;
+            }
+        }
+    
+    }
+
+    boolean hasPlayer(int x, int y) {
+        return x == this.player.getX() && y == this.player.getY();
+    }
+
 }

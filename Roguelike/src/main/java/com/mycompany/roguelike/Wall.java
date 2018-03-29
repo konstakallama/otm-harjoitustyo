@@ -12,7 +12,7 @@ package com.mycompany.roguelike;
 public class Wall extends MapObject {
 
     public Wall(int x, int y, Map map) {
-        super(x, y, map);
+        super(x, y, map, "wall");
     }
     
 

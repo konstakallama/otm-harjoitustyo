@@ -9,7 +9,6 @@ package com.mycompany.roguelike;
  *
  * @author konstakallama
  */
-public interface TakesTurns {
-    public AttackResult takeTurn();
-    
+public enum AttackResultType {
+    HIT, MISS, KILL, FAIL;
 }

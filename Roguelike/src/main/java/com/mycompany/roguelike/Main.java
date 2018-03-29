@@ -18,10 +18,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import java.util.*;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 
 public class Main extends Application {
 
     int counter = 0;
+    static int kills = 0;
+    static int enemiesCreated = 0;
+    Label log1 = new Label();
+    Label log2 = new Label();
+    Label log3 = new Label();
+    Label log4 = new Label();
 
     public static void main(String[] args) {
         launch(Main.class);
@@ -33,68 +41,100 @@ public class Main extends Application {
         Canvas canvas = new Canvas(500, 500);
         GraphicsContext drawer = canvas.getGraphicsContext2D();
 
-        BorderPane pane = new BorderPane();
+        GridPane upperGrid = new GridPane();
+        Label hp = new Label();
+        upperGrid.add(hp, 0, 0);
+        Label enemiesKilled = new Label();
+        GridPane logGrid = new GridPane();
+        logGrid.add(log1, 0, 3);
+        logGrid.add(log2, 0, 2);
+        logGrid.add(log3, 0, 1);
+        logGrid.add(log4, 0, 0);
+        updateKills(enemiesKilled);
 
-        pane.setCenter(canvas);
+        upperGrid.add(enemiesKilled, 2, 0);
 
-        Scene scene = new Scene(pane);
+        BorderPane framework = new BorderPane();
+
+        framework.setCenter(canvas);
+        framework.setTop(upperGrid);
+        framework.setBottom(logGrid);
+
+        Scene scene = new Scene(framework);
         primaryStage.setScene(scene);
 
         MapGenerator m = new MapGenerator();
         Map map = m.createMap(50, 50);
 
-        Player p = new Player(map, 10, 4, null, null);
+        Player p = new Player(map, 10, 4, new PlayerStats(1, 1, 1, 1, 1, null, null), null);
         map.setPlayer(p);
+        updateHP(hp, p);
 
         addEnemy(map);
 
         drawMap(drawer, map);
 
         scene.setOnKeyPressed((event) -> {
+            boolean turnTaken = false;
 
             if (event.getCode().equals(KeyCode.UP)) {
                 if (!p.move(Direction.UP)) {
-                    if (p.attack(Direction.UP)) {
-                        counter++;
+                    if (parseAttackResult(p.attack(Direction.UP))) {
+                        turnTaken = true;
                     }
                 } else {
-                    counter++;
+                    turnTaken = true;
                 }
 
             } else if (event.getCode() == KeyCode.DOWN) {
                 if (!p.move(Direction.DOWN)) {
-                    if (p.attack(Direction.DOWN)) {
-                        counter++;
+                    if (parseAttackResult(p.attack(Direction.DOWN))) {
+                        turnTaken = true;
                     }
                 } else {
-                    counter++;
+                    turnTaken = true;
                 }
 
             } else if (event.getCode() == KeyCode.RIGHT) {
                 if (!p.move(Direction.RIGHT)) {
-                    if (p.attack(Direction.RIGHT)) {
-                        counter++;
+                    if (parseAttackResult(p.attack(Direction.RIGHT))) {
+                        turnTaken = true;
                     }
-                }else {
-                    counter++;
+                } else {
+                    turnTaken = true;
                 }
 
             } else if (event.getCode() == KeyCode.LEFT) {
                 if (!p.move(Direction.LEFT)) {
-                    if (p.attack(Direction.LEFT)) {
-                        counter++;
+                    if (parseAttackResult(p.attack(Direction.LEFT))) {
+                        turnTaken = true;
                     }
                 } else {
-                    counter++;
+                    turnTaken = true;
                 }
 
+            } else if (event.getCode() == KeyCode.SPACE) {
+                turnTaken = true;
             }
+
+            if (turnTaken) {
+                ArrayList<AttackResult> results = map.takeTurns();
+                for (AttackResult result : results) {
+                    parseAttackResult(result);
+                }
+                counter++;
+                updateKills(enemiesKilled);
+                updateHP(hp, p);
+                drawMap(drawer, map);
+            }
+
             if (counter == 15) {
                 addEnemy(map);
                 counter = 0;
             }
-            drawMap(drawer, map);
+
         });
+
         primaryStage.show();
     }
 
@@ -135,8 +175,67 @@ public class Main extends Application {
             y = random.nextInt(50);
         }
 
-        Enemy e = new Enemy(x, y, null, map, new EnemyStats(2, 2, 2, 2, 2, null, null, null, 0), true);
+        Enemy e = new Enemy(x, y, new EnemyType("test enemy " + enemiesCreated), map, new EnemyStats(2, 2, 2, 2, 2, null, null, null, 0), true);
+        enemiesCreated++;
         map.addEnemy(x, y, e);
+    }
+
+    private void updateHP(Label hp, Player p) {
+        hp.setText("HP: " + p.getCurrentHP() + "/" + p.getMaxHP() + "   ");
+    }
+
+    private void updateKills(Label enemiesKilled) {
+        enemiesKilled.setText("Enemies Killed: " + kills);
+    }
+
+    private boolean parsePlayerAttackResult(AttackResult result) {
+        if (result.getType() == AttackResultType.HIT) {
+            updateLog("You hit the " + result.getTarget().getName() + " dealing " + result.getDamageDealt() + " damage.");
+        }
+        if (result.getType() == AttackResultType.MISS) {
+            updateLog("You miss the " + result.getTarget().getName() + ".");
+        }
+        if (result.getType() == AttackResultType.KILL) {
+            updateLog("You kill the " + result.getTarget().getName() + ".");
+            kills++;
+        }
+        return true;
+    }
+
+    private boolean parseAttackResult(AttackResult result) {
+        if (result.getType() == AttackResultType.FAIL) {
+            return false;
+        }
+        if (result.getAttacker().isEnemy()) {
+            return parseEnemyAttackResult(result);
+        } else {
+            return parsePlayerAttackResult(result);
+        }
+    }
+
+    private boolean parseEnemyAttackResult(AttackResult result) {
+        if (result.getType() == AttackResultType.HIT) {
+            updateLog("The " + result.getAttacker().getName() + " attacks you and deals " + result.getDamageDealt() + " damage.");
+        }
+        if (result.getType() == AttackResultType.MISS) {
+            updateLog("The " + result.getAttacker().getName() + " misses you.");
+        }
+        if (result.getType() == AttackResultType.KILL) {
+            updateLog("The " + result.getAttacker().getName() + " attacks and kills you.");
+            gameOver();
+        }
+        return true;
+    }
+
+    private void gameOver() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void updateLog(String newMessage) {
+        log4.setText(log3.getText());
+        log3.setText(log2.getText());
+        log2.setText(log1.getText());
+        log1.setText(newMessage);
     }
 
 }

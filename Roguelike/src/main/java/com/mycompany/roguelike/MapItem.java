@@ -10,12 +10,10 @@ package com.mycompany.roguelike;
  * @author konstakallama
  */
 public class MapItem extends MapObject {
-    private String name;
     private boolean visible;
     
     public MapItem(int x, int y, Map map, String name, boolean visible) {
-        super(x, y, map);
-        this.name = name;
+        super(x, y, map, name);
         this.visible = visible;
     }
 

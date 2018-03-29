@@ -4,19 +4,21 @@
  * and open the template in the editor.
  */
 package com.mycompany.roguelike;
+import java.util.*;
 
 /**
  *
  * @author konstakallama
  */
 public class Formulas {
+    Random r = new Random();
 
-    public int getEnemyHP(EnemyType type, int con) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getEnemyMaxHP(EnemyType type, int con) {
+        return 10;
     }
 
     public int getPlayerMaxHP(int con) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 10;
 
     }
 
@@ -25,21 +27,46 @@ public class Formulas {
     }
 
     boolean attackHits(Stats atkStats, Stats defStats) {
-        return true;
+        return r.nextDouble() < 0.75;
     }
 
     boolean damageCalculation(Stats atkStats, Stats defStats) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    void playerDamageCalculation(Player player, Enemy enemy) {
-//        EnemyStats enemyStats = enemy.getStats();
-//        PlayerStats playerStats = player.getStats();
-//        // Damage calculation
-//        if (enemyStats.isDead()) {           
+    AttackResult playerDamageCalculation(Player player, Enemy enemy) {
+        EnemyStats enemyStats = enemy.getStats();
+        PlayerStats playerStats = player.getStats();
+        AttackResult result;
+        
+        enemy.getStats().takeDamage(5);
+
+        if (enemyStats.isDead()) {           
 //            playerStats.gainExp(enemyStats.getExp());
-//            enemy.die();
-//        }
-        enemy.die();
+            result = new AttackResult(AttackResultType.KILL, 5, player, enemy);
+            enemy.die();
+        } else {
+            result = new AttackResult(AttackResultType.HIT, 5, player, enemy);
+        }
+        
+        return result;
+        
+        
+    }
+
+    AttackResult enemyDamageCalculation(Enemy enemy, Player player) {
+        EnemyStats enemyStats = enemy.getStats();
+        PlayerStats playerStats = player.getStats();
+        AttackResult result;
+        
+        playerStats.takeDamage(1);
+        
+        if (playerStats.isDead()) {
+            result = new AttackResult(AttackResultType.KILL, 1, enemy, player);
+            
+        } else {
+            result = new AttackResult(AttackResultType.HIT, 1, enemy, player);
+        }
+        return result;
     }
 }

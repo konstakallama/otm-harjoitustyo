@@ -14,10 +14,10 @@ class Player extends Moves {
     private PlayerStats stats;
 
     public Player(Map map, int x, int y, PlayerStats stats, Inventory inventory) {
-        super(map, x, y);
-        this.map.setPlayer(this);
+        super(map, x, y, "player");       
         this.stats = stats;
         this.inventory = inventory;
+        this.map.setPlayer(this);
     }
     
     public void newFloor(Map newMap, int startX, int startY) {
@@ -27,18 +27,23 @@ class Player extends Moves {
         this.map.setPlayer(this);
     }
 
-    public boolean attack(Direction d) {
+    public AttackResult attack(Direction d) {
         if (map.hasEnemy(x + d.xVal(), y + d.yVal())) {
             if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
-                f.playerDamageCalculation(this, map.getEnemy(x + d.xVal(), y + d.yVal()));               
-                return true;
+                return f.playerDamageCalculation(this, map.getEnemy(x + d.xVal(), y + d.yVal()));              
+            } else {
+                return new AttackResult(AttackResultType.MISS, 0, this, map.getEnemy(x + d.xVal(), y + d.yVal()));
             }
         }
-        return false;
+        return new AttackResult(AttackResultType.FAIL, 0, this, null);
     }
 
     public PlayerStats getStats() {
         return this.stats;
+    }
+    
+    public int getCurrentHP() {
+        return this.stats.getCurrentHP();
     }
 
     @Override
@@ -53,6 +58,10 @@ class Player extends Moves {
     @Override
     public boolean move(Direction d) {
         return map.movePlayer(this, d);
+    }
+    
+    public int getMaxHP() {
+        return this.stats.getMaxHP();
     }
     
 

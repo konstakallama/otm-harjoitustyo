@@ -22,7 +22,7 @@ public class EnemyStats extends Stats {
 
     @Override
     public int getMaxHP() {
-        return f.getEnemyHP(type, con);
+        return f.getEnemyMaxHP(type, con);
     }
 
     public EnemyType getType() {
@@ -31,6 +31,11 @@ public class EnemyStats extends Stats {
     
     public int getExp() {
         return this.exp;
+    }
+
+    @Override
+    public int getCurrentHP() {
+        return this.getMaxHP() - this.damage;
     }
     
     

@@ -11,8 +11,8 @@ package com.mycompany.roguelike;
  */
 public abstract class Moves extends MapObject {
 
-    public Moves(Map map, int x, int y) {
-        super(x, y, map);
+    public Moves(Map map, int x, int y, String name) {
+        super(x, y, map, name);
     }
 
     @Override

@@ -14,11 +14,13 @@ public abstract class MapObject {
     int y;
     Map map;
     Formulas f = new Formulas();
+    String name;
 
-    public MapObject(int x, int y, Map map) {
+    public MapObject(int x, int y, Map map, String name) {
         this.x = x;
         this.y = y;
         this.map = map;
+        this.name = name;
     }
     
     
@@ -47,10 +49,17 @@ public abstract class MapObject {
         return false;
     }
     
-    public abstract boolean isOccupied();
+    public boolean isOccupied() {
+        return true;
+    }
     public boolean hasHP() {
         return false;
     }
+
+    public String getName() {
+        return name;
+    }
+    
 //    public abstract Stats getStats();
     public abstract boolean isVisible();
 }

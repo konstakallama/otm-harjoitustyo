@@ -107,6 +107,8 @@ public abstract class Stats {
         this.weapon = weapon;
     }
     
+    public abstract int getCurrentHP();
+    
     
     
 }

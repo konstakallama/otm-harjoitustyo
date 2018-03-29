@@ -32,5 +32,10 @@ public class PlayerStats extends Stats {
         this.exp += gain;
         return false;
     }
+
+    @Override
+    public int getCurrentHP() {
+        return this.getMaxHP() - this.damage;
+    }
     
 }
