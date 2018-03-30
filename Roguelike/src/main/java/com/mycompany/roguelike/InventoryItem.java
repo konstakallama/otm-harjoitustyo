@@ -9,7 +9,7 @@ package com.mycompany.roguelike;
  *
  * @author konstakallama
  */
-public abstract class InventoryItem implements Comparable<InventoryItem> {
+public class InventoryItem implements Comparable<InventoryItem> {
     int wt;
     ItemType itemType;
     String name;

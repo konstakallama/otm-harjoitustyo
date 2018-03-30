@@ -26,7 +26,7 @@ public class Map {
         this.terrain = terrain;
         this.floor = floor;
         this.items = new MapItem[mapWidth][mapHeight];
-        
+
         this.mapH = mapHeight;
         this.mapW = mapWidth;
     }
@@ -38,9 +38,12 @@ public class Map {
         if (this.terrain[x][y].isOccupied()) {
             return true;
         }
-        if (this.player.getX() == x && this.player.getY() == y) {
-            return true;
+        if (this.player != null) {
+            if (this.player.getX() == x && this.player.getY() == y) {
+                return true;
+            }
         }
+
         if (this.enemies[x][y] == null) {
             return false;
         }
@@ -90,7 +93,7 @@ public class Map {
 
     public ArrayList<AttackResult> takeTurns() {
         ArrayList<AttackResult> l = new ArrayList<>();
-        
+
         for (int i = 0; i < this.enemies.length; i++) {
             for (int j = 0; j < this.enemies[i].length; j++) {
                 if (this.enemies[i][j] != null) {
@@ -98,7 +101,7 @@ public class Map {
                 }
             }
         }
-        
+
         for (int i = 0; i < this.enemies.length; i++) {
             for (int j = 0; j < this.enemies[i].length; j++) {
                 if (this.enemies[i][j] != null) {
@@ -106,7 +109,7 @@ public class Map {
                 }
             }
         }
-        
+
         return l;
 
     }
@@ -115,23 +118,30 @@ public class Map {
         return this.terrain[x][y];
     }
 
-    public boolean movePlayer(Player p, Direction d) {
-        if (this.isOccupied(p.getX() + d.xVal(), p.getY() + d.yVal())) {
-            return false;
+    public CommandResult movePlayer(Direction d) {
+        if (this.isOccupied(player.getX() + d.xVal(), player.getY() + d.yVal())) {
+            return new CommandResult(false, false, "", null);
         }
-        int nx = p.getX() + d.xVal();
-        int ny = p.getY() + d.yVal();
+        
+        CommandResult cr = new CommandResult(true, false, "", null);
+        
+        int nx = player.getX() + d.xVal();
+        int ny = player.getY() + d.yVal();
 
         if (this.items[nx][ny] != null) {
-            p.pickUp(items[nx][ny]);
+            if (player.pickUp(items[nx][ny])) {
+                cr = new CommandResult(true, true, "You picked up the " + this.items[nx][ny].getName() + ".", new AttackResult(AttackResultType.FAIL, 0, player, null));
+                this.items[nx][ny] = null;
+                
+            }
         }
         if (this.terrain[nx][ny] == Terrain.STAIRS) {
             // Player chooses to go to next floor
             // If yes, create new map, move player to it and return true
         }
-        p.setX(nx);
-        p.setY(ny);
-        return true;
+        player.setX(nx);
+        player.setY(ny);
+        return cr;
     }
 
     public Player getPlayer() {
@@ -160,11 +170,11 @@ public class Map {
         }
         return this.enemies[x][y] != null;
     }
-    
+
     public boolean isOutOfBounds(int x, int y) {
         return x < 0 || x >= this.mapW || y < 0 || y >= this.mapH;
     }
-    
+
     public Direction getPlayerDirection(int x, int y) {
         if (Math.abs(x - this.player.getX()) >= Math.abs(y - this.player.getY())) {
             if (x - this.player.getX() < 0) {
@@ -179,7 +189,7 @@ public class Map {
                 return Direction.UP;
             }
         }
-    
+
     }
 
     boolean hasPlayer(int x, int y) {

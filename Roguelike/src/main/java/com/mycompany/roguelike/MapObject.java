@@ -59,6 +59,11 @@ public abstract class MapObject {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
     
 //    public abstract Stats getStats();
     public abstract boolean isVisible();

@@ -10,7 +10,7 @@ package com.mycompany.roguelike;
  * @author konstakallama
  */
 public enum Direction {
-    UP, DOWN, RIGHT, LEFT;
+    UP, DOWN, RIGHT, LEFT, NONE;
     
     public int xVal() {
         if (this == Direction.UP) {
@@ -19,8 +19,10 @@ public enum Direction {
             return 0;
         } else if (this == Direction.RIGHT) {
             return 1;
-        } else {
+        } else if (this == Direction.LEFT){
             return -1;
+        } else {
+            return 0;
         }
     }
     

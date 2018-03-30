@@ -69,4 +69,23 @@ public class Formulas {
         }
         return result;
     }
+
+    int getEnemySpawnInterval(int floor) {
+        return 15;
+    }
+
+    Location createPlayerStartLocation(Map map) {
+        return this.createRandomFreeLocation(map);
+    }
+    
+    Location createRandomFreeLocation(Map map) {
+        int x = r.nextInt(50);
+        int y = r.nextInt(50);
+
+        while (map.isOccupied(x, y)) {
+            x = r.nextInt(50);
+            y = r.nextInt(50);
+        }
+        return new Location(x, y);
+    }
 }

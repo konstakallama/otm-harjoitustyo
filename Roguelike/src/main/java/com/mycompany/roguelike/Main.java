@@ -18,18 +18,22 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import java.util.*;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
 public class Main extends Application {
+    
+    ArrayList<Label> logs = new ArrayList<>();
+      
+    Label enemiesKilled = new Label();
+    Label turnCounter = new Label();
+    Label hp = new Label();
+    
+    static int pixelSize = 10;
 
-    int counter = 0;
-    static int kills = 0;
-    static int enemiesCreated = 0;
-    Label log1 = new Label();
-    Label log2 = new Label();
-    Label log3 = new Label();
-    Label log4 = new Label();
+    GameManager gm;
+    PlayerCommandParser playerCommandParser = new PlayerCommandParser();
 
     public static void main(String[] args) {
         launch(Main.class);
@@ -37,22 +41,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        Canvas canvas = new Canvas(500, 500);
+        
+        this.gm = new GameManager(this.createPlayerStats(), this.createInventory());
+              
+        Canvas canvas = new Canvas(gm.getMapW() * this.pixelSize, gm.getMapH() * this.pixelSize);
         GraphicsContext drawer = canvas.getGraphicsContext2D();
 
         GridPane upperGrid = new GridPane();
-        Label hp = new Label();
-        upperGrid.add(hp, 0, 0);
-        Label enemiesKilled = new Label();
-        GridPane logGrid = new GridPane();
-        logGrid.add(log1, 0, 3);
-        logGrid.add(log2, 0, 2);
-        logGrid.add(log3, 0, 1);
-        logGrid.add(log4, 0, 0);
-        updateKills(enemiesKilled);
+        addUpperLabels(upperGrid);
 
-        upperGrid.add(enemiesKilled, 2, 0);
+        GridPane logGrid = new GridPane();
+        
+        this.createLogs(4);
+        addLogs(logGrid);
 
         BorderPane framework = new BorderPane();
 
@@ -62,76 +63,31 @@ public class Main extends Application {
 
         Scene scene = new Scene(framework);
         primaryStage.setScene(scene);
+        
+        updateUpperGrid(gm.getPlayer());
 
-        MapGenerator m = new MapGenerator();
-        Map map = m.createMap(50, 50);
+        gm.addEnemy();
 
-        Player p = new Player(map, 10, 4, new PlayerStats(1, 1, 1, 1, 1, null, null), null);
-        map.setPlayer(p);
-        updateHP(hp, p);
-
-        addEnemy(map);
-
-        drawMap(drawer, map);
+        drawMap(drawer, gm.getMap());
 
         scene.setOnKeyPressed((event) -> {
-            boolean turnTaken = false;
 
-            if (event.getCode().equals(KeyCode.UP)) {
-                if (!p.move(Direction.UP)) {
-                    if (parseAttackResult(p.attack(Direction.UP))) {
-                        turnTaken = true;
+            ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode()));
+
+            for (CommandResult cr : results) {
+                if (cr.isSuccess()) {
+                    if (cr.hasLogMessage) {
+                        this.updateLog(cr.getLogMessage());
+                        if (cr.getAttackResult().getAttacker().isEnemy() && cr.getAttackResult().getType() == AttackResultType.KILL) {
+                            gameOver(primaryStage, cr.getAttackResult());
+                            break;
+                        }
                     }
-                } else {
-                    turnTaken = true;
                 }
-
-            } else if (event.getCode() == KeyCode.DOWN) {
-                if (!p.move(Direction.DOWN)) {
-                    if (parseAttackResult(p.attack(Direction.DOWN))) {
-                        turnTaken = true;
-                    }
-                } else {
-                    turnTaken = true;
-                }
-
-            } else if (event.getCode() == KeyCode.RIGHT) {
-                if (!p.move(Direction.RIGHT)) {
-                    if (parseAttackResult(p.attack(Direction.RIGHT))) {
-                        turnTaken = true;
-                    }
-                } else {
-                    turnTaken = true;
-                }
-
-            } else if (event.getCode() == KeyCode.LEFT) {
-                if (!p.move(Direction.LEFT)) {
-                    if (parseAttackResult(p.attack(Direction.LEFT))) {
-                        turnTaken = true;
-                    }
-                } else {
-                    turnTaken = true;
-                }
-
-            } else if (event.getCode() == KeyCode.SPACE) {
-                turnTaken = true;
             }
 
-            if (turnTaken) {
-                ArrayList<AttackResult> results = map.takeTurns();
-                for (AttackResult result : results) {
-                    parseAttackResult(result);
-                }
-                counter++;
-                updateKills(enemiesKilled);
-                updateHP(hp, p);
-                drawMap(drawer, map);
-            }
-
-            if (counter == 15) {
-                addEnemy(map);
-                counter = 0;
-            }
+            this.updateUpperGrid(gm.getPlayer());
+            drawMap(drawer, gm.getMap());
 
         });
 
@@ -142,42 +98,26 @@ public class Main extends Application {
         for (int i = 0; i < map.getEnemies().length; i++) {
             for (int j = 0; j < map.getEnemies()[0].length; j++) {
                 if (map.getTerrain(i, j) == Terrain.WALL) {
-                    paintTile(i * 10, j * 10, "Black", drawer);
+                    paintTile(i * pixelSize, j * pixelSize, "Black", drawer);
                 } else if (map.getTerrain(i, j) == Terrain.FLOOR) {
-                    paintTile(i * 10, j * 10, "White", drawer);
+                    paintTile(i * pixelSize, j * pixelSize, "White", drawer);
                 } else if (map.getTerrain(i, j) == Terrain.STAIRS) {
-                    paintTile(i * 10, j * 10, "Yellow", drawer);
+                    paintTile(i * pixelSize, j * pixelSize, "Yellow", drawer);
                 }
                 if (map.getEnemy(i, j) != null) {
-                    paintTile(i * 10, j * 10, "Red", drawer);
+                    paintTile(i * pixelSize, j * pixelSize, "Red", drawer);
                 } else if (map.getItem(i, j) != null) {
-                    paintTile(i * 10, j * 10, "Blue", drawer);
+                    paintTile(i * pixelSize, j * pixelSize, "Blue", drawer);
                 }
             }
         }
-        paintTile(map.getPlayer().getX() * 10, map.getPlayer().getY() * 10, "Green", drawer);
+        paintTile(map.getPlayer().getX() * pixelSize, map.getPlayer().getY() * pixelSize, "Green", drawer);
 
     }
 
     private static void paintTile(int x, int y, String color, GraphicsContext drawer) {
         drawer.setFill(Paint.valueOf(color));
-        drawer.fillRect(x, y, 10, 10);
-    }
-
-    public static void addEnemy(Map map) {
-        Random random = new Random();
-
-        int x = random.nextInt(50);
-        int y = random.nextInt(50);
-
-        while (map.isOccupied(x, y)) {
-            x = random.nextInt(50);
-            y = random.nextInt(50);
-        }
-
-        Enemy e = new Enemy(x, y, new EnemyType("test enemy " + enemiesCreated), map, new EnemyStats(2, 2, 2, 2, 2, null, null, null, 0), true);
-        enemiesCreated++;
-        map.addEnemy(x, y, e);
+        drawer.fillRect(x, y, pixelSize, pixelSize);
     }
 
     private void updateHP(Label hp, Player p) {
@@ -185,57 +125,84 @@ public class Main extends Application {
     }
 
     private void updateKills(Label enemiesKilled) {
-        enemiesKilled.setText("Enemies Killed: " + kills);
+        enemiesKilled.setText("Enemies Killed: " + gm.getGmStats().getEnemiesKilled() + "   ");
     }
 
-    private boolean parsePlayerAttackResult(AttackResult result) {
-        if (result.getType() == AttackResultType.HIT) {
-            updateLog("You hit the " + result.getTarget().getName() + " dealing " + result.getDamageDealt() + " damage.");
-        }
-        if (result.getType() == AttackResultType.MISS) {
-            updateLog("You miss the " + result.getTarget().getName() + ".");
-        }
-        if (result.getType() == AttackResultType.KILL) {
-            updateLog("You kill the " + result.getTarget().getName() + ".");
-            kills++;
-        }
-        return true;
-    }
+    private void gameOver(Stage stage, AttackResult result) {
+        GridPane grid = new GridPane();
 
-    private boolean parseAttackResult(AttackResult result) {
-        if (result.getType() == AttackResultType.FAIL) {
-            return false;
-        }
-        if (result.getAttacker().isEnemy()) {
-            return parseEnemyAttackResult(result);
-        } else {
-            return parsePlayerAttackResult(result);
-        }
-    }
+        Label goText = new Label("Game Over");
+        goText.setAlignment(Pos.CENTER);
 
-    private boolean parseEnemyAttackResult(AttackResult result) {
-        if (result.getType() == AttackResultType.HIT) {
-            updateLog("The " + result.getAttacker().getName() + " attacks you and deals " + result.getDamageDealt() + " damage.");
-        }
-        if (result.getType() == AttackResultType.MISS) {
-            updateLog("The " + result.getAttacker().getName() + " misses you.");
-        }
-        if (result.getType() == AttackResultType.KILL) {
-            updateLog("The " + result.getAttacker().getName() + " attacks and kills you.");
-            gameOver();
-        }
-        return true;
-    }
+        Label detailedMessage = new Label(getGameOverMessage(result));
+        detailedMessage.setAlignment(Pos.CENTER);
 
-    private void gameOver() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        grid.add(goText, 0, 0);
+        grid.add(detailedMessage, 0, 1);
+
+        grid.setAlignment(Pos.CENTER);
+        grid.setPrefSize(500, 500);
+
+        Scene gameOverScreen = new Scene(grid);
+        stage.setScene(gameOverScreen);
+        stage.show();
     }
 
     private void updateLog(String newMessage) {
-        log4.setText(log3.getText());
-        log3.setText(log2.getText());
-        log2.setText(log1.getText());
-        log1.setText(newMessage);
+        for (int i = 0; i < logs.size() - 1; i++) {
+            logs.get(i).setText(logs.get(i + 1).getText());
+        }
+        logs.get(logs.size() - 1).setText(newMessage);
+    }
+
+    private void updateUpperGrid(Player p) {
+        updateKills(enemiesKilled);
+        updateHP(hp, p);
+        updateTurns();
+    }
+
+    private void updateTurns() {
+        turnCounter.setText("Turns: " + gm.getGmStats().getTurns());
+    }
+
+    private void addUpperLabels(GridPane upperGrid) {
+        upperGrid.add(enemiesKilled, 1, 0);
+        upperGrid.add(turnCounter, 2, 0);
+        upperGrid.add(hp, 0, 0);
+
+    }
+    
+    private void createLogs(int amount) {
+        for (int i = 0; i < amount; i++) {
+            Label log = new Label();
+            logs.add(log);
+        }
+    }
+
+    private void addLogs(GridPane logGrid) {
+        for (int i = 0; i < logs.size(); i++) {
+            logGrid.add(logs.get(i), 0, i);
+        }
+    }
+
+    private String getGameOverMessage(AttackResult result) {
+        return "You were killed on turn " + gm.getGmStats().getTurns() + " by " + result.getAttacker().getName() + ".";
+    }
+
+    private PlayerStats createPlayerStats() {
+        return this.createTestPlayerStats();
+    }
+
+    private PlayerStats createTestPlayerStats() {
+        return new PlayerStats(1, 1, 1, 1, 1, null, null);
+    }
+
+    private Inventory createInventory() {
+        return this.createTestInventory();
+    }
+
+    private Inventory createTestInventory() {
+        return new Inventory(10);
     }
 
 }

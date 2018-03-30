@@ -14,6 +14,7 @@ import java.util.*;
 class Inventory {
     private ArrayList<InventoryItem> items;
     private int size;
+    ItemDb itemDb = new ItemDb();
 
     public Inventory(int size) {
         this.items = new ArrayList<>();
@@ -46,8 +47,10 @@ class Inventory {
     }
 
     boolean pickUp(MapItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return addItem(this.itemDb.itemConverter(item));
     }
+
+
     
     
     

@@ -99,5 +99,14 @@ public class Enemy extends Moves implements TakesTurns {
         }
         return new AttackResult(AttackResultType.FAIL, 0, this, null);
     }
+    
+    public boolean move(Direction d) {
+        if (this.map.moveEnemy(x, y, d)) {
+            this.x += d.xVal();
+            this.y += d.yVal();
+            return true;
+        }
+        return false;   
+    }
 
 }

@@ -55,9 +55,9 @@ class Player extends Moves {
         return this.inventory.pickUp(item);
     }
     
-    @Override
-    public boolean move(Direction d) {
-        return map.movePlayer(this, d);
+    
+    public CommandResult move(Direction d) {
+        return map.movePlayer(d);
     }
     
     public int getMaxHP() {

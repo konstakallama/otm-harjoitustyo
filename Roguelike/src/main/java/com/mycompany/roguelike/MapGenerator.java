@@ -11,13 +11,25 @@ import java.util.Random;
  */
 class MapGenerator {
     Random random = new Random();
+    Formulas f = new Formulas();
 
-    Map createMap(int w, int h) {
+    Map createTestMap(int w, int h) {
         Terrain[][] t = createTerrain(w, h);
-        return new Map(w, h, t, 0);
+        Map m = new Map(w, h, t, 0);
+        this.addTestItem(m);
+        
+        return m;
+    }
+    
+    public void addTestItem(Map m) {
+        Location l = f.createRandomFreeLocation(m);
+        
+        MapItem item = new MapItem(l.getX(), l.getY(), m, "test item", true);
+        
+        m.addItem(l.getX(), l.getY(), item);
     }
 
-    private Terrain[][] createTerrain(int w, int h) {
+    public Terrain[][] createTerrain(int w, int h) {
         Terrain[][] t = new Terrain[w][h]; 
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
@@ -39,5 +51,7 @@ class MapGenerator {
 //        }
         return t;
    }
+    
+    
     
 }
