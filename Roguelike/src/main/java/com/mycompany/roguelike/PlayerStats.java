@@ -26,7 +26,7 @@ public class PlayerStats extends Stats {
     public boolean gainExp(int gain) {
         if (this.exp + gain >= f.expToNextLevel(this.level)) {
             this.exp = this.exp + gain - f.expToNextLevel(this.level);
-            this.increaseLevel();
+            this.levelUp();
             return true;
         }
         this.exp += gain;
@@ -36,6 +36,14 @@ public class PlayerStats extends Stats {
     @Override
     public int getCurrentHP() {
         return this.getMaxHP() - this.damage;
+    }
+    
+    public void levelUp() {
+        this.increaseLevel();
+        con++;
+        str++;
+        intel++;
+        dex++;
     }
     
 }

@@ -10,5 +10,5 @@ package com.mycompany.roguelike;
  * @author konstakallama
  */
 public enum PlayerCommandType {
-    MOVE, ATTACK, WAIT, COMMAND_NOT_FOUND;
+    MOVE, ATTACK, WAIT, COMMAND_NOT_FOUND, NEXT_FLOOR;
 }

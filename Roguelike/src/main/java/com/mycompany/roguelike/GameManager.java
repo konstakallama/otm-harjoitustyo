@@ -19,6 +19,7 @@ public class GameManager {
     private GameManagerStatistics gmStats;
     private Formulas f = new Formulas();
     private MapGenerator m = new MapGenerator();
+    private ItemDb itemDb = new ItemDb();
 
     String defaultFailMessage = "";
 
@@ -26,7 +27,7 @@ public class GameManager {
     int mapH = 50;
 
     public GameManager(PlayerStats stats, Inventory i) {
-        this.map = m.createTestMap(mapW, mapH);
+        this.map = m.createTestMap(mapW, mapH, 0);
         Location l = f.createPlayerStartLocation(map);
         
         this.p = new Player(this.map, l.getX(), l.getY(), stats, i);
@@ -57,8 +58,15 @@ public class GameManager {
         }
 
         if (c.getType() == PlayerCommandType.WAIT) {
+            if (map.playerIsOnStairs()) {
+                results.add(new CommandResult(true, true, map.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, p, null), map.playerIsOnStairs()));
+            }
             results.add(new CommandResult(true, false, "", new AttackResult(AttackResultType.FAIL, 0, null, null)));
             this.playRound(results);
+        }
+        
+        if (c.getType() == PlayerCommandType.NEXT_FLOOR) {
+            this.nextFloor();
         }
 
         return results;
@@ -89,30 +97,34 @@ public class GameManager {
     }
 
     public String parsePlayerAttackResult(AttackResult result) {
+        String r = "";
         if (result.getType() == AttackResultType.HIT) {
-            return ("You hit the " + result.getTarget().getName() + " dealing " + result.getDamageDealt() + " damage.");
+            r = ("You hit the " + result.getTarget().getName() + " dealing " + result.getDamageDealt() + " damage.");
         }
         if (result.getType() == AttackResultType.MISS) {
-            return ("You miss the " + result.getTarget().getName() + ".");
+            r = ("You miss the " + result.getTarget().getName() + ".");
         }
         if (result.getType() == AttackResultType.KILL) {
             this.gmStats.increaseEnemiesKilled();
-            return ("You kill the " + result.getTarget().getName() + ".");
+            r = ("You kill the " + result.getTarget().getName() + ".");
         }
-        return "";
+        r += this.getToHitMessage(result);
+        return r;
     }
 
     public String parseEnemyAttackResult(AttackResult result) {
+        String r = "";
         if (result.getType() == AttackResultType.HIT) {
-            return ("The " + result.getAttacker().getName() + " attacks you and deals " + result.getDamageDealt() + " damage.");
+            r = ("The " + result.getAttacker().getName() + " attacks you and deals " + result.getDamageDealt() + " damage.");
         }
         if (result.getType() == AttackResultType.MISS) {
-            return ("The " + result.getAttacker().getName() + " misses you.");
+            r = ("The " + result.getAttacker().getName() + " misses you.");
         }
         if (result.getType() == AttackResultType.KILL) {
-            return ("The " + result.getAttacker().getName() + " attacks and kills you.");
+            r = ("The " + result.getAttacker().getName() + " attacks and kills you.");
         }
-        return "";
+        r += this.getToHitMessage(result);
+        return r;
     }
 
     public void manageRoundStats() {
@@ -133,7 +145,7 @@ public class GameManager {
     }
     
     public Enemy createTestEnemy(int x, int y) {
-        return new Enemy(x, y, new EnemyType("test enemy " + this.gmStats.getEnemiesCreated()), map, new EnemyStats(2, 2, 2, 2, 2, null, null, null, 0), true);
+        return new Enemy(x, y, map, new EnemyStats(1, 1, 1, 1, 1, new EnemyType("test enemy " + this.gmStats.getEnemiesCreated()), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor(), 3), true);
     }
 
     public Map getMap() {
@@ -154,6 +166,19 @@ public class GameManager {
 
     public int getMapH() {
         return mapH;
+    }
+
+    private void nextFloor() {
+        this.map = m.createTestMap(mapW, mapH, map.getFloor() + 1);
+        Location l = f.createPlayerStartLocation(map);
+        p.setX(l.getX());
+        p.setY(l.getY());
+        p.setMap(map);
+        map.setPlayer(p);
+    }
+    
+    String getToHitMessage(AttackResult ar) {
+        return " (" + Math.round(ar.getToHit() * 100) + "% to hit)";
     }
 
 }

@@ -17,8 +17,8 @@ public class Enemy extends Moves implements TakesTurns {
     EnemyStats stats;
     boolean hasMoved;
 
-    public Enemy(int x, int y, EnemyType type, Map map, EnemyStats stats, boolean visible) {
-        super(map, x, y, type.getName());
+    public Enemy(int x, int y, Map map, EnemyStats stats, boolean visible) {
+        super(map, x, y, stats.getType().getName());
         this.stats = stats;
         this.visible = visible;
         this.hasMoved = false;
@@ -94,7 +94,7 @@ public class Enemy extends Moves implements TakesTurns {
             if (f.attackHits(this.stats, map.getPlayer().getStats())) {
                 return f.enemyDamageCalculation(this, map.getPlayer());
             } else {
-                return new AttackResult(AttackResultType.MISS, 0, this, map.getEnemy(x + d.xVal(), y + d.yVal()));
+                return new AttackResult(AttackResultType.MISS, 0, this, map.getPlayer(), f.hitProb(stats, map.getPlayer().getStats()));
             }
         }
         return new AttackResult(AttackResultType.FAIL, 0, this, null);

@@ -14,13 +14,32 @@ public class CommandResult {
     boolean hasLogMessage;
     String logMessage;
     AttackResult attackResult;
+    boolean isOnStairs;
 
-    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult) {
+    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult, boolean isOnStairs) {
         this.success = success;
         this.hasLogMessage = hasLogMessage;
         this.logMessage = logMessage;
         this.attackResult = attackResult;
+        this.isOnStairs = isOnStairs;
+        
+    }   
+
+    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult) {
+        this(success, hasLogMessage, logMessage, attackResult, false);
     }
+
+    public CommandResult(boolean success) {
+        this(success, false, "", new AttackResult(AttackResultType.FAIL, 0, null, null), false);
+    }
+
+    public CommandResult(boolean success, boolean hasLogMessage) {
+        this(success, hasLogMessage, "", new AttackResult(AttackResultType.FAIL, 0, null, null), false);
+    }
+    
+    
+    
+    
 
     public boolean isSuccess() {
         return success;
@@ -45,5 +64,11 @@ public class CommandResult {
     public AttackResult getAttackResult() {
         return attackResult;
     }
+
+    public boolean isOnStairs() {
+        return isOnStairs;
+    }
+    
+    
     
 }

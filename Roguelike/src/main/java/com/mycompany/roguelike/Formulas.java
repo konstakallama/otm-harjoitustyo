@@ -23,11 +23,15 @@ public class Formulas {
     }
 
     int expToNextLevel(int currentLevel) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 10 + currentLevel;
     }
 
     boolean attackHits(Stats atkStats, Stats defStats) {
-        return r.nextDouble() < 0.75;
+        return r.nextDouble() < this.hitProb(atkStats, defStats);
+    }
+    
+    double hitProb(Stats atkStats, Stats defStats) {
+        return (atkStats.getWeapon().getHit() + (0.05 * (atkStats.getDex() - defStats.getDex())));
     }
 
     boolean damageCalculation(Stats atkStats, Stats defStats) {
@@ -39,14 +43,19 @@ public class Formulas {
         PlayerStats playerStats = player.getStats();
         AttackResult result;
         
-        enemy.getStats().takeDamage(5);
+        int dmg = this.getDamage(playerStats, enemyStats);
+        
+        enemy.getStats().takeDamage(dmg);
 
         if (enemyStats.isDead()) {           
-//            playerStats.gainExp(enemyStats.getExp());
-            result = new AttackResult(AttackResultType.KILL, 5, player, enemy);
+            if (playerStats.gainExp(enemyStats.getExp())) {
+                result = new AttackResult(AttackResultType.KILL, dmg, player, enemy, true, (this.hitProb(playerStats, enemyStats)));
+            } else {
+                result = new AttackResult(AttackResultType.KILL, dmg, player, enemy, (this.hitProb(playerStats, enemyStats)));
+            }         
             enemy.die();
         } else {
-            result = new AttackResult(AttackResultType.HIT, 5, player, enemy);
+            result = new AttackResult(AttackResultType.HIT, dmg, player, enemy, (this.hitProb(playerStats, enemyStats)));
         }
         
         return result;
@@ -59,13 +68,15 @@ public class Formulas {
         PlayerStats playerStats = player.getStats();
         AttackResult result;
         
-        playerStats.takeDamage(1);
+        int dmg = this.getDamage(enemyStats, playerStats);
+        
+        playerStats.takeDamage(dmg);
         
         if (playerStats.isDead()) {
-            result = new AttackResult(AttackResultType.KILL, 1, enemy, player);
+            result = new AttackResult(AttackResultType.KILL, dmg, enemy, player, (this.hitProb(enemyStats, playerStats)));
             
         } else {
-            result = new AttackResult(AttackResultType.HIT, 1, enemy, player);
+            result = new AttackResult(AttackResultType.HIT, dmg, enemy, player, (this.hitProb(enemyStats, playerStats)));
         }
         return result;
     }
@@ -88,4 +99,10 @@ public class Formulas {
         }
         return new Location(x, y);
     }
+    
+    public int getDamage(Stats atkStats, Stats defStats) {
+        return atkStats.getStr() + atkStats.getWeapon().getAtk() - defStats.getArmor().getDef();
+    }
+    
+    
 }

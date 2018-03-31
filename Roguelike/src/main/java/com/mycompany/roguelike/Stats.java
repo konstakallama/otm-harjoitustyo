@@ -40,6 +40,10 @@ public abstract class Stats {
     public void increaseLevel() {
         this.level++;
     }
+    
+    public void increaseLevelBy(int amount) {
+        this.level += amount;
+    }
 
     public int getExp() {
         return exp;
@@ -105,6 +109,14 @@ public abstract class Stats {
 
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
+    }
+
+    public Armor getArmor() {
+        return armor;
+    }
+
+    public void setArmor(Armor armor) {
+        this.armor = armor;
     }
     
     public abstract int getCurrentHP();

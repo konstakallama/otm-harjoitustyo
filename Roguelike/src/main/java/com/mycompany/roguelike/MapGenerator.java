@@ -13,10 +13,11 @@ class MapGenerator {
     Random random = new Random();
     Formulas f = new Formulas();
 
-    Map createTestMap(int w, int h) {
+    Map createTestMap(int w, int h, int floor) {
         Terrain[][] t = createTerrain(w, h);
-        Map m = new Map(w, h, t, 0);
+        Map m = new Map(w, h, t, floor);
         this.addTestItem(m);
+        this.addStairs(m);
         
         return m;
     }
@@ -27,6 +28,11 @@ class MapGenerator {
         MapItem item = new MapItem(l.getX(), l.getY(), m, "test item", true);
         
         m.addItem(l.getX(), l.getY(), item);
+    }
+    
+    public void addStairs(Map m) {
+        Location l = f.createRandomFreeLocation(m);
+        m.setTerrain(l.getX(), l.getY(), Terrain.STAIRS);
     }
 
     public Terrain[][] createTerrain(int w, int h) {

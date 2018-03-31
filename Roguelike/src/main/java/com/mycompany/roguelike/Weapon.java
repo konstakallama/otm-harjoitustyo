@@ -11,11 +11,11 @@ package com.mycompany.roguelike;
  */
 public class Weapon extends InventoryItem {
     private int atk;
-    private int hit;
+    private double hit;
     private WeaponType type;
     private int strRec;
 
-    public Weapon(int atk, int hit, WeaponType type, int wt, int strRec, String name) {
+    public Weapon(int atk, double hit, WeaponType type, int wt, int strRec, String name) {
         super(wt, ItemType.WEAPON, name);
         this.atk = atk;
         this.hit = hit;
@@ -23,11 +23,16 @@ public class Weapon extends InventoryItem {
         this.strRec = strRec;
     }
 
+    public Weapon(int atk, double hit, WeaponType type, String name) {
+        this(atk, hit, type, 0, 0, name);
+    }
+    
+
     public int getAtk() {
         return atk;
     }
 
-    public int getHit() {
+    public double getHit() {
         return hit;
     }
 

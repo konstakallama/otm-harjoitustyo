@@ -29,8 +29,10 @@ public class Main extends Application {
     Label enemiesKilled = new Label();
     Label turnCounter = new Label();
     Label hp = new Label();
+    Label floor = new Label();
+    ItemDb itemDb = new ItemDb();
     
-    static int pixelSize = 10;
+    static int pixelSize = 14;
 
     GameManager gm;
     PlayerCommandParser playerCommandParser = new PlayerCommandParser();
@@ -72,7 +74,7 @@ public class Main extends Application {
 
         scene.setOnKeyPressed((event) -> {
 
-            ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode()));
+            ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode(), gm));
 
             for (CommandResult cr : results) {
                 if (cr.isSuccess()) {
@@ -141,7 +143,7 @@ public class Main extends Application {
         grid.add(detailedMessage, 0, 1);
 
         grid.setAlignment(Pos.CENTER);
-        grid.setPrefSize(500, 500);
+        grid.setPrefSize(gm.getMapW() * pixelSize, gm.getMapH() * pixelSize);
 
         Scene gameOverScreen = new Scene(grid);
         stage.setScene(gameOverScreen);
@@ -159,16 +161,22 @@ public class Main extends Application {
         updateKills(enemiesKilled);
         updateHP(hp, p);
         updateTurns();
+        updateFloor();
     }
 
     private void updateTurns() {
-        turnCounter.setText("Turns: " + gm.getGmStats().getTurns());
+        turnCounter.setText("Turns: " + gm.getGmStats().getTurns() + "   ");
+    }
+    
+    private void updateFloor() {
+        floor.setText("Floor: " + gm.getMap().getFloor());
     }
 
     private void addUpperLabels(GridPane upperGrid) {
         upperGrid.add(enemiesKilled, 1, 0);
         upperGrid.add(turnCounter, 2, 0);
         upperGrid.add(hp, 0, 0);
+        upperGrid.add(floor, 3, 0);
 
     }
     
@@ -186,7 +194,7 @@ public class Main extends Application {
     }
 
     private String getGameOverMessage(AttackResult result) {
-        return "You were killed on turn " + gm.getGmStats().getTurns() + " by " + result.getAttacker().getName() + ".";
+        return "You were killed on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + " by " + result.getAttacker().getName() + ".";
     }
 
     private PlayerStats createPlayerStats() {
@@ -194,7 +202,7 @@ public class Main extends Application {
     }
 
     private PlayerStats createTestPlayerStats() {
-        return new PlayerStats(1, 1, 1, 1, 1, null, null);
+        return new PlayerStats(1, 1, 1, 1, 1, itemDb.createTestWeapon(), itemDb.createTestArmor());
     }
 
     private Inventory createInventory() {

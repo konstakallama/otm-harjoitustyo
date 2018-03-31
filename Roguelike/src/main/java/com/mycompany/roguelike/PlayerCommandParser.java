@@ -17,9 +17,10 @@ public class PlayerCommandParser {
     KeyCode moveRight = KeyCode.RIGHT;
     KeyCode moveLeft = KeyCode.LEFT;
     KeyCode wait = KeyCode.SPACE;
+    KeyCode yes = KeyCode.ENTER;
     
     
-    public PlayerCommand parseCommand(KeyCode k) {
+    public PlayerCommand parseCommand(KeyCode k, GameManager gm) {
         if (k == this.moveDown) {
             return new PlayerCommand(PlayerCommandType.MOVE, Direction.DOWN);
         } else if (k == this.moveUp) {
@@ -30,6 +31,12 @@ public class PlayerCommandParser {
             return new PlayerCommand(PlayerCommandType.MOVE, Direction.RIGHT);
         } else if (k == this.wait) {
             return new PlayerCommand(PlayerCommandType.WAIT, Direction.NONE);
+        } else if (gm.getMap().playerIsOnStairs()) {
+            if (k == this.yes) {
+                return new PlayerCommand(PlayerCommandType.NEXT_FLOOR, Direction.NONE);
+            } else {
+                return new PlayerCommand(PlayerCommandType.WAIT, Direction.NONE);
+            }
         } else {
             return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND, Direction.NONE);
         }

@@ -32,7 +32,7 @@ class Player extends Moves {
             if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
                 return f.playerDamageCalculation(this, map.getEnemy(x + d.xVal(), y + d.yVal()));              
             } else {
-                return new AttackResult(AttackResultType.MISS, 0, this, map.getEnemy(x + d.xVal(), y + d.yVal()));
+                return new AttackResult(AttackResultType.MISS, 0, this, map.getEnemy(x + d.xVal(), y + d.yVal()), (f.hitProb(stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())));
             }
         }
         return new AttackResult(AttackResultType.FAIL, 0, this, null);

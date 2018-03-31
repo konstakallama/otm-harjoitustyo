@@ -131,13 +131,13 @@ public class Map {
         if (this.items[nx][ny] != null) {
             if (player.pickUp(items[nx][ny])) {
                 cr = new CommandResult(true, true, "You picked up the " + this.items[nx][ny].getName() + ".", new AttackResult(AttackResultType.FAIL, 0, player, null));
-                this.items[nx][ny] = null;
-                
+                this.items[nx][ny] = null;                
+            } else {
+                cr = new CommandResult(true, true, "Your inventory is full.", new AttackResult(AttackResultType.FAIL, 0, player, null));
             }
         }
         if (this.terrain[nx][ny] == Terrain.STAIRS) {
-            // Player chooses to go to next floor
-            // If yes, create new map, move player to it and return true
+            cr = new CommandResult(true, true, this.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, player, null), true);
         }
         player.setX(nx);
         player.setY(ny);
@@ -194,6 +194,18 @@ public class Map {
 
     boolean hasPlayer(int x, int y) {
         return x == this.player.getX() && y == this.player.getY();
+    }
+    
+    public void setTerrain(int x, int y, Terrain t) {
+        this.terrain[x][y] = t;
+    }
+    
+    public boolean playerIsOnStairs() {
+        return this.terrain[player.getX()][player.getY()] == Terrain.STAIRS;
+    }
+
+    String nextFloorMessage() {
+        return "Would you like to go to the next floor? (press enter to advance)";
     }
 
 }

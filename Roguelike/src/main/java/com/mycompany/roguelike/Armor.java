@@ -12,9 +12,13 @@ package com.mycompany.roguelike;
 public class Armor extends InventoryItem {
     int def;
     
-    public Armor(int wt, ItemType itemType, String name, int def) {
-        super(wt, itemType, name);
+    public Armor(int wt, String name, int def) {
+        super(wt, ItemType.ARMOR, name);
         this.def = def;
+    }
+    
+    public Armor(int def, String name) {
+        this(0, name, def);
     }
 
     public int getDef() {
