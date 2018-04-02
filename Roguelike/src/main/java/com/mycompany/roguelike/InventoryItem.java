@@ -13,11 +13,17 @@ public class InventoryItem implements Comparable<InventoryItem> {
     int wt;
     ItemType itemType;
     String name;
+    Effect effect;
 
     public InventoryItem(int wt, ItemType itemType, String name) {
+        this(wt, itemType, name, new noEffect());
+    }
+
+    public InventoryItem(int wt, ItemType itemType, String name, Effect effect) {
         this.wt = wt;
         this.itemType = itemType;
         this.name = name;
+        this.effect = effect;
     }
 
     @Override
@@ -38,6 +44,14 @@ public class InventoryItem implements Comparable<InventoryItem> {
 
     public String getName() {
         return name;
+    }
+
+    public Effect getEffect() {
+        return effect;
+    }
+
+    public void setEffect(Effect effect) {
+        this.effect = effect;
     }
     
     

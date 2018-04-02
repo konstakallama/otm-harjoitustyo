@@ -11,8 +11,14 @@ package com.mycompany.roguelike;
  */
 class ItemDb {
 
-    InventoryItem itemConverter(MapItem item) {
-        return this.testItemConverter();
+    InventoryItem itemConverter(MapItem item) throws Exception {
+        if (item.getName().equals("test item")) {
+            return this.testItemConverter();
+        } else if (item.getName().equals("potion")){
+            return this.createPotion();
+        }
+        
+        throw new Exception("Item not found");
     }
 
     private InventoryItem testItemConverter() {
@@ -33,6 +39,10 @@ class ItemDb {
     
     Armor createEnemyTestArmor() {
         return new Armor(0, "enemy test armor");
+    }
+    
+    InventoryItem createPotion() {
+        return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(5));
     }
     
 }

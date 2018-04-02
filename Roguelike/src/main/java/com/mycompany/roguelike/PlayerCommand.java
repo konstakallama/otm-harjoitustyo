@@ -25,4 +25,12 @@ public class PlayerCommand {
         this.type = type;
         this.d = d;
     }
+    
+    public PlayerCommand(PlayerCommandType type) {
+        this(type, Direction.NONE);
+    }
+    
+    public PlayerCommand() {
+        this(PlayerCommandType.COMMAND_NOT_FOUND);
+    }
 }

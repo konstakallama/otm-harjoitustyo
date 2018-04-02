@@ -9,6 +9,11 @@ package com.mycompany.roguelike;
  *
  * @author konstakallama
  */
-public enum PlayerCommandType {
-    MOVE, ATTACK, WAIT, COMMAND_NOT_FOUND, NEXT_FLOOR, INVENTORY;
+public class noEffect extends Effect {
+
+    @Override
+    public boolean applyEffectToPlayer(Player p) {
+        return false;
+    }
+    
 }

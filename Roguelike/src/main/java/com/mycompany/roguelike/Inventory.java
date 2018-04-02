@@ -47,7 +47,15 @@ class Inventory {
     }
 
     boolean pickUp(MapItem item) {
-        return addItem(this.itemDb.itemConverter(item));
+        try {
+            return addItem(this.itemDb.itemConverter(item));
+        } catch (Exception e) {
+            return false;
+        }       
+    }
+    
+    boolean removeItem(InventoryItem i) {
+        return this.items.remove(i);
     }
 
 

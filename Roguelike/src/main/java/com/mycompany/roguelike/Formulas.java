@@ -31,7 +31,15 @@ public class Formulas {
     }
     
     double hitProb(Stats atkStats, Stats defStats) {
-        return (atkStats.getWeapon().getHit() + (0.05 * (atkStats.getDex() - defStats.getDex())));
+        double hit = (atkStats.getWeapon().getHit() + (0.05 * (atkStats.getDex() - defStats.getDex())));
+        
+        if (hit >= 1.0) {
+            return 1.0;
+        } else if (hit <= 0) {
+            return 0.0;
+        } else {
+            return hit;
+        }      
     }
 
     boolean damageCalculation(Stats atkStats, Stats defStats) {

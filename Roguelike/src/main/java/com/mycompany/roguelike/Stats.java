@@ -90,11 +90,15 @@ public abstract class Stats {
         return this.isDead();
     }
     
-    public void heal(int amount) {
+    public boolean heal(int amount) {
+        if (this.damage <= 0) {
+            return false;
+        }
         this.damage -= amount;
         if (this.damage < 0) {
             this.damage = 0;
         }
+        return true;
     }
     
     public abstract int getMaxHP();

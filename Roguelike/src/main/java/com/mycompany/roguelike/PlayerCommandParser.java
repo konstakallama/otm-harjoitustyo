@@ -12,14 +12,15 @@ import javafx.scene.input.KeyCode;
  * @author konstakallama
  */
 public class PlayerCommandParser {
+
     KeyCode moveUp = KeyCode.UP;
     KeyCode moveDown = KeyCode.DOWN;
     KeyCode moveRight = KeyCode.RIGHT;
     KeyCode moveLeft = KeyCode.LEFT;
-    KeyCode wait = KeyCode.SPACE;
+    KeyCode wait = KeyCode.SHIFT;
     KeyCode yes = KeyCode.ENTER;
-    
-    
+    KeyCode inventory = KeyCode.I;
+
     public PlayerCommand parseCommand(KeyCode k, GameManager gm) {
         if (k == this.moveDown) {
             return new PlayerCommand(PlayerCommandType.MOVE, Direction.DOWN);
@@ -37,6 +38,8 @@ public class PlayerCommandParser {
             } else {
                 return new PlayerCommand(PlayerCommandType.WAIT, Direction.NONE);
             }
+        } else if (k == this.inventory) {
+            return new PlayerCommand(PlayerCommandType.INVENTORY, Direction.NONE);
         } else {
             return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND, Direction.NONE);
         }
@@ -80,5 +83,21 @@ public class PlayerCommandParser {
 
     public void setWait(KeyCode wait) {
         this.wait = wait;
+    }
+
+    public KeyCode getYes() {
+        return yes;
+    }
+
+    public void setYes(KeyCode yes) {
+        this.yes = yes;
+    }
+
+    public KeyCode getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(KeyCode inventory) {
+        this.inventory = inventory;
     }
 }

@@ -63,6 +63,10 @@ class Player extends Moves {
     public int getMaxHP() {
         return this.stats.getMaxHP();
     }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
     
 
     

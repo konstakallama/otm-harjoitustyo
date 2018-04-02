@@ -16,7 +16,7 @@ class MapGenerator {
     Map createTestMap(int w, int h, int floor) {
         Terrain[][] t = createTerrain(w, h);
         Map m = new Map(w, h, t, floor);
-        this.addTestItem(m);
+        this.addPotion(m);
         this.addStairs(m);
         
         return m;
@@ -26,6 +26,14 @@ class MapGenerator {
         Location l = f.createRandomFreeLocation(m);
         
         MapItem item = new MapItem(l.getX(), l.getY(), m, "test item", true);
+        
+        m.addItem(l.getX(), l.getY(), item);
+    }
+    
+    public void addPotion(Map m) {
+        Location l = f.createRandomFreeLocation(m);
+        
+        MapItem item = new MapItem(l.getX(), l.getY(), m, "potion", true);
         
         m.addItem(l.getX(), l.getY(), item);
     }
