@@ -1,6 +1,6 @@
 # Roguelike
 
-Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyseessä on yksinkertainen roguelike-tyylinen peli, joka on siis vuonna 1980 julkaistun [rogue-pelin](https://en.wikipedia.org/wiki/Rogue_(video_game).html) innoittama. Projekti on vielä kesken.
+Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyseessä on yksinkertainen roguelike-tyylinen peli, joka on siis vuonna 1980 julkaistun [rogue-pelin](https://en.wikipedia.org/wiki/Rogue_%28video_game%29) innoittama. Projekti on vielä kesken.
 
 
 ## Dokumentaatio
