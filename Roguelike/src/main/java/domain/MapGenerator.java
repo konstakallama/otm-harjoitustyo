@@ -9,11 +9,11 @@ import java.util.Random;
  *
  * @author konstakallama
  */
-class MapGenerator {
+public class MapGenerator {
     Random random = new Random();
     Formulas f = new Formulas();
 
-    Map createTestMap(int w, int h, int floor) {
+    public Map createTestMap(int w, int h, int floor) {
         Terrain[][] t = createTerrain(w, h);
         Map m = new Map(w, h, t, floor);
         this.addPotion(m);

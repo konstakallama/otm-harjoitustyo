@@ -232,7 +232,7 @@ public class Main extends Application {
         return this.createTestPlayerStats();
     }
 
-    private PlayerStats createTestPlayerStats() {
+    public PlayerStats createTestPlayerStats() {
         return new PlayerStats(1, 1, 1, 1, 1, itemDb.createTestWeapon(), itemDb.createTestArmor());
     }
 
@@ -240,7 +240,7 @@ public class Main extends Application {
         return this.createTestInventory();
     }
 
-    private Inventory createTestInventory() {
+    public Inventory createTestInventory() {
         return new Inventory(10);
     }
 

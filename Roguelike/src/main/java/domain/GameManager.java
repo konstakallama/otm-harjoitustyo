@@ -35,6 +35,10 @@ public class GameManager {
         this.gmStats = new GameManagerStatistics(f.getEnemySpawnInterval(map.getFloor()));
     }
 
+    public GameManager() {
+        this(new PlayerStats(1, 1, 1, 1, 1, new Weapon(3, 0.75, WeaponType.SWORD, "test weapon"), new Armor(1, "test armor")), new Inventory(10));
+    }
+
     public ArrayList<CommandResult> playCommand(PlayerCommand c) {
         ArrayList<CommandResult> results = new ArrayList<>();
 
@@ -109,7 +113,7 @@ public class GameManager {
             r = ("You kill the " + result.getTarget().getName() + " and gain " + result.getExpGained() + " exp");
         }
         r += this.getToHitMessage(result) + ".";
-        
+
         if (result.isLevelUp()) {
             r += " You have leveled up!";
         }
@@ -184,5 +188,7 @@ public class GameManager {
     String getToHitMessage(AttackResult ar) {
         return " (" + Math.round(ar.getToHit() * 100) + "% to hit)";
     }
+
+
 
 }
