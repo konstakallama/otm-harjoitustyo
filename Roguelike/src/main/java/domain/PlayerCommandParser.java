@@ -24,14 +24,8 @@ public class PlayerCommandParser {
     KeyCode menu = KeyCode.M;
 
     public PlayerCommand parseCommand(KeyCode k, GameManager gm) {
-        if (k == this.moveDown) {
-            return new PlayerCommand(PlayerCommandType.MOVE, Direction.DOWN);
-        } else if (k == this.moveUp) {
-            return new PlayerCommand(PlayerCommandType.MOVE, Direction.UP);
-        } else if (k == this.moveLeft) {
-            return new PlayerCommand(PlayerCommandType.MOVE, Direction.LEFT);
-        } else if (k == this.moveRight) {
-            return new PlayerCommand(PlayerCommandType.MOVE, Direction.RIGHT);
+        if (k == this.moveDown || k == this.moveUp || k == this.moveLeft || k == this.moveRight) {
+            return this.checkMove(k);
         } else if (k == this.wait) {
             return new PlayerCommand(PlayerCommandType.WAIT);
         } else if (gm.getMap().playerIsOnStairs()) {
@@ -46,9 +40,21 @@ public class PlayerCommandParser {
             return new PlayerCommand(PlayerCommandType.CLOSE);
         } else if (k == this.menu) {
             return new PlayerCommand(PlayerCommandType.MENU);
-        } else {
-            return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND);
         }
+        return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND);      
+    }
+    
+    private PlayerCommand checkMove(KeyCode k) {
+        if (k == this.moveDown) {
+            return new PlayerCommand(PlayerCommandType.MOVE, Direction.DOWN);
+        } else if (k == this.moveUp) {
+            return new PlayerCommand(PlayerCommandType.MOVE, Direction.UP);
+        } else if (k == this.moveLeft) {
+            return new PlayerCommand(PlayerCommandType.MOVE, Direction.LEFT);
+        } else if (k == this.moveRight) {
+            return new PlayerCommand(PlayerCommandType.MOVE, Direction.RIGHT);
+        }
+        return new PlayerCommand();
     }
 
     public KeyCode getMoveUp() {

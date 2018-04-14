@@ -38,23 +38,23 @@ class EnemyType {
     }
     
     public int getStr(int level) {
-        return this.baseStr + (int)Math.round(strScale * Double.valueOf(level));
+        return this.baseStr + (int) Math.round(strScale * Double.valueOf(level));
     }
     
     public int getCon(int level) {
-        return this.baseCon + (int)Math.round(conScale * Double.valueOf(level));
+        return this.baseCon + (int) Math.round(conScale * Double.valueOf(level));
     }
     
     public int getInt(int level) {
-        return this.baseInt + (int)Math.round(intScale * Double.valueOf(level));
+        return this.baseInt + (int) Math.round(intScale * Double.valueOf(level));
     }
     
     public int getDex(int level) {
-        return this.baseDex + (int)Math.round(dexScale * Double.valueOf(level));
+        return this.baseDex + (int) Math.round(dexScale * Double.valueOf(level));
     }
     
     public int getExp(int level) {
-        return this.baseExp + (int)Math.round(expScale * Double.valueOf(level));
+        return this.baseExp + (int) Math.round(expScale * Double.valueOf(level));
     }
 
     public String getName() {

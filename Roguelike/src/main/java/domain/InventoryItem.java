@@ -16,7 +16,7 @@ public class InventoryItem implements Comparable<InventoryItem> {
     Effect effect;
 
     public InventoryItem(int wt, ItemType itemType, String name) {
-        this(wt, itemType, name, new noEffect());
+        this(wt, itemType, name, new NoEffect());
     }
 
     public InventoryItem(int wt, ItemType itemType, String name, Effect effect) {

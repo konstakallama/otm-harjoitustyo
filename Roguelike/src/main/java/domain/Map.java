@@ -127,20 +127,31 @@ public class Map {
         
         int nx = player.getX() + d.xVal();
         int ny = player.getY() + d.yVal();
-
+        
         if (this.items[nx][ny] != null) {
-            if (player.pickUp(items[nx][ny])) {
-                cr = new CommandResult(true, true, "You picked up the " + this.items[nx][ny].getName() + ".", new AttackResult(AttackResultType.FAIL, 0, player, null));
-                this.items[nx][ny] = null;                
-            } else {
-                cr = new CommandResult(true, true, "Your inventory is full.", new AttackResult(AttackResultType.FAIL, 0, player, null));
-            }
+            cr = this.pickUp(nx, ny);
         }
+        
         if (this.terrain[nx][ny] == Terrain.STAIRS) {
             cr = new CommandResult(true, true, this.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, player, null), true);
         }
+        
         player.setX(nx);
         player.setY(ny);
+        
+        return cr;
+    }
+
+    private CommandResult pickUp(int nx, int ny) {
+        CommandResult cr;
+        
+        if (player.pickUp(items[nx][ny])) {
+            cr = new CommandResult(true, true, "You picked up the " + this.items[nx][ny].getName() + ".", new AttackResult(AttackResultType.FAIL, 0, player, null));
+            this.items[nx][ny] = null;
+        } else {
+            cr = new CommandResult(true, true, "Your inventory is full.", new AttackResult(AttackResultType.FAIL, 0, player, null));
+        }
+        
         return cr;
     }
 
@@ -195,11 +206,11 @@ public class Map {
     boolean hasPlayer(int x, int y) {
         return x == this.player.getX() && y == this.player.getY();
     }
-    
+
     public void setTerrain(int x, int y, Terrain t) {
         this.terrain[x][y] = t;
     }
-    
+
     public boolean playerIsOnStairs() {
         return this.terrain[player.getX()][player.getY()] == Terrain.STAIRS;
     }

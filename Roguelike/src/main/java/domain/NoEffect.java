@@ -9,7 +9,7 @@ package domain;
  *
  * @author konstakallama
  */
-public class noEffect extends Effect {
+public class NoEffect extends Effect {
 
     @Override
     public boolean applyEffectToPlayer(Player p) {

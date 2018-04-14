@@ -5,7 +5,7 @@
  */
 package Tests;
 
-import UI.Main;
+import ui.Main;
 import domain.GameManager;
 import domain.Player;
 import org.junit.After;

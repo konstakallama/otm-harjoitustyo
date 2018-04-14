@@ -43,30 +43,15 @@ public class GameManager {
         ArrayList<CommandResult> results = new ArrayList<>();
 
         if (c.getType() == PlayerCommandType.COMMAND_NOT_FOUND) {
-            results.add(new CommandResult(false, false, this.defaultFailMessage, new AttackResult(AttackResultType.FAIL, 0, null, null)));
+            this.playCommandNotFound(results);
         }
 
         if (c.getType() == PlayerCommandType.MOVE) {
-            CommandResult cr = this.movePlayer(c.getDirection());
-
-            if (cr.isSuccess()) {
-                results.add(cr);
-                this.playRound(results);
-            } else {
-                cr = this.playerAttack(c.getDirection());
-                results.add(cr);
-                if (cr.isSuccess()) {
-                    this.playRound(results);
-                }
-            }
+            this.playMove(results, c);
         }
 
         if (c.getType() == PlayerCommandType.WAIT) {
-            if (map.playerIsOnStairs()) {
-                results.add(new CommandResult(true, true, map.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, p, null), map.playerIsOnStairs()));
-            }
-            results.add(new CommandResult(true, false, "", new AttackResult(AttackResultType.FAIL, 0, null, null)));
-            this.playRound(results);
+            this.playWait(results);
         }
 
         if (c.getType() == PlayerCommandType.NEXT_FLOOR) {
@@ -74,6 +59,34 @@ public class GameManager {
         }
 
         return results;
+    }
+
+    public void playCommandNotFound(ArrayList<CommandResult> results) {
+        results.add(new CommandResult(false, false, this.defaultFailMessage, new AttackResult(AttackResultType.FAIL, 0, null, null)));
+
+    }
+
+    public void playMove(ArrayList<CommandResult> results, PlayerCommand c) {
+        CommandResult cr = this.movePlayer(c.getDirection());
+
+        if (cr.isSuccess()) {
+            results.add(cr);
+            this.playRound(results);
+        } else {
+            cr = this.playerAttack(c.getDirection());
+            results.add(cr);
+            if (cr.isSuccess()) {
+                this.playRound(results);
+            }
+        }
+    }
+
+    public void playWait(ArrayList<CommandResult> results) {
+        if (map.playerIsOnStairs()) {
+            results.add(new CommandResult(true, true, map.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, p, null), map.playerIsOnStairs()));
+        }
+        results.add(new CommandResult(true, false, "", new AttackResult(AttackResultType.FAIL, 0, null, null)));
+        this.playRound(results);
     }
 
     public CommandResult movePlayer(Direction d) {
@@ -188,7 +201,5 @@ public class GameManager {
     String getToHitMessage(AttackResult ar) {
         return " (" + Math.round(ar.getToHit() * 100) + "% to hit)";
     }
-
-
 
 }

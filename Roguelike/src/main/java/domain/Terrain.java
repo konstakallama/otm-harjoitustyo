@@ -10,7 +10,7 @@ package domain;
  * @author konstakallama
  */
 public enum Terrain {
-    FLOOR, WALL, STAIRS;
+    FLOOR, WALL, STAIRS, CORRIDOR;
     
     public boolean isOccupied() {
         if (this == WALL) {

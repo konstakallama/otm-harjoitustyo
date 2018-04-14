@@ -55,6 +55,11 @@ public class Location {
         return true;
     }
     
+    public void move(Direction d) {
+        this.x += d.xVal();
+        this.y += d.yVal();
+    }
+    
     
     
 }

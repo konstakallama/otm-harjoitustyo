@@ -68,6 +68,15 @@ public class Player extends Moves {
         return inventory;
     }
     
+    public boolean equip(InventoryItem i) {
+        if (i.getItemType() == ItemType.WEAPON) {
+            return this.stats.equipWeapon((Weapon) i, this.inventory);
+        } else if (i.getItemType() == ItemType.ARMOR) {
+            return this.stats.equipArmor((Armor) i, this.inventory);
+        }
+        return false;
+    }
+    
 
     
 }

@@ -19,7 +19,7 @@ public enum Direction {
             return 0;
         } else if (this == Direction.RIGHT) {
             return 1;
-        } else if (this == Direction.LEFT){
+        } else if (this == Direction.LEFT) {
             return -1;
         } else {
             return 0;

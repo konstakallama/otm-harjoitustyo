@@ -14,8 +14,12 @@ public class ItemDb {
     InventoryItem itemConverter(MapItem item) throws Exception {
         if (item.getName().equals("test item")) {
             return this.testItemConverter();
-        } else if (item.getName().equals("potion")){
+        } else if (item.getName().equals("potion")) {
             return this.createPotion();
+        } else if (item.getName().equals("atma weapon")) {
+            return this.createAtmaWeapon();
+        } else if (item.getName().equals("über armor")) {
+            return this.createUberArmor();
         }
         
         throw new Exception("Item not found");
@@ -43,6 +47,14 @@ public class ItemDb {
     
     public InventoryItem createPotion() {
         return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(5));
+    }
+    
+    public InventoryItem createAtmaWeapon() {
+        return new Weapon(100, 1.00, WeaponType.SWORD, "atma weapon");
+    }
+
+    private InventoryItem createUberArmor() {
+        return new Armor(10, "über armor");
     }
     
 }

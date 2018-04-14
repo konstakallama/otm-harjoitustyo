@@ -102,7 +102,7 @@ public class Formulas {
         int x = r.nextInt(50);
         int y = r.nextInt(50);
 
-        while (map.isOccupied(x, y)) {
+        while (map.isOccupied(x, y) || map.getTerrain(x, y) == Terrain.CORRIDOR) {
             x = r.nextInt(50);
             y = r.nextInt(50);
         }
@@ -110,7 +110,7 @@ public class Formulas {
     }
 
     public int getDamage(Stats atkStats, Stats defStats) {
-        return atkStats.getStr() + atkStats.getWeapon().getAtk() - defStats.getArmor().getDef();
+        return Math.max(0, atkStats.getStr() + atkStats.getWeapon().getAtk() - defStats.getArmor().getDef());
     }
 
 

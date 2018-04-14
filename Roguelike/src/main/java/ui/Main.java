@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package UI;
+package ui;
 
 /**
  *
@@ -125,7 +125,7 @@ public class Main extends Application {
             for (int j = 0; j < map.getEnemies()[0].length; j++) {
                 if (map.getTerrain(i, j) == Terrain.WALL) {
                     paintTile(i * pixelSize, j * pixelSize, "Black", drawer);
-                } else if (map.getTerrain(i, j) == Terrain.FLOOR) {
+                } else if (map.getTerrain(i, j) == Terrain.FLOOR || map.getTerrain(i, j) == Terrain.CORRIDOR) {
                     paintTile(i * pixelSize, j * pixelSize, "White", drawer);
                 } else if (map.getTerrain(i, j) == Terrain.STAIRS) {
                     paintTile(i * pixelSize, j * pixelSize, "Yellow", drawer);
@@ -276,13 +276,21 @@ public class Main extends Application {
                 this.updateLog("You used the " + i.getName() + ".");
                 this.updateUpperGrid(gm.getPlayer());
                 gm.getPlayer().getInventory().removeItem(i);
-//                framework.setCenter(mapCanvas);
                 this.closeMenu();
                 this.parseCommandResults(gm.playCommand(new PlayerCommand(PlayerCommandType.WAIT)));
             } else {
                 this.updateLog("You can't use that now.");
             }
 
+        } else if (i.getItemType() == ItemType.WEAPON || i.getItemType() == ItemType.ARMOR) {
+            if (gm.getPlayer().equip(i)) {
+                this.updateLog("You equipped the " + i.getName() + ".");
+                this.updateUpperGrid(gm.getPlayer());
+                this.closeMenu();
+            } else {
+                this.updateLog("You cannot equip that now.");
+            }
+        
         }
     }
 
@@ -359,6 +367,8 @@ public class Main extends Application {
         VBox box = new VBox();
         Label name = new Label(gm.getPlayer().getName());
         Label level = new Label("Level " + gm.getPlayer().getStats().getLevel());
+        Label weapon = new Label("Equipped Weapon: " + gm.getPlayer().getStats().getWeapon().getName());
+        Label armor = new Label("Equipped Armor: " + gm.getPlayer().getStats().getArmor().getName());
         Label statHP = new Label("HP: " + gm.getPlayer().getCurrentHP() + "/" + gm.getPlayer().getMaxHP());
         Label str = new Label("Strength: " + gm.getPlayer().getStats().getStr());
         Label con = new Label("Constitution: " + gm.getPlayer().getStats().getCon());
@@ -369,8 +379,9 @@ public class Main extends Application {
 
         Label space1 = new Label("");
         Label space2 = new Label("");
+        Label space3 = new Label("");
 
-        box.getChildren().addAll(name, level, statHP, space1, str, con, intel, dex, space2, exp, toNextLevel);
+        box.getChildren().addAll(name, level, statHP, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel);
         box.setSpacing(5);
         box.setAlignment(Pos.CENTER);
         framework.setCenter(box);

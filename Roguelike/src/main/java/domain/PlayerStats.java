@@ -11,7 +11,6 @@ package domain;
  */
 public class PlayerStats extends Stats {
 //    private Player owner;
-    
 
     public PlayerStats(int level, int str, int con, int intel, int dex, Weapon weapon, Armor armor) {
         super(level, str, con, intel, dex, weapon, armor);
@@ -22,7 +21,7 @@ public class PlayerStats extends Stats {
     public int getMaxHP() {
         return f.getPlayerMaxHP(con);
     }
-    
+
     public boolean gainExp(int gain) {
         if (this.exp + gain >= f.expToNextLevel(this.level)) {
             this.exp = this.exp + gain - f.expToNextLevel(this.level);
@@ -37,7 +36,7 @@ public class PlayerStats extends Stats {
     public int getCurrentHP() {
         return this.getMaxHP() - this.damage;
     }
-    
+
     public void levelUp() {
         this.increaseLevel();
         con++;
@@ -45,9 +44,32 @@ public class PlayerStats extends Stats {
         intel++;
         dex++;
     }
-    
+
     public int expToNextLevel() {
         return f.expToNextLevel(this.level);
     }
-    
+
+    public boolean equipWeapon(Weapon w, Inventory i) {
+        if (str < w.getStrRec()) {
+            return false;
+        }
+        Weapon oldW = this.weapon;
+        this.weapon = w;
+        i.removeItem(w);
+        if (oldW != null) {
+            i.addItem(oldW);
+        }
+        return true;
+    }
+
+    public boolean equipArmor(Armor a, Inventory i) {
+        Armor oldA = this.armor;
+        this.armor = a;
+        i.removeItem(a);
+        if (oldA != null) {
+            i.addItem(oldA);
+        }
+        return true;
+    }
+
 }
