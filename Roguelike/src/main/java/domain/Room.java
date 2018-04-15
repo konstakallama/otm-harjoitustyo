@@ -71,6 +71,7 @@ public class Room {
     }
     
     public boolean isDirectlyConnected(Room r) {
+        if (r.equals(this)) return true;
         return this.connected.contains(r);
     }
     

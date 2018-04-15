@@ -6,6 +6,7 @@
 package Tests;
 
 import domain.*;
+import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import static org.junit.Assert.*;
  */
 public class PlayerTest {
     private Player p;
+    private Random r = new Random();
     
     public PlayerTest() {
     }
@@ -66,7 +68,54 @@ public class PlayerTest {
      @Test
      public void itemPickUp() {
          MapGenerator m = new MapGenerator();
-         p.pickUp(new MapItem(0, 0, m.createTestMap(50, 50, 0), "test item", true));
-         assertEquals(p.getInventory().getItems().get(0).getName(), "test item");
+         p.pickUp(new MapItem(0, 0, m.createTestMap(50, 50, 0), "potion", true));
+         assertEquals(p.getInventory().getItems().get(0).getName(), "potion");
      }
+     
+     @Test
+     public void expGainWorks() {
+         int oldLevel = p.getStats().getLevel();
+         p.getStats().gainExp(p.getStats().expToNextLevel() - 1);
+         assertEquals(oldLevel, p.getStats().getLevel());
+         p.getStats().gainExp(p.getStats().expToNextLevel());
+         assertEquals(oldLevel + 1, p.getStats().getLevel());
+     }
+     
+     @Test
+     public void moveTest() {
+         for (int i = 0; i < 1000; i++) {
+             int x = r.nextInt(4);
+             Direction d;
+             
+             switch (x) {
+                 case 0:
+                     d = Direction.DOWN;
+                     break;
+                 case 1:
+                     d = Direction.UP;
+                     break;
+                 case 2:
+                     d = Direction.LEFT;
+                     break;
+                 default:
+                     d = Direction.RIGHT;
+                     break;
+             }
+             
+             int oldX = p.getX();
+             int oldY = p.getY();
+             boolean isOccupied = p.getMap().isOccupied(oldX + d.xVal(), oldY + d.yVal());
+             p.move(d);
+             
+             if (isOccupied) {
+                 assertEquals(p.getX(), oldX);
+                 assertEquals(p.getY(), oldY);
+             } else {
+                 assertEquals(p.getX(), oldX + d.xVal());
+                 assertEquals(p.getY(), oldY + d.yVal());
+             }
+         }
+     }
+     
+     
 }

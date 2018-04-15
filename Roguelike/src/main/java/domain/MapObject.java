@@ -44,6 +44,10 @@ public abstract class MapObject {
     public void setMap(Map map) {
         this.map = map;
     }
+
+    public Map getMap() {
+        return map;
+    }
     
     public boolean isEnemy() {
         return false;

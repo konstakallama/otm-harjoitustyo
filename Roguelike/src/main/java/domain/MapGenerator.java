@@ -78,10 +78,10 @@ public class MapGenerator {
 
         ArrayList<Room> rooms = new ArrayList<>();
 
-        for (int i = 0; i < 7; i++) {
-            Room r = this.createTestRoomIterator(t);
-            if (r != null) {
-                rooms.add(r);
+        for (int i = 0; i < 5; i++) {
+            Room room = this.createTestRoomIterator(t);
+            if (room != null) {
+                rooms.add(room);
             }
         }
 
@@ -250,6 +250,10 @@ public class MapGenerator {
     }
 
     private Direction getClosestDir(int fromX, int toX, int fromY, int toY) {
+//        if (fromX == toX && fromY == toY) {
+//            return Direction.NONE;
+//        }
+
         if (Math.abs(fromX - toX) >= Math.abs(fromY - toY)) {
             if (fromX - toX < 0) {
                 return Direction.RIGHT;
@@ -272,7 +276,7 @@ public class MapGenerator {
                 l.move(d);
             } else {
                 break;
-            }          
+            }
         }
         return getValidStart(l, d, t, from);
     }
@@ -293,12 +297,14 @@ public class MapGenerator {
     private Location getValidHorizontal(Location l, Terrain[][] t, Room from, Location startL) {
         while (l.getX() < from.getLocation().getX() + from.getW()) {
             l.move(Direction.RIGHT);
+            l.move(Direction.RIGHT);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
             }
         }
         l = startL;
         while (l.getX() > from.getLocation().getX()) {
+            l.move(Direction.LEFT);
             l.move(Direction.LEFT);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
@@ -310,12 +316,14 @@ public class MapGenerator {
     private Location getValidVertical(Location l, Terrain[][] t, Room from, Location startL) {
         while (l.getY() < from.getLocation().getY() + from.getH()) {
             l.move(Direction.DOWN);
+            l.move(Direction.DOWN);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
             }
         }
         l = startL;
         while (l.getX() > from.getLocation().getX()) {
+            l.move(Direction.LEFT);
             l.move(Direction.LEFT);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
@@ -325,19 +333,30 @@ public class MapGenerator {
     }
 
     private void paintDown(Location l, Room to, Terrain[][] t) {
+
         while (to.getLocation().getY() > l.getY()) {
+
+//            System.out.println("d");
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
             l.move(Direction.DOWN);
         }
-        if (to.isInside(l)) {
+        if (to.isInside(l) || to.isInside(new Location(l.getX(), l.getY() + Direction.DOWN.yVal()))) {
             return;
         }
+
         this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY()), l, to, t);
+
     }
 
     private void paintToDir(Direction d, Location l, Room to, Terrain[][] t) {
+
+//        System.out.println("*");
+        if (d == Direction.NONE) {
+            return;
+        }
+
         if (d == Direction.DOWN) {
             paintDown(l, to, t);
         } else if (d == Direction.UP) {
@@ -351,6 +370,7 @@ public class MapGenerator {
 
     private void paintUp(Location l, Room to, Terrain[][] t) {
         while (to.getLocation().getY() + to.getH() <= l.getY()) {
+//            System.out.println("u");
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
@@ -359,11 +379,15 @@ public class MapGenerator {
         if (to.isInside(l)) {
             return;
         }
+
         this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY() + to.getH() - 1), l, to, t);
+
     }
 
     private void paintRight(Location l, Room to, Terrain[][] t) {
         while (to.getLocation().getX() > l.getX()) {
+
+//            System.out.println("r");
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
@@ -377,6 +401,8 @@ public class MapGenerator {
 
     private void paintLeft(Location l, Room to, Terrain[][] t) {
         while (to.getLocation().getX() + to.getW() <= l.getX()) {
+
+//            System.out.println("l");
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
