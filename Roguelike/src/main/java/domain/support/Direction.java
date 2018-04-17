@@ -45,7 +45,7 @@ public enum Direction {
             return Direction.UP;
         } else if (this == Direction.RIGHT) {
             return Direction.LEFT;
-        } else if (this == Direction.LEFT){
+        } else if (this == Direction.LEFT) {
             return Direction.RIGHT;
         } else {
             return Direction.NONE;
@@ -59,7 +59,7 @@ public enum Direction {
             return Direction.LEFT;
         } else if (this == Direction.RIGHT) {
             return Direction.DOWN;
-        } else if (this == Direction.LEFT){
+        } else if (this == Direction.LEFT) {
             return Direction.UP;
         } else {
             return Direction.NONE;
@@ -73,7 +73,7 @@ public enum Direction {
             return Direction.RIGHT;
         } else if (this == Direction.RIGHT) {
             return Direction.UP;
-        } else if (this == Direction.LEFT){
+        } else if (this == Direction.LEFT) {
             return Direction.DOWN;
         } else {
             return Direction.NONE;

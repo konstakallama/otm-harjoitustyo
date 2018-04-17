@@ -9,6 +9,8 @@ Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyse
 
 [Työaikakirjanpito](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/Ty%C3%B6aikakirjanpito.md)
 
+[Arkkitehtuuri](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/arkkitehtuuri.md)
+
 
 ## Komentorivitoiminnot
 
