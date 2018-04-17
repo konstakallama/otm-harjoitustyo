@@ -1,0 +1,1 @@
+![alt text](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/arkkitehtuuri.png)
