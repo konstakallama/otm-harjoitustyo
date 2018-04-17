@@ -9,21 +9,21 @@ package ui;
  *
  * @author konstakallama
  */
-import domain.AttackResult;
-import domain.AttackResultType;
-import domain.CommandResult;
-import domain.GameManager;
-import domain.Inventory;
-import domain.InventoryItem;
-import domain.ItemDb;
-import domain.ItemType;
-import domain.Map;
-import domain.Player;
-import domain.PlayerCommand;
-import domain.PlayerCommandParser;
-import domain.PlayerCommandType;
-import domain.PlayerStats;
-import domain.Terrain;
+import domain.gamemanager.AttackResult;
+import domain.gamemanager.AttackResultType;
+import domain.gamemanager.CommandResult;
+import domain.gamemanager.GameManager;
+import domain.mapobject.Inventory;
+import domain.items.InventoryItem;
+import domain.items.ItemDb;
+import domain.items.ItemType;
+import domain.map.Map;
+import domain.mapobject.Player;
+import domain.gamemanager.PlayerCommand;
+import domain.gamemanager.PlayerCommandParser;
+import domain.gamemanager.PlayerCommandType;
+import domain.mapobject.PlayerStats;
+import domain.map.Terrain;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;

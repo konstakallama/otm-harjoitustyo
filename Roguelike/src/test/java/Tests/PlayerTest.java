@@ -5,7 +5,11 @@
  */
 package Tests;
 
-import domain.*;
+import domain.mapobject.Player;
+import domain.map.MapGenerator;
+import domain.items.MapItem;
+import domain.support.Direction;
+import domain.gamemanager.GameManager;
 import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;

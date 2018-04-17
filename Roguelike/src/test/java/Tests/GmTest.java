@@ -6,8 +6,8 @@
 package Tests;
 
 
-import domain.GameManager;
-import domain.Player;
+import domain.gamemanager.GameManager;
+import domain.mapobject.Player;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
