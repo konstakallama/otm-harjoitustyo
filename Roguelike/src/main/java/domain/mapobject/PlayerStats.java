@@ -13,10 +13,12 @@ import domain.items.Armor;
  * @author konstakallama
  */
 public class PlayerStats extends Stats {
+    int staminaDmg;
 //    private Player owner;
 
     public PlayerStats(int level, int str, int con, int intel, int dex, Weapon weapon, Armor armor) {
         super(level, str, con, intel, dex, weapon, armor);
+        staminaDmg = 0;
 //        this.owner = player;
     }
 
@@ -42,10 +44,13 @@ public class PlayerStats extends Stats {
 
     public void levelUp() {
         this.increaseLevel();
-        con++;
-        str++;
-        intel++;
-        dex++;
+        if (this.level % 5 == 0) {
+            this.increaseCon();
+            this.increaseDex();
+            this.increaseInt();
+            this.increaseStr();
+        }
+
     }
 
     public int expToNextLevel() {
@@ -73,6 +78,43 @@ public class PlayerStats extends Stats {
             i.addItem(oldA);
         }
         return true;
+    }
+
+    public int getStamina() {
+        return this.getMaxStamina() - this.staminaDmg;
+    }
+
+    public void setStaminaDmg(int stamina) {
+        this.staminaDmg = stamina;
+    }
+    
+    public void decreaseStamina() {
+        this.staminaDmg++;
+        if (this.staminaDmg > this.getMaxStamina()) {
+            this.staminaDmg = this.getMaxStamina();
+        }
+    }
+    
+    public void increaseStamina(int amount) {
+        staminaDmg -= amount;
+        if (staminaDmg > f.getMaxStamina(con)) {
+            staminaDmg = f.getMaxStamina(con);
+        }
+    }
+    
+    public int getMaxStamina() {
+        return f.getMaxStamina(con);
+    }
+    
+    @Override
+    public void increaseCon() {
+        con++;
+//        this.increaseStamina(f.getStaminaPerCon());
+//        this.heal(f.getHpPerCon());
+    }
+
+    public int getStaminaDmg() {
+        return staminaDmg;
     }
 
 }

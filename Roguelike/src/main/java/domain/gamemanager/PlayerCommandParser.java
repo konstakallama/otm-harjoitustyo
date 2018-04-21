@@ -23,6 +23,7 @@ public class PlayerCommandParser {
     KeyCode inventory = KeyCode.I;
     KeyCode close = KeyCode.ESCAPE;
     KeyCode menu = KeyCode.M;
+    KeyCode pickUp = KeyCode.P;
 
     public PlayerCommand parseCommand(KeyCode k, GameManager gm) {
         if (k == this.moveDown || k == this.moveUp || k == this.moveLeft || k == this.moveRight) {
@@ -30,17 +31,15 @@ public class PlayerCommandParser {
         } else if (k == this.wait) {
             return new PlayerCommand(PlayerCommandType.WAIT);
         } else if (gm.getMap().playerIsOnStairs()) {
-            if (k == this.yes) {
-                return new PlayerCommand(PlayerCommandType.NEXT_FLOOR);
-            } else {
-                return new PlayerCommand(PlayerCommandType.WAIT);
-            }
+            return this.checkOnStairs(k);
         } else if (k == this.inventory) {
             return new PlayerCommand(PlayerCommandType.INVENTORY);
         } else if (k == this.close) {
             return new PlayerCommand(PlayerCommandType.CLOSE);
         } else if (k == this.menu) {
             return new PlayerCommand(PlayerCommandType.MENU);
+        } else if (k == this.pickUp) {
+            return new PlayerCommand(PlayerCommandType.PICK_UP);
         }
         return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND);      
     }
@@ -112,5 +111,13 @@ public class PlayerCommandParser {
 
     public void setInventory(KeyCode inventory) {
         this.inventory = inventory;
+    }
+
+    private PlayerCommand checkOnStairs(KeyCode k) {
+        if (k == this.yes) {
+                return new PlayerCommand(PlayerCommandType.NEXT_FLOOR);
+            } else {
+                return new PlayerCommand(PlayerCommandType.WAIT);
+            }
     }
 }

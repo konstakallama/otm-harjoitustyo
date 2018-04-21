@@ -91,6 +91,9 @@ public abstract class Stats {
 
     public boolean takeDamage(int dmg) {
         this.damage += dmg;
+        if (this.damage > this.getMaxHP()) {
+            this.damage = this.getMaxHP();
+        }
         return this.isDead();
     }
     
@@ -125,6 +128,22 @@ public abstract class Stats {
 
     public void setArmor(Armor armor) {
         this.armor = armor;
+    }
+    
+    public void increaseStr() {
+        str++;
+    }
+    
+    public void increaseCon() {
+        con++;
+    }
+    
+    public void increaseInt() {
+        intel++;
+    }
+    
+    public void increaseDex() {
+        dex++;
     }
     
     public abstract int getCurrentHP();

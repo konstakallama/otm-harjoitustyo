@@ -30,7 +30,7 @@ public class Formulas {
     }
 
     public int getPlayerMaxHP(int con) {
-        return 10;
+        return 7 + con*this.getHpPerCon();
 
     }
 
@@ -112,7 +112,7 @@ public class Formulas {
         int x = r.nextInt(50);
         int y = r.nextInt(50);
 
-        while (map.isOccupied(x, y) || map.getTerrain(x, y) == Terrain.CORRIDOR) {
+        while (map.isOccupied(x, y) || map.getTerrain(x, y) == Terrain.CORRIDOR || map.getTerrain(x, y) == Terrain.STAIRS) {
             x = r.nextInt(50);
             y = r.nextInt(50);
         }
@@ -121,6 +121,19 @@ public class Formulas {
 
     public int getDamage(Stats atkStats, Stats defStats) {
         return Math.max(0, atkStats.getStr() + atkStats.getWeapon().getAtk() - defStats.getArmor().getDef());
+    }
+
+    public int getMaxStamina(int con) {
+        return Integer.MAX_VALUE;
+//        return 450 + con*this.getStaminaPerCon();
+    }
+
+    public int getStaminaPerCon() {
+        return 50;
+    }
+    
+    public int getHpPerCon() {
+        return 3;
     }
 
 

@@ -12,6 +12,7 @@ import domain.support.Direction;
 import domain.gamemanager.CommandResult;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
+import domain.support.Location;
 import java.util.*;
 
 /**
@@ -27,6 +28,7 @@ public class Map {
     private Player player;
     private int mapW;
     private int mapH;
+    private ArrayList<Room> rooms;
 
     public Map(int mapWidth, int mapHeight, Terrain[][] terrain, int floor) {
         this.enemies = new Enemy[mapWidth][mapHeight];
@@ -36,6 +38,18 @@ public class Map {
 
         this.mapH = mapHeight;
         this.mapW = mapWidth;
+        this.rooms = new ArrayList<>();
+    }
+
+    public Map(int mapWidth, int mapHeight, Terrain[][] terrain, int floor, ArrayList<Room> rooms) {
+        this.enemies = new Enemy[mapWidth][mapHeight];
+        this.terrain = terrain;
+        this.floor = floor;
+        this.items = new MapItem[mapWidth][mapHeight];
+
+        this.mapH = mapHeight;
+        this.mapW = mapWidth;
+        this.rooms = rooms;
     }
 
     public boolean isOccupied(int x, int y) {
@@ -149,7 +163,7 @@ public class Map {
         return cr;
     }
 
-    private CommandResult pickUp(int nx, int ny) {
+    public CommandResult pickUp(int nx, int ny) {
         CommandResult cr;
         
         if (player.pickUp(items[nx][ny])) {
@@ -209,6 +223,23 @@ public class Map {
         }
 
     }
+    
+    public Direction getSecondaryPlayerDirection(int x, int y) {
+        Direction pd = this.getPlayerDirection(x, y);
+        if (pd == Direction.DOWN || pd == Direction.UP) {
+            if (x - this.player.getX() < 0) {
+                return Direction.RIGHT;
+            } else {
+                return Direction.LEFT;
+            }
+        } else {
+            if (y - this.player.getY() < 0) {
+                return Direction.DOWN;
+            } else {
+                return Direction.UP;
+            }
+        }
+    }
 
     public boolean hasPlayer(int x, int y) {
         return x == this.player.getX() && y == this.player.getY();
@@ -224,6 +255,36 @@ public class Map {
 
     public String nextFloorMessage() {
         return "Would you like to go to the next floor? (press enter to advance)";
+    }
+
+    public int getMapW() {
+        return mapW;
+    }
+
+    public int getMapH() {
+        return mapH;
+    }
+
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+    
+    public boolean isInsideRoom(Location l) {
+        for (Room r : this.rooms) {
+            if (r.isInside(l)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public Room insideWhichRoom(Location l) {
+        for (Room r : this.rooms) {
+            if (r.isInside(l)) {
+                return r;
+            }
+        }
+        return null;
     }
 
 }

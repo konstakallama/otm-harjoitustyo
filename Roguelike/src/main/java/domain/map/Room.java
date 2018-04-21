@@ -5,8 +5,10 @@
  */
 package domain.map;
 
+import domain.support.Direction;
 import domain.support.Location;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  *
@@ -18,6 +20,7 @@ public class Room {
     private int w;
     private int h;
     private ArrayList<Corridor> corridors;
+    private ArrayList<Corridor> arrivingCorridors;
     private ArrayList<Room> connected;
 
     public Room(Location location, int w, int h) {
@@ -25,6 +28,7 @@ public class Room {
         this.w = w;
         this.h = h;
         this.corridors = new ArrayList<>();
+        this.arrivingCorridors = new ArrayList<>();
         this.connected = new ArrayList<>();
     }
 
@@ -61,6 +65,7 @@ public class Room {
         if (c.getFrom().equals(this)) {
             this.connected.add(c.getTo());
             c.getTo().getConnected().add(this);
+            c.getTo().addArrivingCoridor(c);
         } else {
             this.connected.add(c.getFrom());
             c.getFrom().getConnected().add(this);
@@ -100,6 +105,92 @@ public class Room {
     
     public Location getNW() {
         return this.location;
+    }
+
+    private void addArrivingCoridor(Corridor c) {
+        if (!this.arrivingCorridors.contains(c)) {
+            this.arrivingCorridors.add(c);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 11 * hash + Objects.hashCode(this.location);
+        hash = 11 * hash + this.w;
+        hash = 11 * hash + this.h;
+        hash = 11 * hash + Objects.hashCode(this.corridors);
+        hash = 11 * hash + Objects.hashCode(this.connected);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Room other = (Room) obj;
+        if (this.w != other.w) {
+            return false;
+        }
+        if (this.h != other.h) {
+            return false;
+        }
+        if (!Objects.equals(this.location, other.location)) {
+            return false;
+        }
+        return true;
+    }
+    
+    public ArrayList<Location> getCorridorStarts() {
+        ArrayList<Location> starts = new ArrayList<>();
+        
+        System.out.println("c:");
+        
+        for (Corridor c : this.corridors) {
+            System.out.println("c: " + c);
+            if (this.isNextTo(c.getStart())) {
+                System.out.println("cs: " + c.getStart());
+                starts.add(c.getStart());
+            } else if (this.isNextTo(c.getEnd())) {
+                System.out.println("ce: " + c.getEnd());
+                starts.add(c.getEnd());
+            }
+        }
+        System.out.println("a:");
+        for (Corridor c : this.arrivingCorridors) {
+            System.out.println("c: " + c);
+            if (this.isNextTo(c.getStart())) {
+                System.out.println("as: " + c.getStart());
+                starts.add(c.getStart());
+            } else if (this.isNextTo(c.getEnd())) {
+                System.out.println("ae: " + c.getEnd());
+                starts.add(c.getEnd());
+            }
+        }
+        return starts;
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" + "location=" + location + ", w=" + w + ", h=" + h + '}';
+    }
+    
+    public boolean isNextTo(Location l) {
+        Direction d = Direction.DOWN;
+        for (int i = 0; i < 4; i++) {
+            if (this.isInside(l.locInDir(d))) {
+                return true;
+            }
+            d = d.getClockwiseTurn();
+        }
+        return false;
     }
 
 }

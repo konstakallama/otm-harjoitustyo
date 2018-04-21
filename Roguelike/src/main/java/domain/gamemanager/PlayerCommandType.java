@@ -10,5 +10,5 @@ package domain.gamemanager;
  * @author konstakallama
  */
 public enum PlayerCommandType {
-    MOVE, ATTACK, WAIT, COMMAND_NOT_FOUND, NEXT_FLOOR, INVENTORY, CLOSE, MENU;
+    MOVE, ATTACK, WAIT, COMMAND_NOT_FOUND, NEXT_FLOOR, INVENTORY, CLOSE, MENU, PICK_UP;
 }

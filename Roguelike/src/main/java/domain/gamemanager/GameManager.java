@@ -119,6 +119,14 @@ public class GameManager {
     }
 
     public void playRound(ArrayList<CommandResult> results) {
+        p.getStats().decreaseStamina();
+        if (p.getStats().getStamina() == 0) {
+            p.getStats().takeDamage(1);
+            if (p.getStats().isDead()) {
+                results.add(new CommandResult(true, false, "", null, false, true));
+                return;
+            }
+        }
         for (AttackResult r : map.takeTurns()) {
             if (r.getType() != AttackResultType.FAIL) {
                 results.add(new CommandResult(true, true, this.parseEnemyAttackResult(r), r));

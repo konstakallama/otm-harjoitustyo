@@ -64,6 +64,19 @@ public class Location {
         return new Location(this.x + d.xVal(), this.y + d.yVal());
     }
     
+    public int manhattanDistance(Location l) {
+        return Math.abs(this.x - l.getX()) + Math.abs(this.y - l.getY());
+    }
+    
+    public int manhattanDistance(int x, int y) {
+        return this.manhattanDistance(new Location(x, y));
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" + "x=" + x + ", y=" + y + '}';
+    }
+    
     
     
 }

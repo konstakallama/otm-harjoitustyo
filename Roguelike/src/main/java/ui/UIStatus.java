@@ -10,5 +10,5 @@ package ui;
  * @author konstakallama
  */
 public enum UIStatus {
-    MAP, MENU, GAME_OVER; 
+    MAP, MENU, GAME_OVER, LEVEL_UP; 
 }

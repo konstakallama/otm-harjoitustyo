@@ -39,7 +39,7 @@ public class Player extends Moves {
     }
 
     public AttackResult attack(Direction d) {
-        if (map.hasEnemy(x + d.xVal(), y + d.yVal())) {
+        if (map.hasEnemy(x + d.xVal(), y + d.yVal())) {            
             if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
                 return f.playerDamageCalculation(this, map.getEnemy(x + d.xVal(), y + d.yVal()));              
             } else {

@@ -22,6 +22,7 @@ public class Enemy extends Moves {
     EnemyStats stats;
     boolean hasMoved;
     Direction lastMoved;
+    Location movingTowards;
 
     public Enemy(int x, int y, Map map, EnemyStats stats, boolean visible) {
         super(map, x, y, stats.getType().getName());
@@ -29,6 +30,7 @@ public class Enemy extends Moves {
         this.visible = visible;
         this.hasMoved = false;
         this.lastMoved = randomDirection();
+        this.movingTowards = null;
     }
 
     public EnemyType getType() {
@@ -65,6 +67,7 @@ public class Enemy extends Moves {
                 result = new AttackResult(AttackResultType.FAIL, 0, this, null);
 
                 moveAi(pd);
+
             }
         } else {
             result = new AttackResult(AttackResultType.FAIL, 0, this, null);
@@ -104,33 +107,56 @@ public class Enemy extends Moves {
     }
 
     private void moveAi(Direction pd) {
+        boolean inRoom = false;
         if (seesPlayer()) {
-            if (map.isOccupied(x + pd.xVal(), y + pd.yVal())) {
-                this.randomMove();
-            } else {
-                this.move(pd);
+            moveTowardsPlayer(pd);
+        } else if (inRoom()) {
+            inRoom = true;
+            if (this.movingTowards == null) {
+                pickTarget();
             }
-        } else if (nextToCorridor()) {
-            System.out.println("*");
-            this.move(this.corridorDir());
+            this.moveTowards(movingTowards);
         } else if (map.isOccupied(x + this.lastMoved.xVal(), y + this.lastMoved.yVal())) {
             if (inCorner()) {
                 moveInCorner();
             } else {
                 randomTurn();
             }
+        } else if (inCorridor(x + lastMoved.getOpposite().xVal(), y + lastMoved.getOpposite().yVal())) {
+            this.move(this.lastMoved);
+        } else if (nextToCorridor()) {
+            System.out.println("*");
+            this.move(this.corridorDir());
         } else {
             this.move(this.lastMoved);
+        }
+        
+        if (!inRoom) {
+            this.movingTowards = null;
         }
 
     }
 
     private boolean inCorridor(int x, int y) {
-        return (map.isOccupied(x + 1, y) && map.isOccupied(x - 1, y) && !map.isOccupied(x, y + 1) && !map.isOccupied(x, y - 1)) ||
-                (map.isOccupied(x, y + 1) && map.isOccupied(x, y - 1) && !map.isOccupied(x + 1, y) && !map.isOccupied(x - 1, y));
+        Location l = new Location(x, y);
+        int k = 0;
+        Direction d = Direction.DOWN;
+        for (int i = 0; i < 4; i++) {
+            Location l2 = l.locInDir(d);
+            if (map.isOccupied(l2.getX(), l2.getY())) {
+                k++;
+            }
+            d = d.getClockwiseTurn();
+        }
+        return k == 3;
     }
 
     private boolean seesPlayer() {
+        if (map.isInsideRoom(new Location(x, y))) {
+            if (map.insideWhichRoom(new Location(x, y)).isInside(new Location(map.getPlayer().getX(), map.getPlayer().getY()))) {
+                return true;
+            }
+        }
         return playerBfs(new Location(x, y));
     }
 
@@ -204,10 +230,9 @@ public class Enemy extends Moves {
         boolean[][] visited = new boolean[50][50];
         ArrayDeque<Location> q = new ArrayDeque<>();
         q.add(location);
-        int visionRange = 100;
-        int k = 0;
+        int visionRange = 9;
 
-        while (!q.isEmpty() && k < visionRange) {
+        while (!q.isEmpty()) {
             Location l = q.poll();
 
             if (map.hasPlayer(l.getX(), l.getY())) {
@@ -218,13 +243,13 @@ public class Enemy extends Moves {
 
             for (int i = 0; i < 4; i++) {
                 Location ld = l.locInDir(d);
-                if (ld.getX() >= 0 && ld.getY() >= 0) {
+                if (ld.getX() >= 0 && ld.getY() >= 0 && ld.getX() < map.getMapW() && ld.getY() < map.getMapH()) {
                     if (!visited[ld.getX()][ld.getY()]) {
                         visited[ld.getX()][ld.getY()] = true;
                         if (map.hasPlayer(ld.getX(), ld.getY())) {
                             return true;
                         }
-                        if (!map.isOccupied(ld.getX(), ld.getY())) {
+                        if (!map.isOccupied(ld.getX(), ld.getY()) && ld.manhattanDistance(x, y) <= visionRange) {
                             q.add(ld);
                         }
                     }
@@ -232,10 +257,100 @@ public class Enemy extends Moves {
 
                 d = d.getClockwiseTurn();
             }
-            k++;
         }
 
         return false;
+    }
+
+    private void moveTowardsPlayer(Direction pd) {
+        if (map.isOccupied(x + pd.xVal(), y + pd.yVal())) {
+            Direction spd = (map.getSecondaryPlayerDirection(x, y));
+            if (map.isOccupied(x + spd.xVal(), y + spd.yVal())) {
+                Direction tpd = spd.getOpposite();
+                if (map.isOccupied(x + tpd.xVal(), y + tpd.yVal())) {
+                    this.move(pd.getOpposite());
+                } else {
+                    this.move(tpd);
+                }
+            } else {
+                this.move(spd);
+            }
+        } else {
+            this.move(pd);
+        }
+    }
+    
+    private void moveTowards(Location l) {
+        Direction pd = this.getDirectionTowards(l);
+        
+        if (map.isOccupied(x + pd.xVal(), y + pd.yVal())) {
+            Direction spd = (getSecondaryDirectionTowards(l, pd));
+            if (map.isOccupied(x + spd.xVal(), y + spd.yVal())) {
+                Direction tpd = spd.getOpposite();
+                if (map.isOccupied(x + tpd.xVal(), y + tpd.yVal())) {
+                    this.move(pd.getOpposite());
+                } else {
+                    this.move(tpd);
+                }
+            } else {
+                this.move(spd);
+            }
+        } else {
+            this.move(pd);
+        }
+    }
+    
+    public Direction getDirectionTowards(Location l) {
+        if (Math.abs(x - l.getX()) >= Math.abs(y - l.getY())) {
+            if (x - l.getX() < 0) {
+                return Direction.RIGHT;
+            } else {
+                return Direction.LEFT;
+            }
+        } else {
+            if (y - l.getY() < 0) {
+                return Direction.DOWN;
+            } else {
+                return Direction.UP;
+            }
+        }
+
+    }
+
+    private Direction getSecondaryDirectionTowards(Location l, Direction pd) {
+        if (pd == Direction.DOWN || pd == Direction.UP) {
+            if (x - l.getX() < 0) {
+                return Direction.RIGHT;
+            } else {
+                return Direction.LEFT;
+            }
+        } else {
+            if (y - l.getY() < 0) {
+                return Direction.DOWN;
+            } else {
+                return Direction.UP;
+            }
+        }
+    }
+
+    private boolean inRoom() {
+        return map.isInsideRoom(new Location(x, y));
+    }
+
+    private void pickTarget() {
+        ArrayList<Location> ls = map.insideWhichRoom(new Location(x, y)).getCorridorStarts();
+        if (ls.size() == 1) {
+            this.movingTowards = ls.get(0);
+            return;
+        }
+        Random r = new Random();
+        while (true) {
+            Location l = ls.get(r.nextInt(ls.size()));
+            if (!l.equals(new Location(x, y).locInDir(lastMoved.getOpposite()))) {
+                this.movingTowards = l;
+                return;
+            }
+        }
     }
 
 }

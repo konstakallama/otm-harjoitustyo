@@ -15,15 +15,20 @@ public class CommandResult {
     String logMessage;
     AttackResult attackResult;
     boolean isOnStairs;
+    boolean diedOfHunger;
 
-    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult, boolean isOnStairs) {
+    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult, boolean isOnStairs, boolean diedOfHunger) {
         this.success = success;
         this.hasLogMessage = hasLogMessage;
         this.logMessage = logMessage;
         this.attackResult = attackResult;
         this.isOnStairs = isOnStairs;
+        this.diedOfHunger = diedOfHunger;
+    }
+    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult, boolean isOnStairs) {
+        this(success, hasLogMessage, logMessage, attackResult, isOnStairs, false);
         
-    }   
+    } 
 
     public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult) {
         this(success, hasLogMessage, logMessage, attackResult, false);
@@ -68,6 +73,32 @@ public class CommandResult {
     public boolean isOnStairs() {
         return isOnStairs;
     }
+
+    public boolean isHasLogMessage() {
+        return hasLogMessage;
+    }
+
+    public void setHasLogMessage(boolean hasLogMessage) {
+        this.hasLogMessage = hasLogMessage;
+    }
+
+    public boolean isIsOnStairs() {
+        return isOnStairs;
+    }
+
+    public void setIsOnStairs(boolean isOnStairs) {
+        this.isOnStairs = isOnStairs;
+    }
+
+    public boolean isDiedOfHunger() {
+        return diedOfHunger;
+    }
+
+    public void setDiedOfHunger(boolean diedOfHunger) {
+        this.diedOfHunger = diedOfHunger;
+    }
+    
+    
     
     
     

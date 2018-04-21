@@ -25,12 +25,13 @@ public class MapGenerator {
     Formulas f = new Formulas();
 
     public Map createTestMap(int w, int h, int floor) {
-        Terrain[][] t = createTestTerrain(w, h);
-        Map m = new Map(w, h, t, floor);
+        Map m =  createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
+        this.addStairs(m);
         this.addItem(m, "potion");
         this.addItem(m, "atma weapon");
         this.addItem(m, "über armor");
-        this.addStairs(m);
+        this.addItem(m, "apple");
+        
 
         return m;
     }
@@ -71,7 +72,7 @@ public class MapGenerator {
         return t;
     }
 
-    public Terrain[][] createTestTerrain(int w, int h) {
+    public Map createTestTerrain(int w, int h, int floor, int roomAmount, int corridorAmount) {
         Terrain[][] t = new Terrain[w][h];
 
         for (int i = 0; i < w; i++) {
@@ -82,20 +83,20 @@ public class MapGenerator {
 
         ArrayList<Room> rooms = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < roomAmount; i++) {
             Room room = this.createTestRoomIterator(t);
             if (room != null) {
                 rooms.add(room);
             }
         }
 
-        createCorridors(rooms);
+        createCorridors(rooms, corridorAmount);
 
         connectRooms(rooms);
 
         paintCorridors(t, rooms);
 
-        return t;
+        return new Map(w, h, t, floor, rooms);
     }
 
     private Room createTestRoomIterator(Terrain[][] t) {
@@ -160,9 +161,9 @@ public class MapGenerator {
         }
     }
 
-    private void createCorridors(ArrayList<Room> rooms) {
+    private void createCorridors(ArrayList<Room> rooms, int amount) {
         for (Room room : rooms) {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < amount; i++) {
                 int index = r.nextInt(rooms.size());
                 if (!room.isDirectlyConnected(rooms.get(index))) {
                     room.addCoridor(new Corridor(room, rooms.get(index)));
@@ -225,7 +226,9 @@ public class MapGenerator {
     private void paintCorridors(Terrain[][] t, ArrayList<Room> rooms) {
         for (Room room : rooms) {
             for (Corridor c : room.getCorridors()) {
-                paintCorridor(t, c);
+//                if (!c.getFrom().equals(c.getTo())) {
+                    paintCorridor(t, c);
+//                }              
             }
         }
     }
@@ -237,8 +240,10 @@ public class MapGenerator {
         Direction d = getClosestDirForRooms(from, to);
 
         Location start = getCorridorStart(from, d, t);
+        
+        c.setStart(new Location(start.getX(), start.getY()));
 
-        this.paintToDir(d, start, to, t);
+        this.paintToDir(d, start, to, t, c);
     }
 
     private Direction getClosestDirForRooms(Room from, Room to) {
@@ -265,8 +270,10 @@ public class MapGenerator {
         } else {
             if (fromY - toY < 0) {
                 return Direction.DOWN;
-            } else {
+            } else if (fromY - toY > 0 ) {
                 return Direction.UP;
+            } else {
+                return Direction.NONE;
             }
         }
     }
@@ -336,7 +343,7 @@ public class MapGenerator {
             }
         }
         l = startL;
-        while (l.getX() > from.getLocation().getX()) {
+        while (l.getY() > from.getLocation().getY()) {
             l.move(Direction.UP);
             
             if (from.getNW().getY() < l.getY()) {
@@ -350,86 +357,104 @@ public class MapGenerator {
         return startL;
     }
 
-    private void paintDown(Location l, Room to, Terrain[][] t) {
+    private void paintDown(Location l, Room to, Terrain[][] t, Corridor c) {
 
         while (to.getLocation().getY() > l.getY()) {
 
-//            System.out.println("d");
+            System.out.println("d at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
             l.move(Direction.DOWN);
         }
-        if (to.isInside(l) || to.isInside(new Location(l.getX(), l.getY() + Direction.DOWN.yVal()))) {
+        if (to.isInside(l)) {
+            l.move(Direction.UP);
+            c.setEnd(l);
             return;
         }
-
-        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY()), l, to, t);
+        c.setTurn(l);
+        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY()), l, to, t, c);
 
     }
 
-    private void paintToDir(Direction d, Location l, Room to, Terrain[][] t) {
+    private void paintToDir(Direction d, Location l, Room to, Terrain[][] t, Corridor c) {
+        
+        if (to.isNextTo(l)) {
+            if (t[l.getX()][l.getY()] == Terrain.WALL) {
+                t[l.getX()][l.getY()] = Terrain.CORRIDOR;
+            }
+            c.setEnd(l);
+            return;
+        }
 
-//        System.out.println("*");
+        System.out.println("*");
         if (d == Direction.NONE) {
             return;
         }
 
         if (d == Direction.DOWN) {
-            paintDown(l, to, t);
+            paintDown(l, to, t, c);
         } else if (d == Direction.UP) {
-            paintUp(l, to, t);
+            paintUp(l, to, t, c);
         } else if (d == Direction.RIGHT) {
-            paintRight(l, to, t);
+            paintRight(l, to, t, c);
         } else {
-            paintLeft(l, to, t);
+            paintLeft(l, to, t, c);
         }
     }
 
-    private void paintUp(Location l, Room to, Terrain[][] t) {
+    private void paintUp(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getY() + to.getH() <= l.getY()) {
-//            System.out.println("u");
+            System.out.println("u at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
             l.move(Direction.UP);
         }
         if (to.isInside(l)) {
+            l.move(Direction.DOWN);
+            c.setEnd(l);
             return;
         }
-
-        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY() + to.getH() - 1), l, to, t);
+        c.setTurn(l);
+        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY() + to.getH() - 1), l, to, t, c);
 
     }
 
-    private void paintRight(Location l, Room to, Terrain[][] t) {
+    private void paintRight(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getX() > l.getX()) {
 
-//            System.out.println("r");
+            System.out.println("r at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
             l.move(Direction.RIGHT);
         }
         if (to.isInside(l)) {
+            l.move(Direction.LEFT);
+            c.setEnd(l);
             return;
         }
-        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY()), l, to, t);
+        c.setTurn(l);
+        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX(), l.getY(), to.getLocation().getY()), l, to, t, c);
     }
 
-    private void paintLeft(Location l, Room to, Terrain[][] t) {
+    private void paintLeft(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getX() + to.getW() <= l.getX()) {
 
-//            System.out.println("l");
+            System.out.println("l at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
             }
             l.move(Direction.LEFT);
         }
         if (to.isInside(l)) {
+            l.move(Direction.RIGHT);
+            c.setEnd(l);
             return;
         }
-        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX() + to.getW() - 1, l.getY(), to.getLocation().getY()), l, to, t);
+        c.setTurn(l);
+        this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX() + to.getW() - 1, l.getY(), to.getLocation().getY()), l, to, t, c);
     }
 
 }

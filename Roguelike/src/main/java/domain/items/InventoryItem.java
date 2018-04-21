@@ -5,6 +5,9 @@
  */
 package domain.items;
 
+import domain.items.effects.Effect;
+import domain.items.effects.NoEffect;
+
 /**
  *
  * @author konstakallama
@@ -14,6 +17,7 @@ public class InventoryItem implements Comparable<InventoryItem> {
     ItemType itemType;
     String name;
     Effect effect;
+    ItemDb db = new ItemDb();
 
     public InventoryItem(int wt, ItemType itemType, String name) {
         this(wt, itemType, name, new NoEffect());
@@ -52,6 +56,10 @@ public class InventoryItem implements Comparable<InventoryItem> {
 
     public void setEffect(Effect effect) {
         this.effect = effect;
+    }
+    
+    public String getDescription() {
+        return db.getDescription(this.name);
     }
     
     
