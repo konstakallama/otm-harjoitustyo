@@ -50,7 +50,7 @@ public class Corridor {
 
     public void setStart(Location start) {
         this.start = start;
-        System.out.println("s: " + start);
+//        System.out.println("s: " + start);
     }
 
     public Location getTurn() {
@@ -66,7 +66,7 @@ public class Corridor {
     }
 
     public void setEnd(Location end) {
-        System.out.println("e: " + end);
+//        System.out.println("e: " + end);
         this.end = end;
     }
 

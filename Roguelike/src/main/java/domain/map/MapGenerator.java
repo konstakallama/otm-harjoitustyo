@@ -25,13 +25,12 @@ public class MapGenerator {
     Formulas f = new Formulas();
 
     public Map createTestMap(int w, int h, int floor) {
-        Map m =  createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
+        Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
         this.addStairs(m);
         this.addItem(m, "potion");
         this.addItem(m, "atma weapon");
         this.addItem(m, "über armor");
         this.addItem(m, "apple");
-        
 
         return m;
     }
@@ -225,10 +224,16 @@ public class MapGenerator {
 
     private void paintCorridors(Terrain[][] t, ArrayList<Room> rooms) {
         for (Room room : rooms) {
+            ArrayList<Corridor> toRm = new ArrayList<>();
             for (Corridor c : room.getCorridors()) {
-//                if (!c.getFrom().equals(c.getTo())) {
+                if (!c.getFrom().equals(c.getTo())) {
                     paintCorridor(t, c);
-//                }              
+                } else {
+                    toRm.add(c);
+                }
+            }
+            for (Corridor c : toRm) {
+                room.removeCorridor(c);
             }
         }
     }
@@ -240,7 +245,7 @@ public class MapGenerator {
         Direction d = getClosestDirForRooms(from, to);
 
         Location start = getCorridorStart(from, d, t);
-        
+
         c.setStart(new Location(start.getX(), start.getY()));
 
         this.paintToDir(d, start, to, t, c);
@@ -270,7 +275,7 @@ public class MapGenerator {
         } else {
             if (fromY - toY < 0) {
                 return Direction.DOWN;
-            } else if (fromY - toY > 0 ) {
+            } else if (fromY - toY > 0) {
                 return Direction.UP;
             } else {
                 return Direction.NONE;
@@ -306,11 +311,11 @@ public class MapGenerator {
     private Location getValidHorizontal(Location l, Terrain[][] t, Room from, Location startL) {
         while (l.getX() < from.getLocation().getX() + from.getW()) {
             l.move(Direction.RIGHT);
-            
+
             if (from.getNE().getX() > l.getX()) {
                 l.move(Direction.RIGHT);
             }
-                        
+
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
             }
@@ -318,11 +323,11 @@ public class MapGenerator {
         l = startL;
         while (l.getX() > from.getLocation().getX()) {
             l.move(Direction.LEFT);
-            
+
             if (from.getNW().getX() < l.getX()) {
                 l.move(Direction.LEFT);
             }
-            
+
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
             }
@@ -333,11 +338,11 @@ public class MapGenerator {
     private Location getValidVertical(Location l, Terrain[][] t, Room from, Location startL) {
         while (l.getY() < from.getLocation().getY() + from.getH()) {
             l.move(Direction.DOWN);
-            
+
             if (from.getSW().getY() > l.getY()) {
                 l.move(Direction.DOWN);
             }
-            
+
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
             }
@@ -345,7 +350,7 @@ public class MapGenerator {
         l = startL;
         while (l.getY() > from.getLocation().getY()) {
             l.move(Direction.UP);
-            
+
             if (from.getNW().getY() < l.getY()) {
                 l.move(Direction.UP);
             }
@@ -361,9 +366,11 @@ public class MapGenerator {
 
         while (to.getLocation().getY() > l.getY()) {
 
-            System.out.println("d at " + l);
+//            System.out.println("d at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
+//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
+//                }               
             }
             l.move(Direction.DOWN);
         }
@@ -378,7 +385,7 @@ public class MapGenerator {
     }
 
     private void paintToDir(Direction d, Location l, Room to, Terrain[][] t, Corridor c) {
-        
+
         if (to.isNextTo(l)) {
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
@@ -387,7 +394,7 @@ public class MapGenerator {
             return;
         }
 
-        System.out.println("*");
+//        System.out.println("*");
         if (d == Direction.NONE) {
             return;
         }
@@ -405,9 +412,11 @@ public class MapGenerator {
 
     private void paintUp(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getY() + to.getH() <= l.getY()) {
-            System.out.println("u at " + l);
+//            System.out.println("u at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
+//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
+//                } 
             }
             l.move(Direction.UP);
         }
@@ -424,9 +433,11 @@ public class MapGenerator {
     private void paintRight(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getX() > l.getX()) {
 
-            System.out.println("r at " + l);
+//            System.out.println("r at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
+//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
+//                } 
             }
             l.move(Direction.RIGHT);
         }
@@ -442,9 +453,11 @@ public class MapGenerator {
     private void paintLeft(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getX() + to.getW() <= l.getX()) {
 
-            System.out.println("l at " + l);
+//            System.out.println("l at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
+//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
+//                } 
             }
             l.move(Direction.LEFT);
         }
@@ -455,6 +468,19 @@ public class MapGenerator {
         }
         c.setTurn(l);
         this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX() + to.getW() - 1, l.getY(), to.getLocation().getY()), l, to, t, c);
+    }
+
+    private boolean isNextToMoreThanOneCorridor(Location l, Terrain[][] t) {
+        int i = 0;
+        for (Location a : l.getAdjacent()) {
+            try {
+                if (t[a.getX()][a.getY()] == Terrain.CORRIDOR || t[a.getX()][a.getY()] == Terrain.FLOOR) {
+                    i++;
+                }
+            } catch (Exception e) {
+            }
+        }
+        return i > 1;
     }
 
 }

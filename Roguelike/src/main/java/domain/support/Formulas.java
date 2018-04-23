@@ -15,6 +15,7 @@ import domain.mapobject.Stats;
 import domain.map.Terrain;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
+import domain.map.Room;
 import java.util.*;
 
 /**
@@ -113,6 +114,19 @@ public class Formulas {
         int y = r.nextInt(50);
 
         while (map.isOccupied(x, y) || map.getTerrain(x, y) == Terrain.CORRIDOR || map.getTerrain(x, y) == Terrain.STAIRS) {
+            x = r.nextInt(50);
+            y = r.nextInt(50);
+        }
+        return new Location(x, y);
+    }
+    
+    public Location createEnemySpawnLocation(Map map) {
+        int x = r.nextInt(50);
+        int y = r.nextInt(50);
+        
+        Room room = map.getPlayerRoom();
+
+        while (map.isOccupied(x, y) || map.getTerrain(x, y) == Terrain.CORRIDOR || map.getTerrain(x, y) == Terrain.STAIRS || room.isInside(new Location(x, y))) {
             x = r.nextInt(50);
             y = r.nextInt(50);
         }

@@ -29,16 +29,10 @@ public class Map {
     private int mapW;
     private int mapH;
     private ArrayList<Room> rooms;
+    private VisibilityStatus[][] visibility;
 
     public Map(int mapWidth, int mapHeight, Terrain[][] terrain, int floor) {
-        this.enemies = new Enemy[mapWidth][mapHeight];
-        this.terrain = terrain;
-        this.floor = floor;
-        this.items = new MapItem[mapWidth][mapHeight];
-
-        this.mapH = mapHeight;
-        this.mapW = mapWidth;
-        this.rooms = new ArrayList<>();
+        this(mapWidth, mapHeight, terrain, floor, new ArrayList<>());
     }
 
     public Map(int mapWidth, int mapHeight, Terrain[][] terrain, int floor, ArrayList<Room> rooms) {
@@ -50,6 +44,7 @@ public class Map {
         this.mapH = mapHeight;
         this.mapW = mapWidth;
         this.rooms = rooms;
+        initVisibility(mapWidth, mapHeight);
     }
 
     public boolean isOccupied(int x, int y) {
@@ -143,36 +138,38 @@ public class Map {
         if (this.isOccupied(player.getX() + d.xVal(), player.getY() + d.yVal())) {
             return new CommandResult(false, false, "", null);
         }
-        
+
         CommandResult cr = new CommandResult(true, false, "", null);
-        
+
         int nx = player.getX() + d.xVal();
         int ny = player.getY() + d.yVal();
-        
+
         if (this.items[nx][ny] != null) {
             cr = this.pickUp(nx, ny);
         }
-        
+
         if (this.terrain[nx][ny] == Terrain.STAIRS) {
             cr = new CommandResult(true, true, this.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, player, null), true);
         }
-        
+
         player.setX(nx);
         player.setY(ny);
-        
+
+        this.updateVisibility();
+
         return cr;
     }
 
     public CommandResult pickUp(int nx, int ny) {
         CommandResult cr;
-        
+
         if (player.pickUp(items[nx][ny])) {
             cr = new CommandResult(true, true, "You picked up the " + this.items[nx][ny].getName() + ".", new AttackResult(AttackResultType.FAIL, 0, player, null));
             this.items[nx][ny] = null;
         } else {
             cr = new CommandResult(true, true, "Your inventory is full.", new AttackResult(AttackResultType.FAIL, 0, player, null));
         }
-        
+
         return cr;
     }
 
@@ -182,6 +179,7 @@ public class Map {
 
     public void setPlayer(Player player) {
         this.player = player;
+        updateVisibility();
     }
 
     public Enemy[][] getEnemies() {
@@ -223,7 +221,7 @@ public class Map {
         }
 
     }
-    
+
     public Direction getSecondaryPlayerDirection(int x, int y) {
         Direction pd = this.getPlayerDirection(x, y);
         if (pd == Direction.DOWN || pd == Direction.UP) {
@@ -268,7 +266,7 @@ public class Map {
     public ArrayList<Room> getRooms() {
         return rooms;
     }
-    
+
     public boolean isInsideRoom(Location l) {
         for (Room r : this.rooms) {
             if (r.isInside(l)) {
@@ -277,7 +275,7 @@ public class Map {
         }
         return false;
     }
-    
+
     public Room insideWhichRoom(Location l) {
         for (Room r : this.rooms) {
             if (r.isInside(l)) {
@@ -285,6 +283,102 @@ public class Map {
             }
         }
         return null;
+    }
+
+    private void initVisibility(int mapWidth, int mapHeight) {
+        this.visibility = new VisibilityStatus[mapWidth][mapHeight];
+
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
+                this.visibility[i][j] = VisibilityStatus.UNKNOWN;
+            }
+        }
+    }
+
+    private void updateVisibility() {
+        if (this.isInsideRoom(this.player.getLocation())) {
+            updateVisibilityInRoom();
+        } else {
+            updateVisibilityInCorridor();
+        }
+    }
+
+    private void updateVisibilityInRoom() {
+        Room r = this.getPlayerRoom();
+
+        for (int i = 0; i < mapW; i++) {
+            for (int j = 0; j < mapH; j++) {
+                if (r.isInside(new Location(i, j))) {
+                    this.visibility[i][j] = VisibilityStatus.IN_RANGE;
+                } else if (r.isNextTo(new Location(i, j))) {
+                    this.visibility[i][j] = VisibilityStatus.KNOWN;
+                } else {
+                    if (this.visibility[i][j] == VisibilityStatus.IN_RANGE) {
+                        this.visibility[i][j] = VisibilityStatus.KNOWN;
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateVisibilityInCorridor() {
+        for (int i = 0; i < mapW; i++) {
+            for (int j = 0; j < mapH; j++) {
+                if (this.visibility[i][j] == VisibilityStatus.IN_RANGE) {
+                    this.visibility[i][j] = VisibilityStatus.KNOWN;
+                }
+            }
+        }
+
+        corridorVisibilityBfs();
+    }
+
+    public VisibilityStatus[][] getVisibility() {
+        return visibility;
+    }
+
+    public VisibilityStatus getVisibility(int x, int y) {
+        return visibility[x][y];
+    }
+
+    private void corridorVisibilityBfs() {
+        ArrayDeque<Location> q = new ArrayDeque<>();
+        q.add(this.player.getLocation());
+
+        while (!q.isEmpty()) {
+            Location l = q.poll();
+
+            this.visibility[l.getX()][l.getY()] = VisibilityStatus.IN_RANGE;
+
+            for (Location a : l.getAdjacent()) {
+                if (!this.isOutOfBounds(a)) {
+                    if (this.terrain[a.getX()][a.getY()] != Terrain.WALL) {
+                        if (a.manhattanDistance(player.getLocation()) > l.manhattanDistance(player.getLocation()) && a.manhattanDistance(player.getLocation()) <= player.getVisionRange()) {
+                            q.add(a);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private boolean isOutOfBounds(Location l) {
+        return this.isOutOfBounds(l.getX(), l.getY());
+    }
+
+    public Room getPlayerRoom() {
+        if (this.player == null) {
+            return new Room(new Location(0, 0), 0, 0);
+        } else if (!this.isInsideRoom(this.player.getLocation())) {
+            for (Location l : this.player.getLocation().getAdjacent()) {
+                if (this.isInsideRoom(l)) {
+                    return this.insideWhichRoom(l);
+                }
+            }
+            return new Room(new Location(0, 0), 0, 0);
+        }
+        return this.insideWhichRoom(this.player.getLocation());
     }
 
 }

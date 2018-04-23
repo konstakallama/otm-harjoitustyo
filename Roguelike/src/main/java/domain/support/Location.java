@@ -5,6 +5,8 @@
  */
 package domain.support;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author konstakallama
@@ -75,6 +77,19 @@ public class Location {
     @Override
     public String toString() {
         return "Location{" + "x=" + x + ", y=" + y + '}';
+    }
+    
+    public ArrayList<Location> getAdjacent() {
+        ArrayList<Location> a = new ArrayList<>();
+        
+        Direction d = Direction.DOWN;
+        
+        for (int i = 0; i < 4; i++) {
+            a.add(this.locInDir(d));
+            d = d.getClockwiseTurn();
+        }
+        
+        return a;
     }
     
     

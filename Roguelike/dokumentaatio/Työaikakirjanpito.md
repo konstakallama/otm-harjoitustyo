@@ -1,6 +1,6 @@
 # Työaikakirjanpito
 
-## Yhteensä 30h
+## Yhteensä 34h
 
 Päivä | Aika
 ------|------
@@ -15,3 +15,4 @@ Päivä | Aika
 14.4.2018 | 5h
 15.4.2018 | 1h
 21.4.2018 | 6h
+23.4.2018 | 4h

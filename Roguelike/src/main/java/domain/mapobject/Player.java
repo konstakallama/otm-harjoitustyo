@@ -15,6 +15,7 @@ import domain.support.Direction;
 import domain.gamemanager.CommandResult;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
+import domain.support.Location;
 
 /**
  *
@@ -23,12 +24,14 @@ import domain.gamemanager.AttackResult;
 public class Player extends Moves {
     private Inventory inventory;
     private PlayerStats stats;
+    private int visionRange;
 
     public Player(Map map, int x, int y, PlayerStats stats, Inventory inventory) {
         super(map, x, y, "player");       
         this.stats = stats;
         this.inventory = inventory;
         this.map.setPlayer(this);
+        this.visionRange = 3;
     }
     
     public void newFloor(Map newMap, int startX, int startY) {
@@ -86,6 +89,18 @@ public class Player extends Moves {
             return this.stats.equipArmor((Armor) i, this.inventory);
         }
         return false;
+    }
+    
+    public Location getLocation() {
+        return new Location(x, y);
+    }
+
+    public int getVisionRange() {
+        return visionRange;
+    }
+
+    public void setVisionRange(int visionRange) {
+        this.visionRange = visionRange;
     }
     
 

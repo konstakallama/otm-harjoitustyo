@@ -179,7 +179,7 @@ public class GameManager {
     }
 
     public void addEnemy() {
-        Location l = f.createRandomFreeLocation(map);
+        Location l = f.createEnemySpawnLocation(map);
 
         map.addEnemy(l.getX(), l.getY(), this.createEnemy(l.getX(), l.getY()));
     }
@@ -219,6 +219,7 @@ public class GameManager {
         p.setY(l.getY());
         p.setMap(map);
         map.setPlayer(p);
+        this.addEnemy();
     }
 
     String getToHitMessage(AttackResult ar) {

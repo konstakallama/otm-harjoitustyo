@@ -26,6 +26,7 @@ import domain.items.MapItem;
 import domain.map.Room;
 import domain.mapobject.PlayerStats;
 import domain.map.Terrain;
+import domain.map.VisibilityStatus;
 import domain.support.Location;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -149,26 +150,31 @@ public class Main extends Application {
     public void drawMap(GraphicsContext drawer, Map map) {
         for (int i = 0; i < map.getEnemies().length; i++) {
             for (int j = 0; j < map.getEnemies()[0].length; j++) {
-                if (map.getTerrain(i, j) == Terrain.WALL) {
+                if (map.getTerrain(i, j) == Terrain.WALL || map.getVisibility(i, j) == VisibilityStatus.UNKNOWN) {
                     paintTile(i * pixelSize, j * pixelSize, "Black", drawer);
+                } else if (map.getVisibility(i, j) == VisibilityStatus.KNOWN) {
+                    paintTile(i * pixelSize, j * pixelSize, "gray", drawer);
                 } else if (map.getTerrain(i, j) == Terrain.FLOOR) {
                     paintTile(i * pixelSize, j * pixelSize, "White", drawer);
                 } else if (map.getTerrain(i, j) == Terrain.CORRIDOR) {
-                    paintTile(i * pixelSize, j * pixelSize, "gray", drawer);
+                    paintTile(i * pixelSize, j * pixelSize, "White", drawer);
                 } else if (map.getTerrain(i, j) == Terrain.STAIRS) {
                     paintTile(i * pixelSize, j * pixelSize, "Yellow", drawer);
                 }
-                if (map.getEnemy(i, j) != null) {
-                    paintTile(i * pixelSize, j * pixelSize, "Red", drawer);
-                } else if (map.getItem(i, j) != null) {
-                    paintTile(i * pixelSize, j * pixelSize, "#00FFFF", drawer);
+
+                if (map.getVisibility(i, j) == VisibilityStatus.IN_RANGE) {
+                    if (map.getEnemy(i, j) != null) {
+                        paintTile(i * pixelSize, j * pixelSize, "Red", drawer);
+                    } else if (map.getItem(i, j) != null) {
+                        paintTile(i * pixelSize, j * pixelSize, "#00FFFF", drawer);
+                    }
                 }
+
             }
         }
         paintTile(map.getPlayer().getX() * pixelSize, map.getPlayer().getY() * pixelSize, "#64FE2E", drawer);
 
-        drawCorridorStarts(drawer, map);
-
+//        drawCorridorStarts(drawer, map);
     }
 
     private void paintTile(int x, int y, String color, GraphicsContext drawer) {
@@ -406,7 +412,7 @@ public class Main extends Application {
         stats.setOnMouseClicked((event) -> {
             this.statScreen();
         });
-        
+
         discard.setOnMouseClicked((event) -> {
             this.discardScreen();
         });
@@ -707,7 +713,5 @@ public class Main extends Application {
             this.updateLog(cr.getLogMessage());
         }
     }
-    
-    
 
 }

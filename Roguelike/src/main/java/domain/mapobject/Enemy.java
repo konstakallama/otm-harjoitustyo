@@ -125,7 +125,7 @@ public class Enemy extends Moves {
         } else if (inCorridor(x + lastMoved.getOpposite().xVal(), y + lastMoved.getOpposite().yVal())) {
             this.move(this.lastMoved);
         } else if (nextToCorridor()) {
-            System.out.println("*");
+//            System.out.println("*");
             this.move(this.corridorDir());
         } else {
             this.move(this.lastMoved);

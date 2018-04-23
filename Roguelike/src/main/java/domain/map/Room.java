@@ -151,26 +151,26 @@ public class Room {
     public ArrayList<Location> getCorridorStarts() {
         ArrayList<Location> starts = new ArrayList<>();
         
-        System.out.println("c:");
+//        System.out.println("c:");
         
         for (Corridor c : this.corridors) {
-            System.out.println("c: " + c);
+//            System.out.println("c: " + c);
             if (this.isNextTo(c.getStart())) {
-                System.out.println("cs: " + c.getStart());
+//                System.out.println("cs: " + c.getStart());
                 starts.add(c.getStart());
             } else if (this.isNextTo(c.getEnd())) {
-                System.out.println("ce: " + c.getEnd());
+//                System.out.println("ce: " + c.getEnd());
                 starts.add(c.getEnd());
             }
         }
-        System.out.println("a:");
+//        System.out.println("a:");
         for (Corridor c : this.arrivingCorridors) {
-            System.out.println("c: " + c);
+//            System.out.println("c: " + c);
             if (this.isNextTo(c.getStart())) {
-                System.out.println("as: " + c.getStart());
+//                System.out.println("as: " + c.getStart());
                 starts.add(c.getStart());
             } else if (this.isNextTo(c.getEnd())) {
-                System.out.println("ae: " + c.getEnd());
+//                System.out.println("ae: " + c.getEnd());
                 starts.add(c.getEnd());
             }
         }
@@ -183,6 +183,9 @@ public class Room {
     }
     
     public boolean isNextTo(Location l) {
+//        System.out.println(l);
+        
+        
         Direction d = Direction.DOWN;
         for (int i = 0; i < 4; i++) {
             if (this.isInside(l.locInDir(d))) {
@@ -193,4 +196,15 @@ public class Room {
         return false;
     }
 
+    public void removeCorridor(Corridor c) {
+        Room r = c.getTo();
+        r.getArrivingCorridors().remove(c);
+        this.corridors.remove(c);
+    }
+
+
+
+    public ArrayList<Corridor> getArrivingCorridors() {
+        return arrivingCorridors;
+    }
 }

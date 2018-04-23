@@ -5,9 +5,9 @@ Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyse
 
 ## Dokumentaatio
 
-[Vaatimusmäärittely](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/Vaatimusm%C3%A4%C3%A4rittely.md)
+[Vaatimusmäärittely](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/Vaatimusm%C3%A4%C3%A4rittely.md)
 
-[Työaikakirjanpito](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/Ty%C3%B6aikakirjanpito.md)
+[Työaikakirjanpito](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/Ty%C3%B6aikakirjanpito.md)
 
 [Arkkitehtuuri](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/arkkitehtuuri.md)
 
