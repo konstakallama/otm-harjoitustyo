@@ -83,7 +83,7 @@ public class Main extends Application {
 
         GridPane logGrid = new GridPane();
 
-        this.createLogs(4);
+        this.createLogs(5);
         addLogs(logGrid);
 
         framework.setCenter(mapCanvas);
@@ -633,7 +633,7 @@ public class Main extends Application {
     }
 
     private String starveGameOverMessage() {
-        return "You died of hunger on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + ".";
+        return "You starved to death on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + ".";
     }
 
     private void drawCorridorStarts(GraphicsContext drawer, Map map) {

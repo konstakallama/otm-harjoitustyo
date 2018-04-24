@@ -114,6 +114,8 @@ public class Enemy extends Moves {
             inRoom = true;
             if (this.movingTowards == null) {
                 pickTarget();
+            } else if (this.movingTowards.equals(new Location(0, 0))) {
+                pickTarget();
             }
             this.moveTowards(movingTowards);
         } else if (map.isOccupied(x + this.lastMoved.xVal(), y + this.lastMoved.yVal())) {
@@ -344,11 +346,16 @@ public class Enemy extends Moves {
             return;
         }
         Random r = new Random();
-        while (true) {
+        int i = 0;
+        while (i < 1000000) {
+            i++;
             Location l = ls.get(r.nextInt(ls.size()));
             if (!l.equals(new Location(x, y).locInDir(lastMoved.getOpposite()))) {
                 this.movingTowards = l;
                 return;
+            }
+            if (i == 1000000) {
+                this.movingTowards = new Location(0, 0);
             }
         }
     }

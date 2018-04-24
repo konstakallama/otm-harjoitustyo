@@ -64,7 +64,7 @@ public class GameManagerStatistics {
     
     public boolean increaseEnemySpawnCounter() {
         this.enemySpawnCounter++;
-        if (this.enemySpawnCounter == this.enemySpawnInterval) {
+        if (this.enemySpawnCounter == this.getEnemySpawnInterval()) {
             this.enemySpawnCounter = 0;
             this.enemiesCreated++;
             return true;

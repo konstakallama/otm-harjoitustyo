@@ -88,6 +88,9 @@ public class Room {
     }
     
     public boolean isInside(Location l) {
+        if (this.h == 0 || this.w == 0) {
+            return false;
+        }
         return (l.getX() >= this.location.getX() && l.getX() < this.location.getX() + w && l.getY() >= this.location.getY() && l.getY() < this.location.getY() + h);
     }
     
@@ -126,9 +129,6 @@ public class Room {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if (obj == null) {
             return false;
         }

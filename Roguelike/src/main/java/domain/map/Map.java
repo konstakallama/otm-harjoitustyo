@@ -139,7 +139,7 @@ public class Map {
             return new CommandResult(false, false, "", null);
         }
 
-        CommandResult cr = new CommandResult(true, false, "", null);
+        CommandResult cr = new CommandResult(true);
 
         int nx = player.getX() + d.xVal();
         int ny = player.getY() + d.yVal();
@@ -300,6 +300,11 @@ public class Map {
             updateVisibilityInRoom();
         } else {
             updateVisibilityInCorridor();
+        }
+        for (Location l : player.getLocation().getAdjacent()) {
+            if (!this.isOutOfBounds(l)) {
+                this.visibility[l.getX()][l.getY()] = VisibilityStatus.IN_RANGE;
+            }
         }
     }
 

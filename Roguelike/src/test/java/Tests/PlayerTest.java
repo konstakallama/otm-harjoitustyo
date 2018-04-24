@@ -10,6 +10,10 @@ import domain.map.MapGenerator;
 import domain.items.MapItem;
 import domain.support.Direction;
 import domain.gamemanager.GameManager;
+import domain.gamemanager.PlayerCommand;
+import domain.gamemanager.PlayerCommandType;
+import domain.items.ItemDb;
+import domain.support.Formulas;
 import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -25,6 +29,8 @@ import static org.junit.Assert.*;
 public class PlayerTest {
     private Player p;
     private Random r = new Random();
+    private Formulas f = new Formulas();
+    private GameManager gm;
     
     public PlayerTest() {
     }
@@ -39,7 +45,7 @@ public class PlayerTest {
     
     @Before
     public void setUp() {
-        GameManager gm = new GameManager();
+        gm = new GameManager();
         p = gm.getPlayer();
     }
     
@@ -119,6 +125,34 @@ public class PlayerTest {
                  assertEquals(p.getY(), oldY + d.yVal());
              }
          }
+     }
+     
+     @Test
+     public void equipTest() {
+         ItemDb d = new ItemDb();
+         MapItem i = new MapItem(0, 0, p.getMap(), "atma weapon", true);
+         String oldW = p.getStats().getWeapon().getName();
+         try {
+             p.equip(d.itemConverter(i));
+         } catch (Exception e) {
+             assertEquals(true, false);
+         }
+         assertEquals("atma weapon", p.getStats().getWeapon().getName());
+         assertEquals(oldW, p.getInventory().getItems().get(0).getName());
+     }
+     
+     @Test
+     public void hpGainAtStatUp() {
+         p.getStats().increaseCon();
+         assertEquals(f.getPlayerMaxHP(p.getStats().getCon()), p.getCurrentHP());
+     }
+     
+     @Test
+     public void standingPlayerDies() {
+         for (int i = 0; i < 1000; i++) {
+             gm.playCommand(new PlayerCommand(PlayerCommandType.WAIT));
+         }
+         assertTrue(p.getStats().isDead());
      }
      
      

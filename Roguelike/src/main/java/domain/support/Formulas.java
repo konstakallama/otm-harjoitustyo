@@ -31,7 +31,7 @@ public class Formulas {
     }
 
     public int getPlayerMaxHP(int con) {
-        return 7 + con*this.getHpPerCon();
+        return 7 + con * this.getHpPerCon();
 
     }
 
@@ -102,7 +102,7 @@ public class Formulas {
     }
 
     public int getEnemySpawnInterval(int floor) {
-        return 15;
+        return 30 - Math.min(floor, 15);
     }
 
     public Location createPlayerStartLocation(Map map) {
@@ -138,8 +138,8 @@ public class Formulas {
     }
 
     public int getMaxStamina(int con) {
-        return Integer.MAX_VALUE;
-//        return 450 + con*this.getStaminaPerCon();
+//        return Integer.MAX_VALUE;
+        return 450 + con * this.getStaminaPerCon();
     }
 
     public int getStaminaPerCon() {

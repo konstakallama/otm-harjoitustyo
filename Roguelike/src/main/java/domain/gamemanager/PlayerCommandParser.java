@@ -41,9 +41,9 @@ public class PlayerCommandParser {
         } else if (k == this.pickUp) {
             return new PlayerCommand(PlayerCommandType.PICK_UP);
         }
-        return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND);      
+        return new PlayerCommand(PlayerCommandType.COMMAND_NOT_FOUND);
     }
-    
+
     private PlayerCommand checkMove(KeyCode k) {
         if (k == this.moveDown) {
             return new PlayerCommand(PlayerCommandType.MOVE, Direction.DOWN);
@@ -115,9 +115,9 @@ public class PlayerCommandParser {
 
     private PlayerCommand checkOnStairs(KeyCode k) {
         if (k == this.yes) {
-                return new PlayerCommand(PlayerCommandType.NEXT_FLOOR);
-            } else {
-                return new PlayerCommand(PlayerCommandType.WAIT);
-            }
+            return new PlayerCommand(PlayerCommandType.NEXT_FLOOR);
+        } else {
+            return new PlayerCommand(PlayerCommandType.WAIT);
+        }
     }
 }

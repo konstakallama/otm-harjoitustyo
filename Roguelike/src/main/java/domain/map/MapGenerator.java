@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package domain.map;
 
 import domain.items.MapItem;
@@ -12,13 +7,8 @@ import domain.support.Location;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Queue;
 import java.util.Random;
 
-/**
- *
- * @author konstakallama
- */
 public class MapGenerator {
 
     Random r = new Random();
@@ -27,10 +17,16 @@ public class MapGenerator {
     public Map createTestMap(int w, int h, int floor) {
         Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
         this.addStairs(m);
-        this.addItem(m, "potion");
-        this.addItem(m, "atma weapon");
-        this.addItem(m, "über armor");
-        this.addItem(m, "apple");
+//        this.addItem(m, "atma weapon");
+//        this.addItem(m, "über armor");
+
+        if (r.nextDouble() < 1) {
+            this.addItem(m, "potion");
+        }
+
+        if (r.nextDouble() < 1) {
+            this.addItem(m, "apple");
+        }
 
         return m;
     }
@@ -310,11 +306,7 @@ public class MapGenerator {
 
     private Location getValidHorizontal(Location l, Terrain[][] t, Room from, Location startL) {
         while (l.getX() < from.getLocation().getX() + from.getW()) {
-            l.move(Direction.RIGHT);
-
-            if (from.getNE().getX() > l.getX()) {
-                l.move(Direction.RIGHT);
-            }
+            l = moveLRight(l, from);
 
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
@@ -337,11 +329,7 @@ public class MapGenerator {
 
     private Location getValidVertical(Location l, Terrain[][] t, Room from, Location startL) {
         while (l.getY() < from.getLocation().getY() + from.getH()) {
-            l.move(Direction.DOWN);
-
-            if (from.getSW().getY() > l.getY()) {
-                l.move(Direction.DOWN);
-            }
+            l = moveLDown(l, from);
 
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 return l;
@@ -481,6 +469,24 @@ public class MapGenerator {
             }
         }
         return i > 1;
+    }
+
+    private Location moveLDown(Location l, Room from) {
+        l.move(Direction.DOWN);
+
+        if (from.getSW().getY() > l.getY()) {
+            l.move(Direction.DOWN);
+        }
+        return l;
+    }
+
+    private Location moveLRight(Location l, Room from) {
+        l.move(Direction.RIGHT);
+
+        if (from.getNE().getX() > l.getX()) {
+            l.move(Direction.RIGHT);
+        }
+        return l;
     }
 
 }
