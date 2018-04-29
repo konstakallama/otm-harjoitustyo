@@ -5,17 +5,17 @@
  */
 package domain.items.effects;
 
-import domain.mapobject.Player;
+import domain.mapobject.Player.Player;
 
 /**
  *
  * @author konstakallama
  */
 public class NoEffect extends Effect {
-
-    @Override
-    public boolean applyEffectToPlayer(Player p) {
-        return false;
+    
+    public NoEffect(String name) {
+        super(name);
     }
+    
     
 }

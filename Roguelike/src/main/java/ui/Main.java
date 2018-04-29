@@ -13,21 +13,23 @@ import domain.gamemanager.AttackResult;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.CommandResult;
 import domain.gamemanager.GameManager;
-import domain.mapobject.Inventory;
+import domain.mapobject.Player.Inventory;
 import domain.items.InventoryItem;
 import domain.items.ItemDb;
 import domain.items.ItemType;
 import domain.map.Map;
-import domain.mapobject.Player;
+import domain.mapobject.Player.Player;
 import domain.gamemanager.PlayerCommand;
-import domain.gamemanager.PlayerCommandParser;
 import domain.gamemanager.PlayerCommandType;
 import domain.items.MapItem;
 import domain.map.Room;
-import domain.mapobject.PlayerStats;
+import domain.mapobject.Player.PlayerStats;
 import domain.map.Terrain;
 import domain.map.VisibilityStatus;
+import domain.mapobject.Player.Spell;
+import domain.mapobject.Player.SpellDb;
 import domain.support.Location;
+import domain.support.MessageDb;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -39,6 +41,7 @@ import java.util.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -60,8 +63,14 @@ public class Main extends Application {
     BorderPane framework = new BorderPane();
     Button menu = new Button("Menu");
     UIStatus status = UIStatus.MAP;
+    MessageDb mdb = new MessageDb();
+    Scene scene;
+    HBox spellBox;
 
-    static int pixelSize = 14;
+    static int pixelSize = 12;
+
+    int xCorrect;
+    int yCorrect;
 
     GameManager gm;
     PlayerCommandParser playerCommandParser = new PlayerCommandParser();
@@ -78,8 +87,15 @@ public class Main extends Application {
         mapCanvas = new Canvas(gm.getMapW() * this.pixelSize, gm.getMapH() * this.pixelSize);
         drawer = mapCanvas.getGraphicsContext2D();
 
-        HBox upperBox = new HBox();
-        this.addUpperLabelsToHBox(upperBox);
+        HBox statusBox = new HBox();
+        this.addUpperLabelsToHBox(statusBox);
+
+        spellBox = new HBox();
+        spellBox.setMinHeight(30);
+        updateSpellBox();
+
+        VBox upperGrid = new VBox();
+        upperGrid.getChildren().addAll(statusBox, spellBox);
 
         GridPane logGrid = new GridPane();
 
@@ -87,10 +103,10 @@ public class Main extends Application {
         addLogs(logGrid);
 
         framework.setCenter(mapCanvas);
-        framework.setTop(upperBox);
+        framework.setTop(upperGrid);
         framework.setBottom(logGrid);
 
-        Scene scene = new Scene(framework);
+        scene = new Scene(framework);
         primaryStage.setScene(scene);
 
         updateUpperGrid();
@@ -101,47 +117,13 @@ public class Main extends Application {
 
         drawMap(drawer, gm.getMap());
 
+        SpellDb sdb = new SpellDb();
+
+//        gm.getPlayer().getStats().learnSpell(sdb.spellConverter("Fire", gm.getPlayer().getStats()));
+        this.updateSpellBox();
+
         scene.setOnKeyPressed((event) -> {
-
-            if (!(this.status == UIStatus.GAME_OVER)) {
-                if (this.status == UIStatus.MAP) {
-                    ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode(), gm));
-                    this.parseCommandResults(results);
-                    if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.INVENTORY) {
-                        this.updateLog("Opening the inventory...");
-                        this.inventorySreen();
-                    } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.MENU) {
-                        this.menuButtonEvent();
-                    } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.PICK_UP) {
-                        this.pickUp();
-                    }
-
-                    if (results != null) {
-                        if (results.size() > 0) {
-                            if (results.get(0).getAttackResult() != null) {
-                                if (results.get(0).getAttackResult().isLevelUp()) {
-                                    this.levelUpScreen();
-                                }
-
-                            }
-
-                            if (gm.getPlayer().getStats().getStamina() == 0) {
-                                this.updateLog("You are starving! You will take 1 damage each turn unless you eat something.");
-                                if (gm.getPlayer().getStats().isDead()) {
-                                    this.gameOver(this.starveGameOverMessage());
-                                }
-                            }
-                        }
-                    }
-
-                } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.CLOSE && this.status == UIStatus.MENU) {
-                    this.closeMenu();
-                }
-
-                this.updateUpperGrid();
-                drawMap(drawer, gm.getMap());
-            }
-
+            controls(event);
         });
 
         primaryStage.show();
@@ -225,6 +207,8 @@ public class Main extends Application {
         updateTurns();
         updateFloor();
         updateStamina();
+
+        this.updateSpellBox();
     }
 
     private void updateTurns() {
@@ -262,7 +246,7 @@ public class Main extends Application {
     }
 
     private String getGameOverMessage(AttackResult result) {
-        return "You were killed on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + " by " + result.getAttacker().getName() + ".";
+        return "You were killed on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + " by " + result.getAttacker() + ".";
     }
 
     private PlayerStats createPlayerStats() {
@@ -281,7 +265,7 @@ public class Main extends Application {
         return new Inventory(10);
     }
 
-    private void inventorySreen() {
+    private void inventoryScreen() {
         this.status = UIStatus.MENU;
 
         GridPane grid = new GridPane();
@@ -301,6 +285,7 @@ public class Main extends Application {
                         break;
                     } else if (gm.getPlayer().getCurrentHP() <= 0 && gm.getPlayer().getStats().getStamina() <= 0) {
                         gameOver(starveGameOverMessage());
+                        break;
                     }
                 }
             }
@@ -311,8 +296,11 @@ public class Main extends Application {
 
     private void getInventoryButtonPressed(InventoryItem i, BorderPane framework) {
         if (i.getItemType() == ItemType.CONSUMABLE) {
-            if (i.getEffect().applyEffectToPlayer(gm.getPlayer())) {
-                this.updateLog("You used the " + i.getName() + ".");
+
+            CommandResult cr = i.getEffect().applyEffectToPlayer(gm.getPlayer());
+
+            if (cr.isSuccess()) {
+                this.updateLog(cr.getLogMessage());
                 this.updateUpperGrid();
                 gm.getPlayer().getInventory().removeItem(i);
                 this.closeMenu();
@@ -337,11 +325,11 @@ public class Main extends Application {
         int columnIndex = 0;
         int rowIndex = 0;
         Label help = new Label("");
-        help.setMinHeight(200);
+        help.setMinHeight(300);
 
         for (InventoryItem i : gm.getPlayer().getInventory().getItems()) {
             Button b = new Button(i.getName());
-            b.setMinWidth(150);
+            b.setMinWidth(200);
 
             b.setOnMouseClicked((event) -> {
                 getInventoryButtonPressed(i, framework);
@@ -354,7 +342,7 @@ public class Main extends Application {
             grid.add(b, columnIndex, rowIndex);
 
             columnIndex++;
-            if (columnIndex == 4) {
+            if (columnIndex == 3) {
                 columnIndex = 0;
                 rowIndex++;
             }
@@ -367,7 +355,7 @@ public class Main extends Application {
 
     private void backToMapEvent() {
         backToMap.setText("Back to map");
-        this.inventorySreen();
+        this.inventoryScreen();
         backToMap.setOnMouseClicked((event) -> {
             backToMap.setText("Open Inventory");
             this.closeMenu();
@@ -406,7 +394,7 @@ public class Main extends Application {
         discard.setMinWidth(100);
 
         inventory.setOnMouseClicked((event) -> {
-            this.inventorySreen();
+            this.inventoryScreen();
         });
 
         stats.setOnMouseClicked((event) -> {
@@ -432,7 +420,7 @@ public class Main extends Application {
         Label stamina = new Label("Stamina: " + gm.getPlayer().getStats().getStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
         Label str = new Label("Strength: " + gm.getPlayer().getStats().getStr());
         Label con = new Label("Constitution: " + gm.getPlayer().getStats().getCon());
-        Label intel = new Label("Intelligence: " + gm.getPlayer().getStats().getIntel());
+        Label intel = new Label("Intelligence: " + gm.getPlayer().getStats().getInt());
         Label dex = new Label("Dexterity: " + gm.getPlayer().getStats().getDex());
         Label exp = new Label("Exp. points: " + gm.getPlayer().getStats().getExp());
         Label toNextLevel = new Label("To next level: " + gm.getPlayer().getStats().expToNextLevel());
@@ -522,6 +510,10 @@ public class Main extends Application {
         this.framework.setLeft(null);
         this.defaultButtonEvents();
         this.framework.setCenter(mapCanvas);
+        this.updateUpperGrid();
+        scene.setOnKeyPressed((event) -> {
+            controls(event);
+        });
     }
 
     private void levelUpScreen() {
@@ -531,7 +523,7 @@ public class Main extends Application {
         Label space = new Label("");
         Button str = new Button("Strength (" + gm.getPlayer().getStats().getStr() + ")");
         Button con = new Button("Constitution (" + gm.getPlayer().getStats().getCon() + ")");
-        Button intel = new Button("Intelligence (" + gm.getPlayer().getStats().getIntel() + ")");
+        Button intel = new Button("Intelligence (" + gm.getPlayer().getStats().getInt() + ")");
         Button dex = new Button("Dexterity (" + gm.getPlayer().getStats().getDex() + ")");
         Label space2 = new Label("");
         Label help = new Label("");
@@ -629,9 +621,6 @@ public class Main extends Application {
         stamina.setText("Stamina: " + gm.getPlayer().getStats().getStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
     }
 
-    private void starveGameOver() {
-    }
-
     private String starveGameOverMessage() {
         return "You starved to death on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + ".";
     }
@@ -711,6 +700,164 @@ public class Main extends Application {
         if (gm.getMap().getItem(x, y) != null) {
             CommandResult cr = gm.getMap().pickUp(x, y);
             this.updateLog(cr.getLogMessage());
+        }
+    }
+
+    private void updateSpellBox() {
+        this.spellBox.getChildren().clear();
+        for (Spell s : gm.getPlayer().getStats().getSpells()) {
+            Button b = new Button(s.getName());
+            b.setOnMouseClicked((event) -> {
+                getSpellButtonEvent(s);
+            });
+
+            if (!s.canBeUsed()) {
+                b.setDisable(true);
+                b.setText(s.getName() + "(" + s.getTurnsInCooldown() + ")");
+            } else {
+                b.setDisable(false);
+            }
+
+            this.spellBox.getChildren().add(b);
+        }
+    }
+
+    private void getSpellButtonEvent(Spell s) {
+        if (this.status == UIStatus.MAP) {
+            this.status = UIStatus.TARGETING;
+
+            this.updateLog(mdb.getCastingSpellMsg());
+
+            this.paintCastingRange(s);
+
+            scene.setOnKeyPressed((event) -> {
+                if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.CLOSE && this.status != UIStatus.GAME_OVER) {
+                    this.closeMenu();
+                    this.drawMap(drawer, gm.getMap());
+                }
+            });
+
+            this.mapCanvas.setOnMouseClicked((event) -> {
+                if (this.status == UIStatus.TARGETING) {
+                    int x = (int) Math.floor(event.getX() / pixelSize);
+                    int y = (int) Math.floor(event.getY() / pixelSize);
+
+                    System.out.println("x: " + x);
+                    System.out.println("y: " + y);
+                    System.out.println(gm.getPlayer().getLocation());
+
+                    if (gm.getMap().hasEnemy(x, y) && gm.getMap().getVisibility(x, y) == VisibilityStatus.IN_RANGE && s.inRange(gm.getPlayer().getLocation(), new Location(x, y))) {
+                        CommandResult cr = s.useOnEnemy(gm.getMap().getEnemy(x, y));
+                        if (cr.isSuccess()) {
+                            this.updateLog(cr.getLogMessage());
+                            if (cr.getAttackResult().isLevelUp()) {
+                                this.levelUpScreen();
+                            }
+                            ArrayList<CommandResult> results = gm.playCommand(new PlayerCommand(PlayerCommandType.WAIT));
+                            this.parseCommandResults(results);
+                            if (this.status == UIStatus.TARGETING) {
+                                this.closeMenu();
+                            }
+                            
+                        }
+                    }
+                }
+
+            });
+        }
+
+    }
+
+    private void paintCastingRange(Spell s) {
+        for (int i = 0; i < gm.getMapW(); i++) {
+            for (int j = 0; j < gm.getMapH(); j++) {
+                if (gm.getMap().getVisibility(i, j) == VisibilityStatus.IN_RANGE) {
+                    if (s.inRange(gm.getPlayer().getLocation(), new Location(i, j))) {
+                        if (gm.getMap().getTerrain(i, j) != Terrain.WALL) {
+                            paintBox(i * pixelSize, j * pixelSize, "pink");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void paintBox(int x, int y, String color) {
+        this.drawer.setStroke(Paint.valueOf(color));
+        this.drawer.strokeRect(x, y, pixelSize, pixelSize);
+    }
+
+    private void controls(KeyEvent event) {
+        if (!(this.status == UIStatus.GAME_OVER)) {
+            if (this.status == UIStatus.MAP) {
+                ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode(), gm));
+                this.parseCommandResults(results);
+                if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.INVENTORY) {
+                    this.updateLog("Opening the inventory...");
+                    this.inventoryScreen();
+                } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.MENU) {
+                    this.menuButtonEvent();
+                } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.PICK_UP) {
+                    this.pickUp();
+                } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.DISCARD) {
+                    this.discardScreen();
+                }
+
+                if (results != null) {
+                    if (results.size() > 0) {
+                        if (results.get(0).getAttackResult() != null) {
+                            if (results.get(0).getAttackResult().isLevelUp()) {
+                                this.levelUpScreen();
+                            }
+
+                        }
+
+                        if (gm.getPlayer().getStats().getStamina() == 0) {
+                            this.updateLog("You are starving! You will take 1 damage each turn unless you eat something.");
+                            if (gm.getPlayer().getStats().isDead()) {
+                                this.gameOver(this.starveGameOverMessage());
+                            }
+                        }
+                    }
+                }
+
+            } else if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.CLOSE && this.status == UIStatus.MENU) {
+                this.closeMenu();
+            }
+
+            this.updateUpperGrid();
+            drawMap(drawer, gm.getMap());
+        }
+
+    }
+
+    private void mouseCalibration() {
+        this.status = UIStatus.CALIBRATION;
+
+        this.updateLog("Please click the palyer.");
+
+        this.mapCanvas.setOnMouseClicked((event) -> {
+            int x = (int) Math.floor(event.getX() / 10);
+            int y = (int) Math.floor(event.getY() / 10);
+
+            this.xCorrect = gm.getPlayer().getX() - x;
+            this.yCorrect = gm.getPlayer().getY() - y;
+
+            this.closeMenu();
+        });
+    }
+
+    private int correct(int og) {
+        int r = roundTo5(og);
+        return og - (r / 5);
+    }
+
+    private int roundTo5(int og) {
+        int rm = og % 5;
+        if (rm < 2) {
+            return (og / 5) * 5;
+        } else {
+            return ((og / 5) * 5) + 5;
         }
     }
 

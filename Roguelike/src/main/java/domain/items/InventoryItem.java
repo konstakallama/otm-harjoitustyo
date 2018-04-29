@@ -20,7 +20,7 @@ public class InventoryItem implements Comparable<InventoryItem> {
     ItemDb db = new ItemDb();
 
     public InventoryItem(int wt, ItemType itemType, String name) {
-        this(wt, itemType, name, new NoEffect());
+        this(wt, itemType, name, new NoEffect(name));
     }
 
     public InventoryItem(int wt, ItemType itemType, String name, Effect effect) {

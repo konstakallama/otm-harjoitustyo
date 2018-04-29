@@ -5,7 +5,7 @@
  */
 package Tests;
 
-import domain.mapobject.Player;
+import domain.mapobject.Player.Player;
 import domain.map.MapGenerator;
 import domain.items.MapItem;
 import domain.support.Direction;

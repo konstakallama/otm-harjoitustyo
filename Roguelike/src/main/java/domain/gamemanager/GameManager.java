@@ -11,13 +11,13 @@ import domain.mapobject.Enemy;
 import domain.mapobject.EnemyStats;
 import domain.mapobject.EnemyType;
 import domain.support.Formulas;
-import domain.mapobject.Inventory;
+import domain.mapobject.Player.Inventory;
 import domain.items.ItemDb;
 import domain.support.Location;
 import domain.map.Map;
 import domain.map.MapGenerator;
-import domain.mapobject.Player;
-import domain.mapobject.PlayerStats;
+import domain.mapobject.Player.Player;
+import domain.mapobject.Player.PlayerStats;
 import domain.items.Weapon;
 import domain.items.WeaponType;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class GameManager {
         }
 
         if (c.getType() == PlayerCommandType.NEXT_FLOOR) {
-            this.nextFloor();
+            this.nextFloor(results);
         }
 
         return results;
@@ -119,6 +119,8 @@ public class GameManager {
     }
 
     public void playRound(ArrayList<CommandResult> results) {
+        p.getStats().advanceCooldowns();
+        
         p.getStats().decreaseStamina();
         if (p.getStats().getStamina() == 0) {
             p.getStats().takeDamage(1);
@@ -214,7 +216,7 @@ public class GameManager {
         return mapH;
     }
 
-    private void nextFloor() {
+    private void nextFloor(ArrayList<CommandResult> results) {
         this.map = m.createTestMap(mapW, mapH, map.getFloor() + 1);
         Location l = f.createPlayerStartLocation(map);
         p.setX(l.getX());
@@ -222,6 +224,7 @@ public class GameManager {
         p.setMap(map);
         map.setPlayer(p);
         this.addEnemy();
+        results.add(new CommandResult(true, false, "", true));
     }
 
     String getToHitMessage(AttackResult ar) {

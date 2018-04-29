@@ -19,6 +19,7 @@ public class MapGenerator {
         this.addStairs(m);
 //        this.addItem(m, "atma weapon");
 //        this.addItem(m, "über armor");
+        this.addItem(m, "fire tome");
 
         if (r.nextDouble() < 1) {
             this.addItem(m, "potion");

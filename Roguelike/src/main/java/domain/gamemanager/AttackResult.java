@@ -112,5 +112,9 @@ public class AttackResult {
         this.expGained = expGained;
     }
     
+    public boolean isKill() {
+        return this.type == AttackResultType.KILL;
+    }
+    
     
 }

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.gamemanager;
+package domain.mapobject.Player;
 
 /**
  *
  * @author konstakallama
  */
-public enum PlayerCommandType {
-    MOVE, ATTACK, WAIT, COMMAND_NOT_FOUND, NEXT_FLOOR, INVENTORY, CLOSE, MENU, PICK_UP, DISCARD;
+public enum RangeType {
+    SELF, CIRCLE, LINE;
 }

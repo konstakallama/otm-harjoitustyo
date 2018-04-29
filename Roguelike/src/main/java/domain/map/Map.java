@@ -6,7 +6,7 @@
 package domain.map;
 
 import domain.mapobject.Enemy;
-import domain.mapobject.Player;
+import domain.mapobject.Player.Player;
 import domain.items.MapItem;
 import domain.support.Direction;
 import domain.gamemanager.CommandResult;

@@ -5,7 +5,9 @@
  */
 package domain.items.effects;
 
-import domain.mapobject.Player;
+import domain.gamemanager.CommandResult;
+import domain.mapobject.Player.Player;
+import domain.support.MessageDb;
 
 /**
  *
@@ -13,8 +15,10 @@ import domain.mapobject.Player;
  */
 public class Heal extends Effect {
     private int amount;
+    private MessageDb mdb = new MessageDb();
 
-    public Heal(int amount) {
+    public Heal(int amount, String name) {
+        super(name);
         this.amount = amount;
     }
 
@@ -28,8 +32,9 @@ public class Heal extends Effect {
     
 
     @Override
-    public boolean applyEffectToPlayer(Player p) {
-        return p.getStats().heal(amount);
+    public CommandResult applyEffectToPlayer(Player p) {
+        boolean success = p.getStats().heal(amount);
+        return new CommandResult(success, true, mdb.getItemHealMsg(amount, this.sourceName));
     }
     
 }

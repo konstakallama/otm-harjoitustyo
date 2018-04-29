@@ -7,7 +7,7 @@ package Tests;
 
 
 import domain.gamemanager.GameManager;
-import domain.mapobject.Player;
+import domain.mapobject.Player.Player;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

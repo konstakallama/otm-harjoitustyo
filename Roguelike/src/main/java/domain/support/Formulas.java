@@ -9,13 +9,16 @@ import domain.mapobject.Enemy;
 import domain.mapobject.EnemyStats;
 import domain.mapobject.EnemyType;
 import domain.map.Map;
-import domain.mapobject.Player;
-import domain.mapobject.PlayerStats;
+import domain.mapobject.Player.Player;
+import domain.mapobject.Player.PlayerStats;
 import domain.mapobject.Stats;
 import domain.map.Terrain;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
+import domain.gamemanager.CommandResult;
 import domain.map.Room;
+import domain.mapobject.Player.Spell;
+import domain.mapobject.Player.SpellDb;
 import java.util.*;
 
 /**
@@ -25,6 +28,7 @@ import java.util.*;
 public class Formulas {
 
     Random r = new Random();
+    SpellDb sdb = new SpellDb();
 
     public int getEnemyMaxHP(EnemyType type, int con) {
         return 10;
@@ -64,7 +68,7 @@ public class Formulas {
         PlayerStats playerStats = player.getStats();
         AttackResult result;
 
-        int dmg = this.getDamage(playerStats, enemyStats);
+        int dmg = this.getRegularAttackDamage(playerStats, enemyStats);
 
         enemy.getStats().takeDamage(dmg);
 
@@ -80,7 +84,6 @@ public class Formulas {
         }
 
         return result;
-
     }
 
     public AttackResult enemyDamageCalculation(Enemy enemy, Player player) {
@@ -88,7 +91,7 @@ public class Formulas {
         PlayerStats playerStats = player.getStats();
         AttackResult result;
 
-        int dmg = this.getDamage(enemyStats, playerStats);
+        int dmg = this.getRegularAttackDamage(enemyStats, playerStats);
 
         playerStats.takeDamage(dmg);
 
@@ -133,7 +136,7 @@ public class Formulas {
         return new Location(x, y);
     }
 
-    public int getDamage(Stats atkStats, Stats defStats) {
+    public int getRegularAttackDamage(Stats atkStats, Stats defStats) {
         return Math.max(0, atkStats.getStr() + atkStats.getWeapon().getAtk() - defStats.getArmor().getDef());
     }
 
@@ -148,6 +151,64 @@ public class Formulas {
     
     public int getHpPerCon() {
         return 3;
+    }
+
+    public int getMaxSpellbookSlots(int i) {
+        if (i < 3) {
+            return 1;
+        } else if (i < 6) {
+            return 2;
+        } else if (i < 10) {
+            return 3;
+        } else if (i < 15) {
+            return 4;
+        } else {
+            return 5;
+        }
+    }
+
+    public AttackResult magicDamageCalculation(PlayerStats playerStats, Enemy e, int power, String spellName) {
+        EnemyStats enemyStats = e.getStats();
+        
+        int dmg = getMagicDamage(playerStats, enemyStats, power);
+        AttackResult result;
+        
+        e.getStats().takeDamage(dmg);
+
+        if (enemyStats.isDead()) {
+            if (playerStats.gainExp(enemyStats.getExp())) {
+                result = new AttackResult(AttackResultType.KILL, dmg, null, e, true, (this.getSpellToHit(playerStats, enemyStats, spellName)), enemyStats.getExp());
+            } else {
+                result = new AttackResult(AttackResultType.KILL, dmg, null, e, false, (this.getSpellToHit(playerStats, enemyStats, spellName)), enemyStats.getExp());
+            }
+            e.die();
+        } else {
+            result = new AttackResult(AttackResultType.HIT, dmg, null, e, (this.getSpellToHit(playerStats, enemyStats, spellName)));
+        }
+
+        return result;      
+    }
+
+    public boolean spellHits(PlayerStats casterStats, EnemyStats stats, String spellName) {
+        return (r.nextDouble() < this.getSpellToHit(casterStats, stats, spellName));
+    }
+
+    public double getSpellToHit(PlayerStats casterStats, EnemyStats stats, String spellName) {
+        Spell s = this.sdb.spellConverter(spellName, casterStats);
+        
+        double hit = (s.getAccuracy() + (0.05 * (casterStats.getInt() - stats.getInt())));
+        
+        if (hit >= 1.0) {
+            return 1.0;
+        } else if (hit <= 0) {
+            return 0.0;
+        } else {
+            return hit;
+        }
+    }
+
+    private int getMagicDamage(Stats atkStats, EnemyStats defStats, int power) {
+        return Math.max(0, atkStats.getInt() + power - defStats.getInt());
     }
 
 

@@ -5,12 +5,34 @@
  */
 package domain.items.effects;
 
-import domain.mapobject.Player;
+import domain.gamemanager.CommandResult;
+import domain.mapobject.Enemy;
+import domain.mapobject.Player.Player;
+import domain.support.MessageDb;
 
 /**
  *
  * @author konstakallama
  */
 public abstract class Effect {
-    public abstract boolean applyEffectToPlayer(Player p);
+    String sourceName;
+    MessageDb mdb;
+
+    public Effect(String name) {
+        this.sourceName = name;
+    }
+
+    public String getName() {
+        return sourceName;
+    }
+    
+    
+    
+    public CommandResult applyEffectToPlayer(Player p) {
+        return new CommandResult(false);
+    }
+    
+    public CommandResult applyEffectToEnemy(Enemy e) {
+        return new CommandResult(false);
+    }
 }

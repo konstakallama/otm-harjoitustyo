@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject;
+package domain.mapobject.Player;
 
 import domain.items.Weapon;
 import domain.items.Armor;
+import domain.mapobject.Stats;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,11 +16,14 @@ import domain.items.Armor;
  */
 public class PlayerStats extends Stats {
     int staminaDmg;
+    private ArrayList<Spell> spells;
 //    private Player owner;
 
     public PlayerStats(int level, int str, int con, int intel, int dex, Weapon weapon, Armor armor) {
         super(level, str, con, intel, dex, weapon, armor);
         staminaDmg = 0;
+        this.spells = new ArrayList<>();
+        
 //        this.owner = player;
     }
 
@@ -97,8 +102,8 @@ public class PlayerStats extends Stats {
     
     public void increaseStamina(int amount) {
         staminaDmg -= amount;
-        if (staminaDmg > f.getMaxStamina(con)) {
-            staminaDmg = f.getMaxStamina(con);
+        if (staminaDmg < 0) {
+            staminaDmg = 0;
         }
     }
     
@@ -115,6 +120,36 @@ public class PlayerStats extends Stats {
 
     public int getStaminaDmg() {
         return staminaDmg;
+    }
+    
+    public int getMaxSpellbookSlots() {
+        return f.getMaxSpellbookSlots(intel);
+    }
+    
+    public int getFreeSpellBookSlots() {
+        return this.getMaxSpellbookSlots() - this.spells.size();
+    }
+    
+    public boolean learnSpell(Spell s) {
+        if (this.getFreeSpellBookSlots() > 0) {
+            this.spells.add(s);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean forgetSpell(Spell s) {
+        return this.spells.remove(s);
+    }
+
+    public ArrayList<Spell> getSpells() {
+        return spells;
+    }
+    
+    public void advanceCooldowns() {
+        for (Spell s : this.spells) {
+            s.advanceCooldown();
+        }
     }
 
 }

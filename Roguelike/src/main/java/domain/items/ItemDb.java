@@ -7,6 +7,7 @@ package domain.items;
 
 import domain.items.effects.Heal;
 import domain.items.effects.StaminaHeal;
+import domain.items.effects.TeachSpell;
 
 /**
  *
@@ -29,6 +30,8 @@ public class ItemDb {
             return this.createTestWeapon();
         } else if (item.getName().equals("test armor")) {
             return this.createTestArmor();
+        } else if (item.getName().equals("fire tome")) {
+            return this.createFireTome();
         }
         
         throw new Exception("Item not found");
@@ -55,7 +58,7 @@ public class ItemDb {
     }
     
     public InventoryItem createPotion() {
-        return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(5));
+        return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(5, "potion"));
     }
     
     public InventoryItem createAtmaWeapon() {
@@ -90,14 +93,23 @@ public class ItemDb {
                     + "Defence: 1";
         } else if (name.equals("apple")) {
             return "Type: consumable\n"
-                    + "Effect: heals 50 stamina";
-        } else {
-            return "";
+                    + "Effect: heals 100 stamina";
+        } else if (name.equals("fire tome")) {
+            return "Type: consumable\n"
+                    + "Effect: teaches the spell Fire\n"
+                    + "\tPower: 4\n"
+                    + "\tAccuracy: 70%";
         }
+        
+        return "";
     }
 
     private InventoryItem createApple() {
-        return new InventoryItem(0, ItemType.CONSUMABLE, "apple", new StaminaHeal(50));
+        return new InventoryItem(0, ItemType.CONSUMABLE, "apple", new StaminaHeal(100, "apple"));
+    }
+
+    private InventoryItem createFireTome() {
+        return new InventoryItem(0, ItemType.CONSUMABLE, "fire tome", new TeachSpell("fire tome", "Fire"));
     }
     
 }

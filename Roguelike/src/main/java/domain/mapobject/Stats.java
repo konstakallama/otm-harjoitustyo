@@ -14,16 +14,16 @@ import domain.support.Formulas;
  * @author konstakallama
  */
 public abstract class Stats {
-    int level;
-    int exp;
-    int str;
-    int con;
-    int intel;
-    int dex;
-    int damage;
-    Formulas f = new Formulas();
-    Weapon weapon;
-    Armor armor;
+    public int level;
+    public int exp;
+    public int str;
+    public int con;
+    public int intel;
+    public int dex;
+    public int damage;
+    public Formulas f = new Formulas();
+    public Weapon weapon;
+    public Armor armor;
 
     public Stats(int level, int str, int con, int intel, int dex, Weapon weapon, Armor armor) {
         this.level = level;
@@ -69,11 +69,11 @@ public abstract class Stats {
         this.con = con;
     }
 
-    public int getIntel() {
+    public int getInt() {
         return intel;
     }
 
-    public void setIntel(int intel) {
+    public void setInt(int intel) {
         this.intel = intel;
     }
 

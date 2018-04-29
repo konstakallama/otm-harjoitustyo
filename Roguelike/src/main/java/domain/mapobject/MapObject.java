@@ -13,11 +13,11 @@ import domain.support.Formulas;
  * @author konstakallama
  */
 public abstract class MapObject {
-    int x;
-    int y;
-    Map map;
-    Formulas f = new Formulas();
-    String name;
+    public int x;
+    public int y;
+    public Map map;
+    public Formulas f = new Formulas();
+    public String name;
 
     public MapObject(int x, int y, Map map, String name) {
         this.x = x;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject;
+package domain.mapobject.Player;
 
 import domain.map.Map;
 import domain.items.ItemType;
@@ -15,6 +15,7 @@ import domain.support.Direction;
 import domain.gamemanager.CommandResult;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
+import domain.mapobject.Moves;
 import domain.support.Location;
 
 /**

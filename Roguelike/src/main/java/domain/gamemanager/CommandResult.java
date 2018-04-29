@@ -16,6 +16,7 @@ public class CommandResult {
     AttackResult attackResult;
     boolean isOnStairs;
     boolean diedOfHunger;
+    boolean nextFloor;
 
     public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult, boolean isOnStairs, boolean diedOfHunger) {
         this.success = success;
@@ -24,6 +25,7 @@ public class CommandResult {
         this.attackResult = attackResult;
         this.isOnStairs = isOnStairs;
         this.diedOfHunger = diedOfHunger;
+        this.nextFloor = false;
     }
     public CommandResult(boolean success, boolean hasLogMessage, String logMessage, AttackResult attackResult, boolean isOnStairs) {
         this(success, hasLogMessage, logMessage, attackResult, isOnStairs, false);
@@ -40,6 +42,21 @@ public class CommandResult {
 
     public CommandResult(boolean success, boolean hasLogMessage) {
         this(success, hasLogMessage, "", new AttackResult(AttackResultType.FAIL, 0, null, null), false);
+    }
+    
+    public CommandResult(boolean success, boolean hasLogMessage, String logMessage) {
+        this(success, hasLogMessage, logMessage, new AttackResult(AttackResultType.FAIL, 0, null, null), false);
+    }
+
+    public CommandResult(boolean success, boolean hasLogMessage, String logMessage, boolean nextFloor) {
+        this.success = success;
+        this.hasLogMessage = hasLogMessage;
+        this.logMessage = logMessage;
+        this.nextFloor = nextFloor;
+    }
+
+    public boolean isNextFloor() {
+        return nextFloor;
     }
     
     
