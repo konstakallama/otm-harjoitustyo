@@ -11,6 +11,8 @@ Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyse
 
 [Arkkitehtuuri](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/arkkitehtuuri.md)
 
+[Käyttöohje](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/k%C3%A4ytt%C3%B6ohje.md)
+
 
 ## Komentorivitoiminnot
 
