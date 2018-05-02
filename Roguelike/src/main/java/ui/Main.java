@@ -482,7 +482,7 @@ public class Main extends Application {
         Label space4 = new Label("");
         Label space5 = new Label("");
 
-        box.getChildren().addAll(name, level, statHP, stamina, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel, space4, space5, help);
+        box.getChildren().addAll(level, statHP, stamina, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel, space4, space5, help);
         box.setSpacing(5);
         box.setAlignment(Pos.CENTER);
         framework.setCenter(box);
@@ -742,9 +742,9 @@ public class Main extends Application {
                     int x = (int) Math.floor(event.getX() / pixelSize);
                     int y = (int) Math.floor(event.getY() / pixelSize);
 
-                    System.out.println("x: " + x);
-                    System.out.println("y: " + y);
-                    System.out.println(gm.getPlayer().getLocation());
+//                    System.out.println("x: " + x);
+//                    System.out.println("y: " + y);
+//                    System.out.println(gm.getPlayer().getLocation());
 
                     if (gm.getMap().hasEnemy(x, y) && gm.getMap().getVisibility(x, y) == VisibilityStatus.IN_RANGE && s.inRange(gm.getPlayer().getLocation(), new Location(x, y))) {
                         CommandResult cr = s.useOnEnemy(gm.getMap().getEnemy(x, y));

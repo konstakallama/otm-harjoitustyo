@@ -143,7 +143,7 @@ public class Formulas {
      * @return the rate at which enemies spawn on a given floor.
      */
     public int getEnemySpawnInterval(int floor) {
-        return 20 - Math.min(floor, 10);
+        return 30 - Math.min(floor, 20);
     }
     /**
      * Returns a random starting location for the player on the given map using formulas.createRandomFreeLocation().

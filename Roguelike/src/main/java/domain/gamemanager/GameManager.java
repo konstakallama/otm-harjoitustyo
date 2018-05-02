@@ -191,7 +191,7 @@ public class GameManager {
     }
 
     public Enemy createTestEnemy(int x, int y) {
-        int i = this.gmStats.getEnemiesCreated() / 10;
+        int i = this.gmStats.getEnemiesCreated() / 20;
         
         return new Enemy(x, y, map, new EnemyStats(1 + i, 1 + i, 1 + i, 1 + i, 1 + i, new EnemyType("test enemy " + this.gmStats.getEnemiesCreated()), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor(), 3), true);
     }
