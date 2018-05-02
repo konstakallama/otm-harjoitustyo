@@ -93,7 +93,7 @@ public class ItemDb {
                     + "Defence: 1";
         } else if (name.equals("apple")) {
             return "Type: consumable\n"
-                    + "Effect: heals 100 stamina";
+                    + "Effect: heals 75 stamina";
         } else if (name.equals("fire tome")) {
             return "Type: consumable\n"
                     + "Effect: teaches the spell Fire\n"
@@ -105,7 +105,7 @@ public class ItemDb {
     }
 
     private InventoryItem createApple() {
-        return new InventoryItem(0, ItemType.CONSUMABLE, "apple", new StaminaHeal(100, "apple"));
+        return new InventoryItem(0, ItemType.CONSUMABLE, "apple", new StaminaHeal(75, "apple"));
     }
 
     private InventoryItem createFireTome() {

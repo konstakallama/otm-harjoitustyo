@@ -5,7 +5,7 @@
  */
 package domain.items.effects;
 
-import domain.mapobject.Player.Player;
+import domain.mapobject.player.Player;
 
 /**
  *

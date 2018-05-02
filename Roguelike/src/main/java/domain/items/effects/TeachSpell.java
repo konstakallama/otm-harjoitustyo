@@ -6,9 +6,9 @@
 package domain.items.effects;
 
 import domain.gamemanager.CommandResult;
-import domain.mapobject.Player.Player;
-import domain.mapobject.Player.Spell;
-import domain.mapobject.Player.SpellDb;
+import domain.mapobject.player.Player;
+import domain.mapobject.player.Spell;
+import domain.mapobject.player.SpellDb;
 import domain.support.MessageDb;
 
 /**

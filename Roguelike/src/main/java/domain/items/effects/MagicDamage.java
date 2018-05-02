@@ -8,8 +8,8 @@ package domain.items.effects;
 import domain.gamemanager.AttackResult;
 import domain.gamemanager.CommandResult;
 import domain.mapobject.Enemy;
-import domain.mapobject.Player.Player;
-import domain.mapobject.Player.PlayerStats;
+import domain.mapobject.player.Player;
+import domain.mapobject.player.PlayerStats;
 import domain.mapobject.Stats;
 import domain.support.Formulas;
 import domain.support.MessageDb;
@@ -30,10 +30,10 @@ public class MagicDamage extends Effect {
         this.casterStats = casterStats;
     }
 
-    public MagicDamage(int power, String name) {
-        super(name);
-        this.power = power;
-    }
+//    public MagicDamage(int power, String name) {
+//        super(name);
+//        this.power = power;
+//    }
 
     public int getPower() {
         return power;

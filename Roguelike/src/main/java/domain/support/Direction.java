@@ -11,7 +11,10 @@ package domain.support;
  */
 public enum Direction {
     UP, DOWN, RIGHT, LEFT, NONE;
-    
+    /**
+     * Returns the change in the x coordinate when moving to this direction.
+     * @return the change in the x coordinate when moving to this direction.
+     */
     public int xVal() {
         if (this == Direction.UP) {
             return 0;
@@ -25,7 +28,10 @@ public enum Direction {
             return 0;
         }
     }
-    
+    /**
+     * Returns the change in the y coordinate when moving to this direction.
+     * @return the change in the y coordinate when moving to this direction.
+     */
     public int yVal() {
         if (this == Direction.UP) {
             return -1;
@@ -37,7 +43,10 @@ public enum Direction {
             return 0;
         }
     }
-    
+    /**
+     * Returns the direction opposite to this one.
+     * @return the direction opposite to this one.
+     */
     public Direction getOpposite() {
         if (this == Direction.UP) {
             return Direction.DOWN;
@@ -51,7 +60,10 @@ public enum Direction {
             return Direction.NONE;
         }
     }
-    
+    /**
+     * Returns the clockwise turn from this direction.
+     * @return the clockwise turn from this direction.
+     */
     public Direction getClockwiseTurn() {
         if (this == Direction.UP) {
             return Direction.RIGHT;
@@ -65,7 +77,10 @@ public enum Direction {
             return Direction.NONE;
         }
     }
-    
+    /**
+     * Returns the counterclockwise turn from this direction.
+     * @return the counterclockwise turn from this direction.
+     */
     public Direction getCounterclockwiseTurn() {
         if (this == Direction.UP) {
             return Direction.LEFT;

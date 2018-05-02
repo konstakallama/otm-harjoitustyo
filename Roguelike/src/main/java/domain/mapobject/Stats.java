@@ -88,7 +88,11 @@ public abstract class Stats {
     public int getDamage() {
         return damage;
     }
-
+    /**
+     * Takes the specified amount of damage. Returns true if the sufferer dies as a result.
+     * @param dmg
+     * @return true if the sufferer dies as a result.
+     */
     public boolean takeDamage(int dmg) {
         this.damage += dmg;
         if (this.damage > this.getMaxHP()) {
@@ -96,7 +100,11 @@ public abstract class Stats {
         }
         return this.isDead();
     }
-    
+    /**
+     * Reduces the amount of damage the owner ow the stats has taken by amount. Damage may never be negative; if the amount of damage healed is greater the damage suffered, damage will be set to 0. Returns true if some damage is healed, false if not (ie the owner of the stats is at full hp).
+     * @param amount
+     * @return true if some damage is healed.
+     */
     public boolean heal(int amount) {
         if (this.damage <= 0) {
             return false;
@@ -109,7 +117,10 @@ public abstract class Stats {
     }
     
     public abstract int getMaxHP();
-    
+    /**
+     * Returns true if current hp is 0 (or lower).
+     * @return true if character is dead
+     */
     public boolean isDead() {
         return this.getMaxHP() - this.damage <= 0;
     }
@@ -129,19 +140,27 @@ public abstract class Stats {
     public void setArmor(Armor armor) {
         this.armor = armor;
     }
-    
+    /**
+     * Increases strength by 1.
+     */
     public void increaseStr() {
         str++;
     }
-    
+    /**
+     * Increases constitution by 1.
+     */
     public void increaseCon() {
         con++;
     }
-    
+    /**
+     * Increases intelligence by 1.
+     */
     public void increaseInt() {
         intel++;
     }
-    
+    /**
+     * Increases dexterity by 1.
+     */
     public void increaseDex() {
         dex++;
     }

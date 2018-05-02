@@ -13,21 +13,21 @@ import domain.gamemanager.AttackResult;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.CommandResult;
 import domain.gamemanager.GameManager;
-import domain.mapobject.Player.Inventory;
+import domain.mapobject.player.Inventory;
 import domain.items.InventoryItem;
 import domain.items.ItemDb;
 import domain.items.ItemType;
 import domain.map.Map;
-import domain.mapobject.Player.Player;
+import domain.mapobject.player.Player;
 import domain.gamemanager.PlayerCommand;
 import domain.gamemanager.PlayerCommandType;
 import domain.items.MapItem;
 import domain.map.Room;
-import domain.mapobject.Player.PlayerStats;
+import domain.mapobject.player.PlayerStats;
 import domain.map.Terrain;
 import domain.map.VisibilityStatus;
-import domain.mapobject.Player.Spell;
-import domain.mapobject.Player.SpellDb;
+import domain.mapobject.player.Spell;
+import domain.mapobject.player.SpellDb;
 import domain.support.Location;
 import domain.support.MessageDb;
 import javafx.application.Application;
@@ -51,7 +51,7 @@ public class Main extends Application {
 
     ArrayList<Label> logs = new ArrayList<>();
 
-    Label enemiesKilled = new Label();
+    Label level = new Label();
     Label turnCounter = new Label();
     Label hp = new Label();
     Label floor = new Label();
@@ -168,8 +168,8 @@ public class Main extends Application {
         hp.setText("HP: " + p.getCurrentHP() + "/" + p.getMaxHP() + "   ");
     }
 
-    private void updateKills(Label enemiesKilled) {
-        enemiesKilled.setText("Enemies Killed: " + gm.getGmStats().getEnemiesKilled() + "   ");
+    private void updateLevel() {
+        level.setText("Level: " + gm.getPlayer().getStats().getLevel() + "   ");
     }
 
     private void gameOver(String msg) {
@@ -202,7 +202,7 @@ public class Main extends Application {
     }
 
     private void updateUpperGrid() {
-        updateKills(enemiesKilled);
+        updateLevel();
         updateHP(hp, gm.getPlayer());
         updateTurns();
         updateFloor();
@@ -220,7 +220,7 @@ public class Main extends Application {
     }
 
     private void addUpperLabelsToGrid(GridPane upperGrid) {
-        upperGrid.add(enemiesKilled, 1, 0);
+        upperGrid.add(level, 1, 0);
         upperGrid.add(turnCounter, 2, 0);
         upperGrid.add(hp, 0, 0);
         upperGrid.add(floor, 3, 0);
@@ -228,7 +228,7 @@ public class Main extends Application {
     }
 
     private void addUpperLabelsToHBox(HBox box) {
-        box.getChildren().addAll(enemiesKilled, turnCounter, hp, floor, menu, stamina);
+        box.getChildren().addAll(level, turnCounter, hp, floor, menu, stamina);
         box.setSpacing(7);
     }
 
@@ -283,7 +283,7 @@ public class Main extends Application {
                     if (cr.getAttackResult().getAttacker().isEnemy() && cr.getAttackResult().getType() == AttackResultType.KILL) {
                         gameOver(this.getGameOverMessage(cr.getAttackResult()));
                         break;
-                    } else if (gm.getPlayer().getCurrentHP() <= 0 && gm.getPlayer().getStats().getStamina() <= 0) {
+                    } else if (gm.getPlayer().getCurrentHP() <= 0 && gm.getPlayer().getStats().getCurrentStamina() <= 0) {
                         gameOver(starveGameOverMessage());
                         break;
                     }
@@ -417,7 +417,7 @@ public class Main extends Application {
         Label weapon = new Label("Equipped Weapon: " + gm.getPlayer().getStats().getWeapon().getName());
         Label armor = new Label("Equipped Armor: " + gm.getPlayer().getStats().getArmor().getName());
         Label statHP = new Label("HP: " + gm.getPlayer().getCurrentHP() + "/" + gm.getPlayer().getMaxHP());
-        Label stamina = new Label("Stamina: " + gm.getPlayer().getStats().getStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
+        Label stamina = new Label("Stamina: " + gm.getPlayer().getStats().getCurrentStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
         Label str = new Label("Strength: " + gm.getPlayer().getStats().getStr());
         Label con = new Label("Constitution: " + gm.getPlayer().getStats().getCon());
         Label intel = new Label("Intelligence: " + gm.getPlayer().getStats().getInt());
@@ -618,7 +618,7 @@ public class Main extends Application {
     }
 
     private void updateStamina() {
-        stamina.setText("Stamina: " + gm.getPlayer().getStats().getStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
+        stamina.setText("Stamina: " + gm.getPlayer().getStats().getCurrentStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
     }
 
     private String starveGameOverMessage() {
@@ -812,7 +812,7 @@ public class Main extends Application {
 
                         }
 
-                        if (gm.getPlayer().getStats().getStamina() == 0) {
+                        if (gm.getPlayer().getStats().getCurrentStamina() == 0) {
                             this.updateLog("You are starving! You will take 1 damage each turn unless you eat something.");
                             if (gm.getPlayer().getStats().isDead()) {
                                 this.gameOver(this.starveGameOverMessage());

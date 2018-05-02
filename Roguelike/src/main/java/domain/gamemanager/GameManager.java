@@ -11,13 +11,13 @@ import domain.mapobject.Enemy;
 import domain.mapobject.EnemyStats;
 import domain.mapobject.EnemyType;
 import domain.support.Formulas;
-import domain.mapobject.Player.Inventory;
+import domain.mapobject.player.Inventory;
 import domain.items.ItemDb;
 import domain.support.Location;
 import domain.map.Map;
 import domain.map.MapGenerator;
-import domain.mapobject.Player.Player;
-import domain.mapobject.Player.PlayerStats;
+import domain.mapobject.player.Player;
+import domain.mapobject.player.PlayerStats;
 import domain.items.Weapon;
 import domain.items.WeaponType;
 import java.util.ArrayList;
@@ -76,12 +76,12 @@ public class GameManager {
         return results;
     }
 
-    public void playCommandNotFound(ArrayList<CommandResult> results) {
+    private void playCommandNotFound(ArrayList<CommandResult> results) {
         results.add(new CommandResult(false, false, this.defaultFailMessage, new AttackResult(AttackResultType.FAIL, 0, null, null)));
 
     }
 
-    public void playMove(ArrayList<CommandResult> results, PlayerCommand c) {
+    private void playMove(ArrayList<CommandResult> results, PlayerCommand c) {
         CommandResult cr = this.movePlayer(c.getDirection());
 
         if (cr.isSuccess()) {
@@ -96,7 +96,7 @@ public class GameManager {
         }
     }
 
-    public void playWait(ArrayList<CommandResult> results) {
+    private void playWait(ArrayList<CommandResult> results) {
         if (map.playerIsOnStairs()) {
             results.add(new CommandResult(true, true, map.nextFloorMessage(), new AttackResult(AttackResultType.FAIL, 0, p, null), map.playerIsOnStairs()));
         }
@@ -104,11 +104,11 @@ public class GameManager {
         this.playRound(results);
     }
 
-    public CommandResult movePlayer(Direction d) {
+    private CommandResult movePlayer(Direction d) {
         return p.move(d);
     }
 
-    public CommandResult playerAttack(Direction d) {
+    private CommandResult playerAttack(Direction d) {
         AttackResult ar = p.attack(d);
 
         if (ar.getType() == AttackResultType.FAIL) {
@@ -118,11 +118,11 @@ public class GameManager {
         }
     }
 
-    public void playRound(ArrayList<CommandResult> results) {
+    private void playRound(ArrayList<CommandResult> results) {
         p.getStats().advanceCooldowns();
         
         p.getStats().decreaseStamina();
-        if (p.getStats().getStamina() == 0) {
+        if (p.getStats().getCurrentStamina() == 0) {
             p.getStats().takeDamage(1);
             if (p.getStats().isDead()) {
                 results.add(new CommandResult(true, false, "", null, false, true));
@@ -138,7 +138,7 @@ public class GameManager {
         this.manageRoundStats();
     }
 
-    public String parsePlayerAttackResult(AttackResult result) {
+    private String parsePlayerAttackResult(AttackResult result) {
         String r = "";
         if (result.getType() == AttackResultType.HIT) {
             r = ("You hit the " + result.getTarget().getName() + " dealing " + result.getDamageDealt() + " damage");
@@ -158,7 +158,7 @@ public class GameManager {
         return r;
     }
 
-    public String parseEnemyAttackResult(AttackResult result) {
+    private String parseEnemyAttackResult(AttackResult result) {
         String r = "";
         if (result.getType() == AttackResultType.HIT) {
             r = ("The " + result.getAttacker().getName() + " attacks you and deals " + result.getDamageDealt() + " damage");
@@ -173,7 +173,7 @@ public class GameManager {
         return r;
     }
 
-    public void manageRoundStats() {
+    private void manageRoundStats() {
         this.gmStats.increaseTurns();
         if (this.gmStats.increaseEnemySpawnCounter()) {
             this.addEnemy();
@@ -186,12 +186,12 @@ public class GameManager {
         map.addEnemy(l.getX(), l.getY(), this.createEnemy(l.getX(), l.getY()));
     }
 
-    public Enemy createEnemy(int x, int y) {
+    private Enemy createEnemy(int x, int y) {
         return this.createTestEnemy(x, y);
     }
 
     public Enemy createTestEnemy(int x, int y) {
-        int i = this.gmStats.getEnemiesCreated() / 20;
+        int i = this.gmStats.getEnemiesCreated() / 10;
         
         return new Enemy(x, y, map, new EnemyStats(1 + i, 1 + i, 1 + i, 1 + i, 1 + i, new EnemyType("test enemy " + this.gmStats.getEnemiesCreated()), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor(), 3), true);
     }
@@ -227,7 +227,7 @@ public class GameManager {
         results.add(new CommandResult(true, false, "", true));
     }
 
-    String getToHitMessage(AttackResult ar) {
+    private String getToHitMessage(AttackResult ar) {
         return " (" + Math.round(ar.getToHit() * 100) + "% to hit)";
     }
 

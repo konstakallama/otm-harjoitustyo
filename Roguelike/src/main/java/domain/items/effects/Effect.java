@@ -7,7 +7,7 @@ package domain.items.effects;
 
 import domain.gamemanager.CommandResult;
 import domain.mapobject.Enemy;
-import domain.mapobject.Player.Player;
+import domain.mapobject.player.Player;
 import domain.support.MessageDb;
 
 /**

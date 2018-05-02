@@ -13,13 +13,18 @@ public class MapGenerator {
 
     Random r = new Random();
     Formulas f = new Formulas();
+    int fireTomesCreated = 0;
 
     public Map createTestMap(int w, int h, int floor) {
         Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
         this.addStairs(m);
 //        this.addItem(m, "atma weapon");
 //        this.addItem(m, "über armor");
-        this.addItem(m, "fire tome");
+        if (r.nextDouble() < 0.3 && this.fireTomesCreated < 5) {
+            this.addItem(m, "fire tome");
+            this.fireTomesCreated++;
+        }
+        
 
         if (r.nextDouble() < 1) {
             this.addItem(m, "potion");

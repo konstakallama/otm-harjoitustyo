@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject.Player;
+package domain.mapobject.player;
 
 import domain.map.Map;
 import domain.items.ItemType;
@@ -35,13 +35,17 @@ public class Player extends Moves {
         this.visionRange = 3;
     }
     
-    public void newFloor(Map newMap, int startX, int startY) {
-        this.map = newMap;
-        this.x = startX;
-        this.y = startY;
-        this.map.setPlayer(this);
-    }
-
+//    public void newFloor(Map newMap, int startX, int startY) {
+//        this.map = newMap;
+//        this.x = startX;
+//        this.y = startY;
+//        this.map.setPlayer(this);
+//    }
+    /**
+     * Attacks the Enemy in d, if there is one. Returns an AttackResult determining the outcome of the attack.
+     * @param d
+     * @return an AttackResult determining the outcome of the attack.
+     */
     public AttackResult attack(Direction d) {
         if (map.hasEnemy(x + d.xVal(), y + d.yVal())) {            
             if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
@@ -65,12 +69,20 @@ public class Player extends Moves {
     public boolean isVisible() {
         return true;
     }
-    
+    /**
+     * Picks up the item using inventory.pickUp(item). Returns true if the action is successful.
+     * @param item
+     * @return true if the action is successful.
+     */
     public boolean pickUp(MapItem item) {
         return this.inventory.pickUp(item);
     }
     
-    
+    /**
+     * Moves the player in d using map.movePlayer(d). Returns a CommandResult determining the outcome of the move.
+     * @param d
+     * @return a CommandResult determining the outcome of the move.
+     */
     public CommandResult move(Direction d) {
         return map.movePlayer(d);
     }
@@ -82,7 +94,11 @@ public class Player extends Moves {
     public Inventory getInventory() {
         return inventory;
     }
-    
+    /**
+     * Equips the given item using stats.equipWeapon or stats.equipArmor. Returns true if the equip is successful.
+     * @param i
+     * @return true if the equip is successful.
+     */
     public boolean equip(InventoryItem i) {
         if (i.getItemType() == ItemType.WEAPON) {
             return this.stats.equipWeapon((Weapon) i, this.inventory);

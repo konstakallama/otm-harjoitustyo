@@ -6,7 +6,7 @@
 package domain.map;
 
 import domain.mapobject.Enemy;
-import domain.mapobject.Player.Player;
+import domain.mapobject.player.Player;
 import domain.items.MapItem;
 import domain.support.Direction;
 import domain.gamemanager.CommandResult;
@@ -47,6 +47,13 @@ public class Map {
         initVisibility(mapWidth, mapHeight);
     }
 
+    
+    /**
+     * Returns true if the tile specified by x and y is currently occupied by a wall, an enemy or the player or if the specified tile is out of bounds of the map.
+     * @param x x-coordinate on the map.
+     * @param y y-coordinate on the map.
+     * @return true if the tile specified by x and y is currently occupied by a wall, an enemy or the player or if the specified tile is out of bounds of the map.
+     */
     public boolean isOccupied(int x, int y) {
         if (this.isOutOfBounds(x, y)) {
             return true;
@@ -65,11 +72,22 @@ public class Map {
         }
         return this.enemies[x][y].isOccupied();
     }
-
+    /**
+     * Adds an enemy to the specified tile on the map. Note that this will override any enemy already on the tile and does not check for terrain; it should always be ensured that map.isOccupied(x, y) is called first to make sure the tile is free.
+     * @param x
+     * @param y
+     * @param o Enemy to add
+     */
     public void addEnemy(int x, int y, Enemy o) {
         this.enemies[x][y] = o;
     }
-
+    /**
+     * Moves the enemy in x, y 1 tile to the specified direction. Returns true if the move is successful and false if the tile in direction d is occupied. The method assumes that x, y contains an enemy.
+     * @param x
+     * @param y
+     * @param d Direction to move to
+     * @return true if the move is successful and false if the tile in direction d is occupied.
+     */
     public boolean moveEnemy(int x, int y, Direction d) {
         return moveEnemyHelper(x, y, d.xVal(), d.yVal());
     }
@@ -82,7 +100,11 @@ public class Map {
         this.enemies[x][y] = null;
         return true;
     }
-
+    /**
+     * Removes the enemy in x, y, if it contains one.
+     * @param x
+     * @param y 
+     */
     public void removeEnemy(int x, int y) {
         this.enemies[x][y] = null;
     }
@@ -94,19 +116,36 @@ public class Map {
     public int getFloor() {
         return floor;
     }
-
+    /**
+     * Adds an item to x, y. Overwrites any item previously in x, y.
+     * @param x
+     * @param y
+     * @param item item to add
+     */
     public void addItem(int x, int y, MapItem item) {
         this.items[x][y] = item;
     }
-
+    /**
+     * Returns the item in x, y or null if it doesn't contain one.
+     * @param x
+     * @param y
+     * @return the item in x, y or null if it doesn't contain one.
+     */
     public MapItem getItem(int x, int y) {
         return this.items[x][y];
     }
-
+    /**
+     * Removes the item in x, y, if it contains one.
+     * @param x
+     * @param y 
+     */
     public void removeItem(int x, int y) {
         this.items[x][y] = null;
     }
-
+    /**
+     * Has all the enemies on the map take their turns. Returns a list of the AttackResults of the enemies' turns.
+     * @return a list of the AttackResults of the enemies' turns.
+     */
     public ArrayList<AttackResult> takeTurns() {
         ArrayList<AttackResult> l = new ArrayList<>();
 
@@ -129,11 +168,20 @@ public class Map {
         return l;
 
     }
-
+    /**
+     * Returns the type of terrain in x, y.
+     * @param x
+     * @param y
+     * @return the type of terrain in x, y.
+     */
     public Terrain getTerrain(int x, int y) {
         return this.terrain[x][y];
     }
-
+    /**
+     * Moves the player in direction d. Returns a CommandResult which specifies whether the move was successful and if the player is now standing on stairs. Also updates the player's visibility.
+     * @param d
+     * @return a CommandResult which specifies whether the move was successful and if the player is now standing on stairs.
+     */
     public CommandResult movePlayer(Direction d) {
         if (this.isOccupied(player.getX() + d.xVal(), player.getY() + d.yVal())) {
             return new CommandResult(false, false, "", null);
@@ -159,7 +207,12 @@ public class Map {
 
         return cr;
     }
-
+    /**
+     * Has the player pick up the item in nx, ny. Returns a CommandResult specifying whether the action is successful.
+     * @param nx
+     * @param ny
+     * @return a CommandResult specifying whether the action is successful.
+     */
     public CommandResult pickUp(int nx, int ny) {
         CommandResult cr;
 
@@ -193,18 +246,33 @@ public class Map {
     public Terrain[][] getTerrain() {
         return terrain;
     }
-
+    /**
+     * Returns true if x, y contains an Enemy, false if not or x, y is out of bounds.
+     * @param x
+     * @param y
+     * @return true if x, y contains an Enemy, false if not or x, y is out of bounds.
+     */
     public boolean hasEnemy(int x, int y) {
         if (this.isOutOfBounds(x, y)) {
             return false;
         }
         return this.enemies[x][y] != null;
     }
-
+    /**
+     * Returns true if x, y is not on the map.
+     * @param x
+     * @param y
+     * @return true if x, y is not on the map.
+     */
     public boolean isOutOfBounds(int x, int y) {
         return x < 0 || x >= this.mapW || y < 0 || y >= this.mapH;
     }
-
+    /**
+     * Returns the direction in which the distance from x, y to the player is the shortest.
+     * @param x
+     * @param y
+     * @return the direction in which the distance from x, y to the player is the shortest.
+     */
     public Direction getPlayerDirection(int x, int y) {
         if (Math.abs(x - this.player.getX()) >= Math.abs(y - this.player.getY())) {
             if (x - this.player.getX() < 0) {
@@ -221,7 +289,12 @@ public class Map {
         }
 
     }
-
+    /**
+     * Returns the direction in which the distance from x, y to the player is the second shortest. Uses getPlayerDirection to determine this and the two should never return the same value.
+     * @param x
+     * @param y
+     * @return the direction in which the distance from x, y to the player is the second shortest.
+     */
     public Direction getSecondaryPlayerDirection(int x, int y) {
         Direction pd = this.getPlayerDirection(x, y);
         if (pd == Direction.DOWN || pd == Direction.UP) {
@@ -238,15 +311,28 @@ public class Map {
             }
         }
     }
-
+    /**
+     * Returns true if the player is on x, y.
+     * @param x
+     * @param y
+     * @return true if the player is on x, y.
+     */
     public boolean hasPlayer(int x, int y) {
         return x == this.player.getX() && y == this.player.getY();
     }
-
+    /**
+     * Sets the terrain on x, y to t.
+     * @param x
+     * @param y
+     * @param t 
+     */
     public void setTerrain(int x, int y, Terrain t) {
         this.terrain[x][y] = t;
     }
-
+    /**
+     * Returns true if the player is standing on stairs.
+     * @return true if the player is standing on stairs.
+     */
     public boolean playerIsOnStairs() {
         return this.terrain[player.getX()][player.getY()] == Terrain.STAIRS;
     }
@@ -266,7 +352,11 @@ public class Map {
     public ArrayList<Room> getRooms() {
         return rooms;
     }
-
+    /**
+     * Returns true if l is inside any room on the map.
+     * @param l
+     * @return true if l is inside any room on the map.
+     */
     public boolean isInsideRoom(Location l) {
         for (Room r : this.rooms) {
             if (r.isInside(l)) {
@@ -275,7 +365,11 @@ public class Map {
         }
         return false;
     }
-
+    /**
+     * Returns the room l is inside or null if it is not inside any; isInsideRoom should always be called first to ensure l is inside a room.
+     * @param l
+     * @return the room l is inside or null if it is not inside any.
+     */
     public Room insideWhichRoom(Location l) {
         for (Room r : this.rooms) {
             if (r.isInside(l)) {
@@ -341,7 +435,12 @@ public class Map {
     public VisibilityStatus[][] getVisibility() {
         return visibility;
     }
-
+    /**
+     * Returns the VisibilityStatus of x, y.
+     * @param x
+     * @param y
+     * @return the VisibilityStatus of x, y.
+     */
     public VisibilityStatus getVisibility(int x, int y) {
         return visibility[x][y];
     }
@@ -371,7 +470,10 @@ public class Map {
     private boolean isOutOfBounds(Location l) {
         return this.isOutOfBounds(l.getX(), l.getY());
     }
-
+    /**
+     * Returns the room the player is in or next to, or a zero-room with w and h of 0 if they are not inside any.
+     * @return the room the player is in or next to, or a zero-room with w and h of 0 if they are not inside any.
+     */
     public Room getPlayerRoom() {
         if (this.player == null) {
             return new Room(new Location(0, 0), 0, 0);

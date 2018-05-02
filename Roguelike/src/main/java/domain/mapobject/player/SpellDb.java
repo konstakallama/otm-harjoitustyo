@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject.Player;
+package domain.mapobject.player;
 
 import domain.items.effects.MagicDamage;
 import domain.mapobject.Stats;

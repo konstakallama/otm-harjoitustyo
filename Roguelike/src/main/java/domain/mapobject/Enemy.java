@@ -51,11 +51,16 @@ public class Enemy extends Moves {
     public boolean isEnemy() {
         return true;
     }
-
+    /**
+     * Removes the Enemy from the map.
+     */
     public void die() {
         map.removeEnemy(x, y);
     }
-
+    /**
+     * Has the Enemy take it's turn. The turn is only taken if hasMoved is false. If it is next to the player, it will attack the player; otherwise it will move according to moveAi(). Returns an AttackResult detailing the results of a possible attack.
+     * @return an AttackResult detailing the results of a possible attack.
+     */
     public AttackResult takeTurn() {
         AttackResult result;
 
@@ -80,12 +85,18 @@ public class Enemy extends Moves {
     private void randomMove() {
         this.move(this.randomDirection());
     }
-
+/**
+ * Sets hasMoved to false, allowing the enemy to take a new turn th next time takeTurn is called.
+ */
     public void reset() {
         this.hasMoved = false;
     }
-
-    public AttackResult attack(Direction d) {
+    /**
+     * Attacks the tile next to the Enemy's location in direction d. Returns an AttackResult detailing the results of the attack.
+     * @param d
+     * @return an AttackResult detailing the results of the attack.
+     */
+    private AttackResult attack(Direction d) {
         if (map.hasPlayer(x + d.xVal(), y + d.yVal())) {
             if (f.attackHits(this.stats, map.getPlayer().getStats())) {
                 return f.enemyDamageCalculation(this, map.getPlayer());
@@ -95,8 +106,12 @@ public class Enemy extends Moves {
         }
         return new AttackResult(AttackResultType.FAIL, 0, this, null);
     }
-
-    public boolean move(Direction d) {
+    /**
+     * Moves the enemy 1 tile in direction d using map.moveEnemy(). Returns true if the move is successful.
+     * @param d
+     * @return true if the move is successful.
+     */
+    private boolean move(Direction d) {
         if (this.map.moveEnemy(x, y, d)) {
             this.x += d.xVal();
             this.y += d.yVal();
@@ -302,7 +317,12 @@ public class Enemy extends Moves {
         }
     }
     
-    public Direction getDirectionTowards(Location l) {
+    /**
+     * Returns the direction in which the distance to l is the shortest.
+     * @param l
+     * @return the direction in which the distance to l is the shortest.
+     */
+    private Direction getDirectionTowards(Location l) {
         if (Math.abs(x - l.getX()) >= Math.abs(y - l.getY())) {
             if (x - l.getX() < 0) {
                 return Direction.RIGHT;

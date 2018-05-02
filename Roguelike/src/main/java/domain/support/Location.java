@@ -56,20 +56,36 @@ public class Location {
         }
         return true;
     }
-    
+    /**
+     * Changes this location to be the one 1 tile in direction d.
+     * @param d 
+     */
     public void move(Direction d) {
         this.x += d.xVal();
         this.y += d.yVal();
     }
-    
+    /**
+     * Returns the location 1 tile in direction d.
+     * @param d
+     * @return the location 1 tile in direction d.
+     */
     public Location locInDir(Direction d) {
         return new Location(this.x + d.xVal(), this.y + d.yVal());
     }
-    
+    /**
+     * Returns the Manhattan distance from this location to l.
+     * @param l
+     * @return the Manhattan distance from this location to l.
+     */
     public int manhattanDistance(Location l) {
         return Math.abs(this.x - l.getX()) + Math.abs(this.y - l.getY());
     }
-    
+    /**
+     * Returns the Manhattan distance from this location to the location represented by x, y.
+     * @param x
+     * @param y
+     * @return the Manhattan distance from this location to the location represented by x, y.
+     */
     public int manhattanDistance(int x, int y) {
         return this.manhattanDistance(new Location(x, y));
     }
@@ -78,7 +94,10 @@ public class Location {
     public String toString() {
         return "Location{" + "x=" + x + ", y=" + y + '}';
     }
-    
+    /**
+     * Returns a list of the 4 locations adjacent to this one.
+     * @return a list of the 4 locations adjacent to this one.
+     */
     public ArrayList<Location> getAdjacent() {
         ArrayList<Location> a = new ArrayList<>();
         

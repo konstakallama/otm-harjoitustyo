@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject.Player;
+package domain.mapobject.player;
 
 import domain.gamemanager.CommandResult;
 import domain.items.effects.Effect;
@@ -72,11 +72,20 @@ public class Spell {
     public double getAccuracy() {
         return accuracy;
     }
-
+    /**
+     * Returns true if the spell cast from s has t in its valid casting range.
+     * @param s location the spell is cast from
+     * @param t location of the spell's target
+     * @return true if the spell cast from s has t in its valid casting range.
+     */
     public boolean inRange(Location s, Location t) {
         return s.manhattanDistance(t) <= this.getRange();
     }
-    
+    /**
+     * Applies the spell's effect to a given Enemy and sets the spell's cooldown counter to its cooldown value. 
+     * @param e
+     * @return 
+     */
     public CommandResult useOnEnemy(Enemy e) {
         this.turnsInCooldown = this.cooldown;
         return this.effect.applyEffectToEnemy(e);
@@ -89,14 +98,19 @@ public class Spell {
     public void setTurnsInCooldown(int turnsInCooldown) {
         this.turnsInCooldown = turnsInCooldown;
     }
-    
+    /**
+     * Reduces the spell's cooldown counter by one. It will not be lowered 
+     */
     public void advanceCooldown() {
         this.turnsInCooldown--;
         if (this.turnsInCooldown < 0) {
             this.turnsInCooldown = 0;
         }
     }
-    
+    /**
+     * Returns true if the spells cooldown counter is at 0 and the spell can be used.
+     * @return true if the spells cooldown counter is at 0 and the spell can be used.
+     */
     public boolean canBeUsed() {
         return this.turnsInCooldown <= 0;
     }
