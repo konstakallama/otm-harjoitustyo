@@ -17,7 +17,7 @@ Sovelluksen järjestelmätestaus on suoritettu manuaalisesti.
 
 ### Asennus ja kanfigurointi
 
-Sovellus on haettu ja sitä on testattu [käyttöohjeen](https://github.com/mluukkai/OtmTodoApp/blob/master/dokumentaatio/kayttoohje.md) kuvaamalla tavalla sekä OSX- että Windows-ympäristössä.
+Sovellus on haettu ja sitä on testattu [käyttöohjeen](https://github.com/konstakallama/otm-harjoitustyo/blob/master/Roguelike/dokumentaatio/k%C3%A4ytt%C3%B6ohje.md) kuvaamalla tavalla sekä OSX- että Windows-ympäristössä.
 
 ### Toiminnallisuudet
 
