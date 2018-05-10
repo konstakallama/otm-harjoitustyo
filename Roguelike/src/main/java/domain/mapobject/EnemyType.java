@@ -24,16 +24,16 @@ public class EnemyType {
     private EnemyDb e = new EnemyDb();
 
     public EnemyType(String name) {
-//        this.baseExp = e.getBaseExp(name);
-//        this.expScale = e.getExpScale(name);
-//        this.baseStr = e.getBaseStr(name);
-//        this.strScale = e.getStrScale(name);
-//        this.baseCon = e.getBaseCon(name);
-//        this.conScale = e.getConScale(name);
-//        this.baseInt = e.getBaseInt(name);
-//        this.intScale = e.getIntScale(name);
-//        this.baseDex = e.getBaseDex(name);
-//        this.dexScale = e.getDexScale(name);
+        this.baseExp = e.getBaseExp(name);
+        this.expScale = e.getExpScale(name);
+        this.baseStr = e.getBaseStr(name);
+        this.strScale = e.getStrScale(name);
+        this.baseCon = e.getBaseCon(name);
+        this.conScale = e.getConScale(name);
+        this.baseInt = e.getBaseInt(name);
+        this.intScale = e.getIntScale(name);
+        this.baseDex = e.getBaseDex(name);
+        this.dexScale = e.getDexScale(name);
         this.name = name;
     }
     
@@ -55,6 +55,10 @@ public class EnemyType {
     
     public int getExp(int level) {
         return this.baseExp + (int) Math.round(expScale * Double.valueOf(level));
+    }
+    
+    public int getMaxHP(int level) {
+        return e.getBaseHP(name) + this.getCon(level) * e.getHPScale(name);
     }
 
     public String getName() {

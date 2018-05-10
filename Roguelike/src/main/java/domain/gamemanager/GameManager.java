@@ -186,8 +186,10 @@ public class GameManager {
 
     public void addEnemy() {
         Location l = f.createEnemySpawnLocation(map);
+        
+        Enemy e = f.createRandomEnemy(map, l, this.gmStats.enemiesCreated);
 
-        map.addEnemy(l.getX(), l.getY(), this.createEnemy(l.getX(), l.getY()));
+        map.addEnemy(l.getX(), l.getY(), e);
     }
 
     private Enemy createEnemy(int x, int y) {
@@ -197,7 +199,7 @@ public class GameManager {
     public Enemy createTestEnemy(int x, int y) {
         int i = this.gmStats.getEnemiesCreated() / 20;
         
-        return new Enemy(x, y, map, new EnemyStats(1 + i, 1 + i, 1 + i, 1 + i, 1 + i, new EnemyType("test enemy " + this.gmStats.getEnemiesCreated()), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor(), 3), true);
+        return new Enemy(x, y, "test enemy " + this.gmStats.getEnemiesCreated(), map, new EnemyStats(1 + i, new EnemyType("test enemy"), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor()), true);
     }
 
     public Map getMap() {

@@ -16,10 +16,19 @@ import domain.map.Terrain;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
 import domain.gamemanager.CommandResult;
+import domain.items.ItemDb;
+import domain.items.Weapon;
+import domain.items.WeaponType;
 import domain.map.Room;
+import domain.mapobject.EnemyDb;
 import domain.mapobject.player.Spell;
 import domain.mapobject.player.SpellDb;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,6 +38,10 @@ public class Formulas {
 
     Random r = new Random();
     SpellDb sdb = new SpellDb();
+    String fileName = "data/EncounterProbabilities.kek";
+    String lastFloor = "20";
+    ItemDb itemDb = new ItemDb();
+    EnemyDb enemyDb = new EnemyDb();
     /**
      * Returns the maximum hp for an enemy of the given type and constitution.
      * @param type
@@ -72,6 +85,12 @@ public class Formulas {
      */
     public double hitProb(Stats atkStats, Stats defStats) {
         double hit = (atkStats.getWeapon().getHit() + (0.05 * (atkStats.getDex() - defStats.getDex())));
+        
+        if (weaponTriangleAdvantage(atkStats, defStats)) {
+            hit += 0.15;
+        } else if (weaponTriangleAdvantage(defStats, atkStats)) {
+            hit -= 0.15;
+        }
 
         if (hit >= 1.0) {
             return 1.0;
@@ -223,13 +242,13 @@ public class Formulas {
      * @return the amount of spellbook slots a player with the given intelligence will have.
      */
     public int getMaxSpellbookSlots(int i) {
-        if (i < 3) {
+        if (i < 6) {
             return 1;
-        } else if (i < 6) {
+        } else if (i < 9) {
             return 2;
-        } else if (i < 10) {
+        } else if (i < 13) {
             return 3;
-        } else if (i < 15) {
+        } else if (i < 18) {
             return 4;
         } else {
             return 5;
@@ -297,6 +316,61 @@ public class Formulas {
 
     private int getMagicDamage(Stats atkStats, EnemyStats defStats, int power) {
         return Math.max(0, atkStats.getInt() + power - defStats.getInt());
+    }
+
+    public Enemy createRandomEnemy(Map map, Location l, int enemiesCreated) {
+        String[] firstLine = null;
+        
+        try {
+            firstLine = Files.readAllLines(Paths.get(this.fileName)).get(0).split("\t");
+        } catch (IOException ex) {
+            
+        }
+        
+        String[] line = this.readLineFromFile(map.getFloor() + "");
+        double random = r.nextDouble();       
+        double d = 0;
+        EnemyType et = null;
+        
+        for (int i = 1; i < firstLine.length; i++) {
+            d += Double.parseDouble(line[i]);
+            if (random < d) {
+                et = new EnemyType(firstLine[i]);
+                break;
+            }
+        }
+        
+        int level = enemiesCreated / 20;
+        EnemyStats es = new EnemyStats(level, et, itemDb.createEnemyTestWeapon(enemyDb.getWeaponType(et.getName())), itemDb.createEnemyTestArmor());
+        
+        return new Enemy(l.getX(), l.getY(), map, es, true);
+    }
+    
+    private String[] readLineFromFile(String name) {
+        try {
+            List<String> l = Files.readAllLines(Paths.get(this.fileName));
+            
+//            System.out.println("name: " + name);
+            
+            for (String line : l) {
+                String[] s = line.split("\t");
+                if (s[0].equals(name)) {
+                    return (s);
+                } else if (s[0].equals(lastFloor)) {
+                    return s;
+                }
+            }
+                     
+        } catch (IOException ex) {
+        }
+        
+        return null;
+    }
+
+    private boolean weaponTriangleAdvantage(Stats atkStats, Stats defStats) {
+        WeaponType aw = atkStats.getWeapon().getType();
+        WeaponType dw = defStats.getWeapon().getType();
+        return (aw == WeaponType.SWORD && dw == WeaponType.AXE) || (aw == WeaponType.LANCE && dw == WeaponType.SWORD) || (aw == WeaponType.AXE && dw == WeaponType.LANCE);
     }
 
 

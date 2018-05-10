@@ -21,7 +21,10 @@ import domain.map.Map;
 import domain.mapobject.player.Player;
 import domain.gamemanager.PlayerCommand;
 import domain.gamemanager.PlayerCommandType;
+import domain.items.Armor;
 import domain.items.MapItem;
+import domain.items.Weapon;
+import domain.items.WeaponType;
 import domain.map.Room;
 import domain.mapobject.player.PlayerStats;
 import domain.map.Terrain;
@@ -38,6 +41,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -126,6 +131,9 @@ public class Main extends Application {
         scene.setOnKeyPressed((event) -> {
             controls(event);
         });
+        mapCanvas.setOnMouseClicked((event) -> {
+            clickOnEnemy(event);
+        });
 
         primaryStage.show();
     }
@@ -148,6 +156,7 @@ public class Main extends Application {
                 if (map.getVisibility(i, j) == VisibilityStatus.IN_RANGE) {
                     if (map.getEnemy(i, j) != null) {
                         paintTile(i * pixelSize, j * pixelSize, "Red", drawer);
+                        paintWeaponTypeBorder(i * pixelSize, j * pixelSize, map.getEnemy(i, j).getStats().getWeapon().getType());
                     } else if (map.getItem(i, j) != null) {
                         paintTile(i * pixelSize, j * pixelSize, "#00FFFF", drawer);
                     }
@@ -248,7 +257,7 @@ public class Main extends Application {
     }
 
     private String getGameOverMessage(AttackResult result) {
-        return "You were killed on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + " by " + result.getAttacker() + ".";
+        return "You were killed on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + " by a " + result.getAttacker() + ".";
     }
 
     private PlayerStats createPlayerStats() {
@@ -256,7 +265,11 @@ public class Main extends Application {
     }
 
     public PlayerStats createTestPlayerStats() {
-        return new PlayerStats(1, 1, 1, 1, 1, itemDb.createTestWeapon(), itemDb.createTestArmor());
+        try {
+            return new PlayerStats(2, 2, 2, 2, 2, (Weapon) itemDb.itemConverter("stick"), (Armor) itemDb.itemConverter("clothes"));
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private Inventory createInventory() {
@@ -264,7 +277,7 @@ public class Main extends Application {
     }
 
     public Inventory createTestInventory() {
-        return new Inventory(10);
+        return new Inventory(20);
     }
 
     private void inventoryScreen() {
@@ -344,7 +357,7 @@ public class Main extends Application {
             grid.add(b, columnIndex, rowIndex);
 
             columnIndex++;
-            if (columnIndex == 3) {
+            if (columnIndex == 2) {
                 columnIndex = 0;
                 rowIndex++;
             }
@@ -393,11 +406,11 @@ public class Main extends Application {
         Button spells = new Button("Spells");
         Button logHistory = new Button("Log history");
 
-        stats.setMinWidth(100);
-        inventory.setMinWidth(100);
-        discard.setMinWidth(100);
-        spells.setMinWidth(100);
-        logHistory.setMinWidth(100);
+        stats.setMinWidth(105);
+        inventory.setMinWidth(105);
+        discard.setMinWidth(105);
+        spells.setMinWidth(105);
+        logHistory.setMinWidth(105);
 
         inventory.setOnMouseClicked((event) -> {
             this.inventoryScreen();
@@ -410,12 +423,12 @@ public class Main extends Application {
         discard.setOnMouseClicked((event) -> {
             this.discardScreen();
         });
-        
-        spells.setOnMouseClicked((event) ->{
+
+        spells.setOnMouseClicked((event) -> {
             this.spellScreen();
         });
-        
-        logHistory.setOnMouseClicked((event) ->{
+
+        logHistory.setOnMouseClicked((event) -> {
             this.logHistoryScreen();
         });
 
@@ -490,7 +503,7 @@ public class Main extends Application {
         stamina.setOnMouseClicked((event) -> {
             help.setText(staminaHelp());
         });
-        
+
         inventorySize.setOnMouseClicked((event) -> {
             help.setText("The maximum amount of items you can carry.");
         });
@@ -533,6 +546,9 @@ public class Main extends Application {
         this.updateUpperGrid();
         scene.setOnKeyPressed((event) -> {
             controls(event);
+        });
+        mapCanvas.setOnMouseClicked((event) -> {
+            clickOnEnemy(event);
         });
     }
 
@@ -691,7 +707,7 @@ public class Main extends Application {
             grid.add(b, columnIndex, rowIndex);
 
             columnIndex++;
-            if (columnIndex == 4) {
+            if (columnIndex == 2) {
                 columnIndex = 0;
                 rowIndex++;
             }
@@ -743,7 +759,7 @@ public class Main extends Application {
 
             this.spellBox.getChildren().add(b);
         }
-        
+
         for (int i = 0; i < gm.getPlayer().getStats().getFreeSpellBookSlots(); i++) {
             Button b = new Button("(free slot)");
             b.setMinWidth(75);
@@ -774,7 +790,6 @@ public class Main extends Application {
 //                    System.out.println("x: " + x);
 //                    System.out.println("y: " + y);
 //                    System.out.println(gm.getPlayer().getLocation());
-
                     if (gm.getMap().hasEnemy(x, y) && gm.getMap().getVisibility(x, y) == VisibilityStatus.IN_RANGE && s.inRange(gm.getPlayer().getLocation(), new Location(x, y))) {
                         CommandResult cr = s.useOnEnemy(gm.getMap().getEnemy(x, y));
                         if (cr.isSuccess()) {
@@ -787,7 +802,7 @@ public class Main extends Application {
                             if (this.status == UIStatus.TARGETING) {
                                 this.closeMenu();
                             }
-                            
+
                         }
                     }
                 }
@@ -820,7 +835,7 @@ public class Main extends Application {
         if (!(this.status == UIStatus.GAME_OVER)) {
             if (this.status == UIStatus.MAP) {
                 ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode(), gm));
-                
+
                 if (results != null) {
                     if (results.size() > 0) {
                         if (results.get(0).getAttackResult() != null) {
@@ -830,8 +845,7 @@ public class Main extends Application {
                         }
                     }
                 }
-                
-                
+
                 this.parseCommandResults(results);
                 if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.INVENTORY) {
                     this.updateLog("Opening the inventory...");
@@ -864,13 +878,13 @@ public class Main extends Application {
         }
 
     }
-    
+
     private void spellScreen() {
         Label l = new Label("Mouseover your spells to get detailed information about them.");
         this.framework.setCenter(l);
-        
+
         SpellDb sdb = new SpellDb();
-        
+
         for (int i = 1; i < this.spellBox.getChildren().size(); i++) {
             Button b = (Button) this.spellBox.getChildren().get(i);
             if (!b.getText().equals("(free slot)")) {
@@ -880,7 +894,7 @@ public class Main extends Application {
             }
         }
     }
-    
+
     private void logHistoryScreen() {
         Label l = new Label("Log History (most recent first):");
         for (int i = gm.getGmStats().getLogHistory().size() - 1; i >= 0; i--) {
@@ -919,6 +933,36 @@ public class Main extends Application {
             return (og / 5) * 5;
         } else {
             return ((og / 5) * 5) + 5;
+        }
+    }
+
+    private void clickOnEnemy(MouseEvent event) {
+        int x = (int) Math.floor(event.getX() / pixelSize);
+        int y = (int) Math.floor(event.getY() / pixelSize);
+
+        if (gm.getMap().hasEnemy(x, y)) {
+            this.updateLog(mdb.getSeeEnemyMsg(gm.getMap().getEnemy(x, y), gm.getPlayer().getStats().getInt()) + ". " + gm.getMap().getEnemy(x, y).getStats().toString());
+//            System.out.println(gm.getMap().getEnemy(x, y).getStats().toString());
+        }
+    }
+
+    private void paintWeaponTypeBorder(int x, int y, WeaponType type) {
+        String color = "";
+        if (type == WeaponType.SWORD) {
+            color = "red";
+        } else if (type == WeaponType.LANCE) {
+            color = "blue";
+        } else if (type == WeaponType.AXE) {
+            color = "green";
+        }
+        paintThickBox(x, y, color, 2);
+    }
+
+    private void paintThickBox(int x, int y, String color, int thickness) {
+        this.drawer.setStroke(Paint.valueOf(color));
+        
+        for (int i = 0; i < thickness; i++) {
+            this.drawer.strokeRect(x + i, y + i, pixelSize - (i * 2), pixelSize - (i * 2));
         }
     }
 

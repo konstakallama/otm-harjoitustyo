@@ -11,4 +11,18 @@ package domain.items;
  */
 public enum WeaponType {
     SWORD, AXE, LANCE;
+
+    @Override
+    public String toString() {
+        if (this == SWORD) {
+            return "Sword";
+        } else if (this == LANCE) {
+            return "Lance";
+        } else if (this == AXE) {
+            return "Axe";
+        }
+        return "";
+    }
+    
+    
 }

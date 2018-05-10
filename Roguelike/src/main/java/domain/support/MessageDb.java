@@ -43,4 +43,8 @@ public class MessageDb {
     public String getMissWithSpellMsg(String spellName, Enemy e, long toHit) {
         return "You cast " + spellName + " on the " + e.getName() + " and miss (" + toHit + " % to hit).";
     }
+
+    public String getSeeEnemyMsg(Enemy enemy, int intel) {
+        return "You see: " + enemy.getName();
+    }
 }

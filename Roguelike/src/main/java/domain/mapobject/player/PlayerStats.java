@@ -196,4 +196,9 @@ public class PlayerStats extends Stats {
         }
     }
 
+    @Override
+    public int getDex() {
+        return Math.max(dex - armor.getDexPenalty(), 1);
+    }
+
 }

@@ -11,6 +11,7 @@ import java.util.Random;
 
 /**
  * Generates randomized maps.
+ *
  * @author konstakallama
  */
 public class MapGenerator {
@@ -18,38 +19,40 @@ public class MapGenerator {
     Random r = new Random();
     Formulas f = new Formulas();
     int fireTomesCreated = 0;
+    String[] swords = {"bronze sword", "iron sword", "steel sword", "silver sword"};
+    int swordIndex = 0;
+    String[] lances = {"bronze lance", "iron lance", "steel lance", "silver lance"};
+    int lanceIndex = 0;
+    String[] axes = {"bronze axe", "iron axe", "steel axe", "silver axe"};
+    int axeIndex = 0;
+    String[] armor = {"leather armor", "iron armor", "elven armor", "heavy armor", "glass armor"};
+    int armorIndex = 0;
+
     /**
-     * Creates a new random map with the specified parameters. Also adds possible items.
+     * Creates a new random map with the specified parameters. Also adds
+     * possible items.
+     *
      * @param w map width
      * @param h map height
-     * @param floor the floor of the dungeon this map is of. Affects the formula for the number of rooms on the map.
+     * @param floor the floor of the dungeon this map is of. Affects the formula
+     * for the number of rooms on the map.
      * @return a new randomly generated map.
      */
     public Map createTestMap(int w, int h, int floor) {
         Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
         this.addStairs(m);
-//        this.addItem(m, "atma weapon");
-//        this.addItem(m, "über armor");
-        if (r.nextDouble() < 0.3 && this.fireTomesCreated < 7) {
-            this.addItem(m, "fire tome");
-            this.fireTomesCreated++;
-        }
-        
-
-        if (r.nextDouble() < 1) {
-            this.addItem(m, "potion");
-        }
-
-        if (r.nextDouble() < 1) {
-            this.addItem(m, "apple");
-        }
+        this.addItems(m);
 
         return m;
     }
+
     /**
      * Adds the specified item to the given map.
+     *
      * @param m map to add item to
-     * @param name name of the item to be added (all item names in the game are unique meaning this is sufficient information to determine the exact item intended)
+     * @param name name of the item to be added (all item names in the game are
+     * unique meaning this is sufficient information to determine the exact item
+     * intended)
      */
     public void addItem(Map m, String name) {
         Location l = f.createRandomFreeLocation(m);
@@ -63,11 +66,14 @@ public class MapGenerator {
         Location l = f.createRandomFreeLocation(m);
         m.setTerrain(l.getX(), l.getY(), Terrain.STAIRS);
     }
+
     /**
-     * Creates a purely random map terrain with no patterns. Used early in development for testing purposes.
+     * Creates a purely random map terrain with no patterns. Used early in
+     * development for testing purposes.
+     *
      * @param w
      * @param h
-     * @return 
+     * @return
      */
     private Terrain[][] createSimpleTestTerrain(int w, int h) {
         Terrain[][] t = new Terrain[w][h];
@@ -495,7 +501,6 @@ public class MapGenerator {
 //        }
 //        return i > 1;
 //    }
-
     private Location moveLDown(Location l, Room from) {
         l.move(Direction.DOWN);
 
@@ -512,6 +517,47 @@ public class MapGenerator {
             l.move(Direction.RIGHT);
         }
         return l;
+    }
+
+    private void addItems(Map m) {
+//        this.addItem(m, "atma weapon");
+//        this.addItem(m, "über armor");
+        
+        double random = r.nextDouble();
+        
+        if (r.nextDouble() < 0.3 && this.fireTomesCreated < 7) {
+            this.addItem(m, "fire tome");
+            this.fireTomesCreated++;
+        }
+        
+        if (r.nextDouble() < 0.1 && this.swordIndex < this.swords.length) {
+            this.addItem(m, this.swords[swordIndex]);
+            this.swordIndex++;
+        }
+        
+        if (r.nextDouble() < 0.1 && this.lanceIndex < this.lances.length) {
+            this.addItem(m, this.lances[lanceIndex]);
+            this.lanceIndex++;
+        }
+        
+        if (r.nextDouble() < 0.1 && this.axeIndex < this.axes.length) {
+            this.addItem(m, this.axes[axeIndex]);
+            this.axeIndex++;
+        }
+        
+        if (r.nextDouble() < 0.1 && this.armorIndex < this.armor.length) {
+            this.addItem(m, this.armor[armorIndex]);
+            this.armorIndex++;
+        }
+
+        for (int i = 0; i < 2; i++) {
+            if (r.nextDouble() < 0.8) {
+                this.addItem(m, "apple");
+            }
+            if (r.nextDouble() < 0.6) {
+                this.addItem(m, "potion");
+            }
+        }
     }
 
 }

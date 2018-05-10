@@ -149,7 +149,7 @@ public class PlayerTests {
         for (int i = 0; i < 4; i++) {
             Location el = p.getLocation().locInDir(d);
             if (!gm.getMap().isOccupied(el.getX(), el.getY())) {
-                e = new Enemy(el.getX(), el.getY(), gm.getMap(), new EnemyStats(1, 1, 1, 1, 1, new EnemyType("test enemy"), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor(), 3), true);
+                e = new Enemy(el.getX(), el.getY(), gm.getMap(), new EnemyStats(1, new EnemyType("test enemy"), itemDb.createEnemyTestWeapon(), itemDb.createEnemyTestArmor()), true);
                 gm.getMap().addEnemy(el.getX(), el.getY(), e);
                 ed = d;
                 break;

@@ -23,11 +23,16 @@ public class Enemy extends Moves {
     boolean hasMoved;
     Direction lastMoved;
     Location movingTowards;
+    
 
     public Enemy(int x, int y, Map map, EnemyStats stats, boolean visible) {
-        super(map, x, y, stats.getType().getName());
-        this.stats = stats;
+        this(x, y, stats.getType().getName(), map, stats, visible);
+    }
+
+    public Enemy(int x, int y, String name, Map map, EnemyStats stats, boolean visible) {
+        super(map, x, y, name);
         this.visible = visible;
+        this.stats = stats;
         this.hasMoved = false;
         this.lastMoved = randomDirection();
         this.movingTowards = null;
