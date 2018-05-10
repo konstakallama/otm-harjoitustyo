@@ -9,7 +9,7 @@ import domain.support.Location;
 import java.util.Objects;
 
 /**
- *
+ * A corridor on the map connecting 2 rooms. Used internally for map generation purposes.
  * @author konstakallama
  */
 public class Corridor {

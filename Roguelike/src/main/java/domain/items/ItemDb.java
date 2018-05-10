@@ -8,9 +8,11 @@ package domain.items;
 import domain.items.effects.Heal;
 import domain.items.effects.StaminaHeal;
 import domain.items.effects.TeachSpell;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
- *
+ * Contains information about all items in the game. Is intended to be replaced with an actual database should there be sufficient time for its implementation.
  * @author konstakallama
  */
 public class ItemDb {
@@ -33,7 +35,7 @@ public class ItemDb {
         } else if (item.getName().equals("fire tome")) {
             return this.createFireTome();
         }
-        
+
         throw new Exception("Item not found");
     }
 
@@ -48,19 +50,19 @@ public class ItemDb {
     public Armor createTestArmor() {
         return new Armor(1, "test armor");
     }
-    
+
     public Weapon createEnemyTestWeapon() {
         return new Weapon(1, 0.6, WeaponType.SWORD, "enemy test weapon");
     }
-    
+
     public Armor createEnemyTestArmor() {
         return new Armor(0, "enemy test armor");
     }
-    
+
     public InventoryItem createPotion() {
         return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(5, "potion"));
     }
-    
+
     public InventoryItem createAtmaWeapon() {
         return new Weapon(100, 1.00, WeaponType.SWORD, "atma weapon");
     }
@@ -73,7 +75,7 @@ public class ItemDb {
         if (name.equals("test item")) {
             return "Type: other";
         } else if (name.equals("potion")) {
-            return "Type: comsumable\n"
+            return "Type: consumable\n"
                     + "Effect: heals 5 hp";
         } else if (name.equals("atma weapon")) {
             return "Type: sword\n"
@@ -100,7 +102,7 @@ public class ItemDb {
                     + "\tPower: 4\n"
                     + "\tAccuracy: 70%";
         }
-        
+
         return "";
     }
 
@@ -111,5 +113,5 @@ public class ItemDb {
     private InventoryItem createFireTome() {
         return new InventoryItem(0, ItemType.CONSUMABLE, "fire tome", new TeachSpell("fire tome", "Fire"));
     }
-    
+
 }

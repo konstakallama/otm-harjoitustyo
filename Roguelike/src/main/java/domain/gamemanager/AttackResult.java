@@ -8,7 +8,7 @@ package domain.gamemanager;
 import domain.mapobject.Moves;
 
 /**
- *
+ * Encapsulates a number of parameters detailing the result of an attack. Only contains simple getters and setters.
  * @author konstakallama
  */
 public class AttackResult {

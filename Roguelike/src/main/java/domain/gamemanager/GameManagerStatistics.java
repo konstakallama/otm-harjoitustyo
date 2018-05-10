@@ -8,7 +8,7 @@ import domain.map.Map;
 import java.util.*;
 
 /**
- *
+ * Encapsulates a number of statistics about the game's current state.
  * @author konstakallama
  */
 public class GameManagerStatistics {
@@ -28,6 +28,7 @@ public class GameManagerStatistics {
         this.enemySpawnCounter = 0;
         this.oldMaps = new ArrayList<>();
         this.enemySpawnInterval = enemySpawnInterval;
+        this.logHistory = new ArrayList<>();
     }
 
     public int getTurns() {
@@ -61,7 +62,10 @@ public class GameManagerStatistics {
     public void increaseEnemiesCreated() {
         this.enemiesCreated++;
     }
-    
+    /**
+     * Increases the counter towards the spawn time of the next enemy. Returns true if an enemy should be spawned this turn, based on this object's enemySpawnInterval variable. The counter is the reset.
+     * @return true if an enemy should be spawned this turn
+     */
     public boolean increaseEnemySpawnCounter() {
         this.enemySpawnCounter++;
         if (this.enemySpawnCounter == this.getEnemySpawnInterval()) {

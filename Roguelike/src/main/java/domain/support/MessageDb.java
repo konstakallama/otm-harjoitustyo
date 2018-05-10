@@ -9,7 +9,7 @@ import domain.gamemanager.AttackResult;
 import domain.mapobject.Enemy;
 
 /**
- *
+ * Contains messages shown in the game all in one place for ease of editing. Is incomplete due to being implemented late to development.
  * @author konstakallama
  */
 public class MessageDb {

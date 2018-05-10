@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- *
+ * A room on a map.
  * @author konstakallama
  */
 public class Room {
@@ -59,7 +59,10 @@ public class Room {
     public ArrayList<Corridor> getCorridors() {
         return corridors;
     }
-    
+    /**
+     * Adds a corridor to this room and an arriving corridor to the room said corridor connects to.
+     * @param c 
+     */
     public void addCoridor(Corridor c) {
         this.corridors.add(c);
         if (c.getFrom().equals(this)) {
@@ -75,41 +78,67 @@ public class Room {
     public ArrayList<Room> getConnected() {
         return connected;
     }
-    
+    /**
+     * Returns true if the given room is reachable from this room using this room's corridors. Used in map generation.
+     * @param r
+     * @return 
+     */
     public boolean isDirectlyConnected(Room r) {
         if (r.equals(this)) {
             return true;
         }
         return this.connected.contains(r);
     }
-    
+    /**
+     * Returns an approximate middle point for this room.
+     * @return 
+     */
     public Location getMiddle() {
         return new Location(this.getLocation().getX() + (this.getW() / 2), this.getLocation().getY() + (this.getH() / 2));
     }
-    
+    /**
+     * Returns true if l is inside this room.
+     * @param l
+     * @return 
+     */
     public boolean isInside(Location l) {
         if (this.h == 0 || this.w == 0) {
             return false;
         }
         return (l.getX() >= this.location.getX() && l.getX() < this.location.getX() + w && l.getY() >= this.location.getY() && l.getY() < this.location.getY() + h);
     }
-    
+    /**
+     * Returns the northeast corner of this room.
+     * @return 
+     */
     public Location getNE() {
         return new Location(this.location.getX() + w - 1, this.location.getY());
     }
-    
+    /**
+     * Returns the southwest corner of this room.
+     * @return 
+     */
     public Location getSW() {
         return new Location(this.location.getX(), this.location.getY() + h - 1);
     }
-    
+    /**
+     * Returns the southeast corner of this room.
+     * @return 
+     */
     public Location getSE() {
         return new Location(this.location.getX() + w - 1, this.location.getY() + h - 1);
     }
-    
+    /**
+     * Returns the northwest corner of this room.
+     * @return 
+     */
     public Location getNW() {
         return this.location;
     }
-
+    /**
+     * Adds c corridor to the list of corridors arriving in this room, if it is not already present.
+     * @param c 
+     */
     private void addArrivingCoridor(Corridor c) {
         if (!this.arrivingCorridors.contains(c)) {
             this.arrivingCorridors.add(c);
@@ -147,7 +176,10 @@ public class Room {
         }
         return true;
     }
-    
+    /**
+     * Returns the starting locations for all corridors leaving from and arriving to this room.
+     * @return 
+     */
     public ArrayList<Location> getCorridorStarts() {
         ArrayList<Location> starts = new ArrayList<>();
         
@@ -181,7 +213,11 @@ public class Room {
     public String toString() {
         return "Room{" + "location=" + location + ", w=" + w + ", h=" + h + '}';
     }
-    
+    /**
+     * Returns true if any location at manhattan distance 1 from l is inside this room.
+     * @param l
+     * @return 
+     */
     public boolean isNextTo(Location l) {
 //        System.out.println(l);
         
@@ -195,7 +231,10 @@ public class Room {
         }
         return false;
     }
-
+    /**
+     * Removes the specified corridor from the list of corridors for this room and the list of arriving corridors for the target room.
+     * @param c 
+     */
     public void removeCorridor(Corridor c) {
         Room r = c.getTo();
         r.getArrivingCorridors().remove(c);

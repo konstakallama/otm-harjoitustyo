@@ -6,7 +6,7 @@
 package domain.gamemanager;
 
 /**
- *
+ * Encapsulates a number of parameters detailing the result of a player's command. Only contains simple getters and setters.
  * @author konstakallama
  */
 public class CommandResult {

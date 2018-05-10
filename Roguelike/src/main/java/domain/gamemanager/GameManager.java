@@ -53,7 +53,11 @@ public class GameManager {
     public GameManager() {
         this(new PlayerStats(1, 1, 1, 1, 1, new Weapon(3, 0.75, WeaponType.SWORD, "test weapon"), new Armor(1, "test armor")), new Inventory(10));
     }
-
+    /**
+     * Plays out the next round of the game with the given player command. Returns an Arraylist of CommandResults detailing the events of the round.
+     * @param c The command for the player's action this round.
+     * @return an Arraylist of CommandResults detailing the events of the round.
+     */
     public ArrayList<CommandResult> playCommand(PlayerCommand c) {
         ArrayList<CommandResult> results = new ArrayList<>();
 

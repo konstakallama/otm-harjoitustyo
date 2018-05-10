@@ -9,18 +9,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * Generates randomized maps.
+ * @author konstakallama
+ */
 public class MapGenerator {
 
     Random r = new Random();
     Formulas f = new Formulas();
     int fireTomesCreated = 0;
-
+    /**
+     * Creates a new random map with the specified parameters. Also adds possible items.
+     * @param w map width
+     * @param h map height
+     * @param floor the floor of the dungeon this map is of. Affects the formula for the number of rooms on the map.
+     * @return a new randomly generated map.
+     */
     public Map createTestMap(int w, int h, int floor) {
         Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
         this.addStairs(m);
 //        this.addItem(m, "atma weapon");
 //        this.addItem(m, "über armor");
-        if (r.nextDouble() < 0.3 && this.fireTomesCreated < 5) {
+        if (r.nextDouble() < 0.3 && this.fireTomesCreated < 7) {
             this.addItem(m, "fire tome");
             this.fireTomesCreated++;
         }
@@ -36,7 +46,11 @@ public class MapGenerator {
 
         return m;
     }
-
+    /**
+     * Adds the specified item to the given map.
+     * @param m map to add item to
+     * @param name name of the item to be added (all item names in the game are unique meaning this is sufficient information to determine the exact item intended)
+     */
     public void addItem(Map m, String name) {
         Location l = f.createRandomFreeLocation(m);
 
@@ -45,12 +59,17 @@ public class MapGenerator {
         m.addItem(l.getX(), l.getY(), item);
     }
 
-    public void addStairs(Map m) {
+    private void addStairs(Map m) {
         Location l = f.createRandomFreeLocation(m);
         m.setTerrain(l.getX(), l.getY(), Terrain.STAIRS);
     }
-
-    public Terrain[][] createSimpleTestTerrain(int w, int h) {
+    /**
+     * Creates a purely random map terrain with no patterns. Used early in development for testing purposes.
+     * @param w
+     * @param h
+     * @return 
+     */
+    private Terrain[][] createSimpleTestTerrain(int w, int h) {
         Terrain[][] t = new Terrain[w][h];
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
@@ -73,7 +92,7 @@ public class MapGenerator {
         return t;
     }
 
-    public Map createTestTerrain(int w, int h, int floor, int roomAmount, int corridorAmount) {
+    private Map createTestTerrain(int w, int h, int floor, int roomAmount, int corridorAmount) {
         Terrain[][] t = new Terrain[w][h];
 
         for (int i = 0; i < w; i++) {
@@ -464,18 +483,18 @@ public class MapGenerator {
         this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX() + to.getW() - 1, l.getY(), to.getLocation().getY()), l, to, t, c);
     }
 
-    private boolean isNextToMoreThanOneCorridor(Location l, Terrain[][] t) {
-        int i = 0;
-        for (Location a : l.getAdjacent()) {
-            try {
-                if (t[a.getX()][a.getY()] == Terrain.CORRIDOR || t[a.getX()][a.getY()] == Terrain.FLOOR) {
-                    i++;
-                }
-            } catch (Exception e) {
-            }
-        }
-        return i > 1;
-    }
+//    private boolean isNextToMoreThanOneCorridor(Location l, Terrain[][] t) {
+//        int i = 0;
+//        for (Location a : l.getAdjacent()) {
+//            try {
+//                if (t[a.getX()][a.getY()] == Terrain.CORRIDOR || t[a.getX()][a.getY()] == Terrain.FLOOR) {
+//                    i++;
+//                }
+//            } catch (Exception e) {
+//            }
+//        }
+//        return i > 1;
+//    }
 
     private Location moveLDown(Location l, Room from) {
         l.move(Direction.DOWN);

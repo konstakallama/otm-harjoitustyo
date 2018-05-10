@@ -39,6 +39,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import java.util.*;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
@@ -195,6 +196,7 @@ public class Main extends Application {
     }
 
     private void updateLog(String newMessage) {
+        gm.getGmStats().addLog(newMessage);
         for (int i = 0; i < logs.size() - 1; i++) {
             logs.get(i).setText(logs.get(i + 1).getText());
         }
@@ -388,10 +390,14 @@ public class Main extends Application {
         Button stats = new Button("Stats");
         Button inventory = new Button("Inventory");
         Button discard = new Button("Discard items");
+        Button spells = new Button("Spells");
+        Button logHistory = new Button("Log history");
 
         stats.setMinWidth(100);
         inventory.setMinWidth(100);
         discard.setMinWidth(100);
+        spells.setMinWidth(100);
+        logHistory.setMinWidth(100);
 
         inventory.setOnMouseClicked((event) -> {
             this.inventoryScreen();
@@ -404,9 +410,17 @@ public class Main extends Application {
         discard.setOnMouseClicked((event) -> {
             this.discardScreen();
         });
+        
+        spells.setOnMouseClicked((event) ->{
+            this.spellScreen();
+        });
+        
+        logHistory.setOnMouseClicked((event) ->{
+            this.logHistoryScreen();
+        });
 
         VBox box = new VBox();
-        box.getChildren().addAll(stats, inventory, discard);
+        box.getChildren().addAll(stats, inventory, discard, spells, logHistory);
         return box;
     }
 
@@ -424,6 +438,7 @@ public class Main extends Application {
         Label dex = new Label("Dexterity: " + gm.getPlayer().getStats().getDex());
         Label exp = new Label("Exp. points: " + gm.getPlayer().getStats().getExp());
         Label toNextLevel = new Label("To next level: " + gm.getPlayer().getStats().expToNextLevel());
+        Label inventorySize = new Label("Inventory size: " + gm.getPlayer().getInventory().getSize());
         Label help = new Label("");
 
         help.setMinHeight(200);
@@ -475,14 +490,19 @@ public class Main extends Application {
         stamina.setOnMouseClicked((event) -> {
             help.setText(staminaHelp());
         });
+        
+        inventorySize.setOnMouseClicked((event) -> {
+            help.setText("The maximum amount of items you can carry.");
+        });
 
         Label space1 = new Label("");
         Label space2 = new Label("");
         Label space3 = new Label("");
         Label space4 = new Label("");
         Label space5 = new Label("");
+        Label space6 = new Label("");
 
-        box.getChildren().addAll(level, statHP, stamina, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel, space4, space5, help);
+        box.getChildren().addAll(level, statHP, stamina, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel, space4, inventorySize, space6, space5, help);
         box.setSpacing(5);
         box.setAlignment(Pos.CENTER);
         framework.setCenter(box);
@@ -705,8 +725,11 @@ public class Main extends Application {
 
     private void updateSpellBox() {
         this.spellBox.getChildren().clear();
+        Label l = new Label("Spells: ");
+        this.spellBox.getChildren().add(l);
         for (Spell s : gm.getPlayer().getStats().getSpells()) {
             Button b = new Button(s.getName());
+            b.setMinWidth(75);
             b.setOnMouseClicked((event) -> {
                 getSpellButtonEvent(s);
             });
@@ -718,6 +741,12 @@ public class Main extends Application {
                 b.setDisable(false);
             }
 
+            this.spellBox.getChildren().add(b);
+        }
+        
+        for (int i = 0; i < gm.getPlayer().getStats().getFreeSpellBookSlots(); i++) {
+            Button b = new Button("(free slot)");
+            b.setMinWidth(75);
             this.spellBox.getChildren().add(b);
         }
     }
@@ -791,6 +820,18 @@ public class Main extends Application {
         if (!(this.status == UIStatus.GAME_OVER)) {
             if (this.status == UIStatus.MAP) {
                 ArrayList<CommandResult> results = gm.playCommand(this.playerCommandParser.parseCommand(event.getCode(), gm));
+                
+                if (results != null) {
+                    if (results.size() > 0) {
+                        if (results.get(0).getAttackResult() != null) {
+                            if (results.get(0).getAttackResult().isLevelUp()) {
+                                this.levelUpScreen();
+                            }
+                        }
+                    }
+                }
+                
+                
                 this.parseCommandResults(results);
                 if (this.playerCommandParser.parseCommand(event.getCode(), gm).getType() == PlayerCommandType.INVENTORY) {
                     this.updateLog("Opening the inventory...");
@@ -805,13 +846,6 @@ public class Main extends Application {
 
                 if (results != null) {
                     if (results.size() > 0) {
-                        if (results.get(0).getAttackResult() != null) {
-                            if (results.get(0).getAttackResult().isLevelUp()) {
-                                this.levelUpScreen();
-                            }
-
-                        }
-
                         if (gm.getPlayer().getStats().getCurrentStamina() == 0) {
                             this.updateLog("You are starving! You will take 1 damage each turn unless you eat something.");
                             if (gm.getPlayer().getStats().isDead()) {
@@ -829,6 +863,33 @@ public class Main extends Application {
             drawMap(drawer, gm.getMap());
         }
 
+    }
+    
+    private void spellScreen() {
+        Label l = new Label("Mouseover your spells to get detailed information about them.");
+        this.framework.setCenter(l);
+        
+        SpellDb sdb = new SpellDb();
+        
+        for (int i = 1; i < this.spellBox.getChildren().size(); i++) {
+            Button b = (Button) this.spellBox.getChildren().get(i);
+            if (!b.getText().equals("(free slot)")) {
+                b.setOnMouseMoved((event) -> {
+                    l.setText(sdb.getHelp(b.getText()));
+                });
+            }
+        }
+    }
+    
+    private void logHistoryScreen() {
+        Label l = new Label("Log History (most recent first):");
+        for (int i = gm.getGmStats().getLogHistory().size() - 1; i >= 0; i--) {
+            l.setText(l.getText() + "\n" + gm.getGmStats().getLogHistory().get(i));
+        }
+//        for (String s : gm.getGmStats().getLogHistory()) {
+//            l.setText(l.getText() + "\n" + s);
+//        }
+        framework.setCenter(l);
     }
 
     private void mouseCalibration() {

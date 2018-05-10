@@ -6,7 +6,7 @@
 package domain.mapobject;
 
 /**
- *
+ * Contains information about all enemies in the game. Is intended to be replaced with an actual database should there be sufficient time for its implementation.
  * @author konstakallama
  */
 class EnemyDb {

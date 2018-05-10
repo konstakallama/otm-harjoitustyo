@@ -12,7 +12,7 @@ import domain.support.Direction;
 import javafx.scene.input.KeyCode;
 
 /**
- *
+ * Parses a key pressed by the player into a command the game understands. Allows the modification of controls with setter methods.
  * @author konstakallama
  */
 public class PlayerCommandParser {
@@ -40,7 +40,12 @@ public class PlayerCommandParser {
     KeyCode menu = KeyCode.M;
     KeyCode pickUp = KeyCode.P;
     KeyCode discard = KeyCode.Q;
-
+    /**
+     * Translates a key pressed by the player into a PlayerCommand to be interpreted by the GameManager, according to the current controls specified by the values of the variables in this class.
+     * @param k
+     * @param gm
+     * @return 
+     */
     public PlayerCommand parseCommand(KeyCode k, GameManager gm) {
         if (k == this.moveDown || k == this.moveUp || k == this.moveLeft || k == this.moveRight || k == this.moveDown2 || k == this.moveUp2 || k == this.moveLeft2 || k == this.moveRight2) {
             return this.checkMove(k);
