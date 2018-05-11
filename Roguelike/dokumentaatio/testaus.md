@@ -2,7 +2,7 @@
 
 Peliä on testattu sekä automatisoiduin yksikkö- ja integraatiotestein JUnitilla että manuaalisella pelitestaamisella.
 
-Eri luokkia testataan erillisillä testiluokilla PlayerTests, MapTests, ItemTests, EnemyTests ja EffectTests. Testit tosin tulevat välttämättä kutsuneeksi muidenkin luokkien metodeja, koska monet testattavista asioista koskevat kahden eri luokan vuorovaikutusta. Lisäksi testeissä käytetään jonkin verran "realistisia" peliskenaarioita, joissa on monta luokkaa toiminnassa yhtä aikaan. Tämän vuoksi testien rivikattavuus on korkea, vaikka testejä ei olekaan kovin paljoa. Graafista käyttöliittymää ei ole testattu JUnit-testeillä.
+Eri luokkia oli tarkoitus testata erillisillä testiluokilla, mutta jostain syystä maven ei suostunut pajassa ohjaajan kanssa suoritetusta korjausyrityksistä huolimatta ajamaan eri luokkiin jaettuja testejä, joten kaikki testit ovat nyt yhdessä luokassa. Testit tosin tulevat muutenkin välttämättä kutsuneeksi muidenkin luokkien metodeja, koska monet testattavista asioista koskevat kahden eri luokan vuorovaikutusta. Lisäksi testeissä käytetään jonkin verran "realistisia" peliskenaarioita, joissa on monta luokkaa toiminnassa yhtä aikaan. Tämän vuoksi testien rivikattavuus on korkea, vaikka testejä ei olekaan kovin paljoa. Graafista käyttöliittymää ei ole testattu JUnit-testeillä.
 
 
 ### Testauskattavuus
@@ -10,6 +10,8 @@ Eri luokkia testataan erillisillä testiluokilla PlayerTests, MapTests, ItemTest
 Käyttöliittymäkerrosta lukuunottamatta sovelluksen testauksen rivikattavuus on 79% ja haarautumakattavuus 75%.
 
 Aivan kaikkea ei ole testattu, ainakin getterit ja setterit sekä osa MapGeneratorin sisäisesti käyttämistä metodeista ja tietorakenteista on testaamatta.
+
+Tämän lisäksi viime hetkellä lisätyn tiedostoista luvun ja kirjoittamisen testausta ei ehditty toteuttaa.
 
 ## Järjestelmätestaus
 

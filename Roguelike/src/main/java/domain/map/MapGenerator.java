@@ -67,37 +67,6 @@ public class MapGenerator {
         m.setTerrain(l.getX(), l.getY(), Terrain.STAIRS);
     }
 
-    /**
-     * Creates a purely random map terrain with no patterns. Used early in
-     * development for testing purposes.
-     *
-     * @param w
-     * @param h
-     * @return
-     */
-    private Terrain[][] createSimpleTestTerrain(int w, int h) {
-        Terrain[][] t = new Terrain[w][h];
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < h; j++) {
-                if (r.nextDouble() < 0.2) {
-                    t[i][j] = Terrain.WALL;
-                } else {
-                    t[i][j] = Terrain.FLOOR;
-                }
-
-            }
-        }
-//        for (int i = 2; i < 50; i++) {
-//            for (int j = 2; j < 30; j++) {
-//                if (!(i ==20 && j == 20)) {
-//                    t[i][j] = Terrain.FLOOR;
-//                }
-//
-//            }
-//        }
-        return t;
-    }
-
     private Map createTestTerrain(int w, int h, int floor, int roomAmount, int corridorAmount) {
         Terrain[][] t = new Terrain[w][h];
 
@@ -158,11 +127,9 @@ public class MapGenerator {
         while (k < 10000) {
             x = r.nextInt(t.length - w);
             y = r.nextInt(t[0].length - h);
-
             if (this.isValidRoomLocation(t, x, y, w, h)) {
                 break;
             }
-
             k++;
         }
         return new Location(x, y);
@@ -194,7 +161,6 @@ public class MapGenerator {
                 if (!room.isDirectlyConnected(rooms.get(index))) {
                     room.addCoridor(new Corridor(room, rooms.get(index)));
                 }
-
             }
         }
     }
@@ -220,7 +186,6 @@ public class MapGenerator {
         if (r1.equals(r2)) {
             return true;
         }
-
         return bfs(r1, r2, rooms);
     }
 
@@ -231,11 +196,9 @@ public class MapGenerator {
 
         while (!q.isEmpty()) {
             Room room = q.poll();
-
             if (room.equals(r2)) {
                 return true;
             }
-
             int index = rooms.indexOf(room);
 
             if (!visited[index]) {
@@ -245,7 +208,6 @@ public class MapGenerator {
                 });
             }
         }
-
         return false;
     }
 
@@ -289,10 +251,6 @@ public class MapGenerator {
     }
 
     private Direction getClosestDir(int fromX, int toX, int fromY, int toY) {
-//        if (fromX == toX && fromY == toY) {
-//            return Direction.NONE;
-//        }
-
         if (Math.abs(fromX - toX) >= Math.abs(fromY - toY)) {
             if (fromX - toX < 0) {
                 return Direction.RIGHT;
@@ -385,11 +343,8 @@ public class MapGenerator {
 
         while (to.getLocation().getY() > l.getY()) {
 
-//            System.out.println("d at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
-//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
-//                }               
             }
             l.move(Direction.DOWN);
         }
@@ -404,7 +359,6 @@ public class MapGenerator {
     }
 
     private void paintToDir(Direction d, Location l, Room to, Terrain[][] t, Corridor c) {
-
         if (to.isNextTo(l)) {
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
@@ -412,12 +366,9 @@ public class MapGenerator {
             c.setEnd(l);
             return;
         }
-
-//        System.out.println("*");
         if (d == Direction.NONE) {
             return;
         }
-
         if (d == Direction.DOWN) {
             paintDown(l, to, t, c);
         } else if (d == Direction.UP) {
@@ -431,11 +382,8 @@ public class MapGenerator {
 
     private void paintUp(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getY() + to.getH() <= l.getY()) {
-//            System.out.println("u at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
-//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
-//                } 
             }
             l.move(Direction.UP);
         }
@@ -451,12 +399,8 @@ public class MapGenerator {
 
     private void paintRight(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getX() > l.getX()) {
-
-//            System.out.println("r at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
-//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
-//                } 
             }
             l.move(Direction.RIGHT);
         }
@@ -471,12 +415,8 @@ public class MapGenerator {
 
     private void paintLeft(Location l, Room to, Terrain[][] t, Corridor c) {
         while (to.getLocation().getX() + to.getW() <= l.getX()) {
-
-//            System.out.println("l at " + l);
             if (t[l.getX()][l.getY()] == Terrain.WALL) {
-//                if (!isNextToMoreThanOneCorridor(l, t)) {
                 t[l.getX()][l.getY()] = Terrain.CORRIDOR;
-//                } 
             }
             l.move(Direction.LEFT);
         }
@@ -489,21 +429,8 @@ public class MapGenerator {
         this.paintToDir(this.getClosestDir(l.getX(), to.getLocation().getX() + to.getW() - 1, l.getY(), to.getLocation().getY()), l, to, t, c);
     }
 
-//    private boolean isNextToMoreThanOneCorridor(Location l, Terrain[][] t) {
-//        int i = 0;
-//        for (Location a : l.getAdjacent()) {
-//            try {
-//                if (t[a.getX()][a.getY()] == Terrain.CORRIDOR || t[a.getX()][a.getY()] == Terrain.FLOOR) {
-//                    i++;
-//                }
-//            } catch (Exception e) {
-//            }
-//        }
-//        return i > 1;
-//    }
     private Location moveLDown(Location l, Room from) {
         l.move(Direction.DOWN);
-
         if (from.getSW().getY() > l.getY()) {
             l.move(Direction.DOWN);
         }
@@ -512,44 +439,17 @@ public class MapGenerator {
 
     private Location moveLRight(Location l, Room from) {
         l.move(Direction.RIGHT);
-
         if (from.getNE().getX() > l.getX()) {
             l.move(Direction.RIGHT);
         }
         return l;
     }
 
-    private void addItems(Map m) {
-//        this.addItem(m, "atma weapon");
-//        this.addItem(m, "über armor");
-        
-        
-        double random = r.nextDouble();
-        
+    private void addItems(Map m) {      
         if (r.nextDouble() < 0.3) {
             addRandomSpell(m);
-        }
-        
-        if (r.nextDouble() < 0.1 && this.swordIndex < this.swords.length) {
-            this.addItem(m, this.swords[swordIndex]);
-            this.swordIndex++;
-        }
-        
-        if (r.nextDouble() < 0.1 && this.lanceIndex < this.lances.length) {
-            this.addItem(m, this.lances[lanceIndex]);
-            this.lanceIndex++;
-        }
-        
-        if (r.nextDouble() < 0.1 && this.axeIndex < this.axes.length) {
-            this.addItem(m, this.axes[axeIndex]);
-            this.axeIndex++;
-        }
-        
-        if (r.nextDouble() < 0.1 && this.armorIndex < this.armor.length) {
-            this.addItem(m, this.armor[armorIndex]);
-            this.armorIndex++;
-        }
-
+        }      
+        addWeapons(m);
         for (int i = 0; i < 2; i++) {
             if (r.nextDouble() < 0.8) {
                 this.addItem(m, "apple");
@@ -561,8 +461,7 @@ public class MapGenerator {
     }
 
     private void addRandomSpell(Map m) {
-        double d = r.nextDouble();
-        
+        double d = r.nextDouble();      
         if (d < 0.25) {
             this.addItem(m, "fire tome");
         } else if (d < 0.5) {
@@ -574,4 +473,22 @@ public class MapGenerator {
         }
     }
 
+    private void addWeapons(Map m) {
+        if (r.nextDouble() < 0.1 && this.swordIndex < this.swords.length) {
+            this.addItem(m, this.swords[swordIndex]);
+            this.swordIndex++;
+        }       
+        if (r.nextDouble() < 0.1 && this.lanceIndex < this.lances.length) {
+            this.addItem(m, this.lances[lanceIndex]);
+            this.lanceIndex++;
+        }       
+        if (r.nextDouble() < 0.1 && this.axeIndex < this.axes.length) {
+            this.addItem(m, this.axes[axeIndex]);
+            this.axeIndex++;
+        }        
+        if (r.nextDouble() < 0.1 && this.armorIndex < this.armor.length) {
+            this.addItem(m, this.armor[armorIndex]);
+            this.armorIndex++;
+        }
+    }
 }

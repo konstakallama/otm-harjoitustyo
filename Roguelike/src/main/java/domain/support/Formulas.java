@@ -16,13 +16,13 @@ import domain.map.Terrain;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.AttackResult;
 import domain.gamemanager.CommandResult;
-import domain.items.ItemDb;
+import dao.ItemDb;
 import domain.items.Weapon;
 import domain.items.WeaponType;
 import domain.map.Room;
-import domain.mapobject.EnemyDb;
+import dao.EnemyDb;
 import domain.mapobject.player.Spell;
-import domain.mapobject.player.SpellDb;
+import dao.SpellDb;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -402,7 +402,11 @@ public class Formulas {
         try {
             firstLine = Files.readAllLines(Paths.get(this.fileName)).get(0).split("\t");
         } catch (IOException ex) {
-
+            try {
+                firstLine = Files.readAllLines(Paths.get("src/main/resources/" + this.fileName)).get(0).split("\t");
+            } catch (IOException ex1) {
+                Logger.getLogger(Formulas.class.getName()).log(Level.SEVERE, null, ex1);
+            }
         }
 
         String[] line = this.readLineFromFileWrapper(map.getFloor() + "");
@@ -417,9 +421,7 @@ public class Formulas {
                 break;
             }
         }
-
-        int level = enemiesCreated / 5;
-        EnemyStats es = new EnemyStats(level, et, itemDb.createEnemyTestWeapon(enemyDb.getWeaponType(et.getName())), itemDb.createEnemyTestArmor());
+        EnemyStats es = new EnemyStats(enemiesCreated / 5, et, itemDb.createEnemyTestWeapon(enemyDb.getWeaponType(et.getName())), itemDb.createEnemyTestArmor());
 
         return new Enemy(l.getX(), l.getY(), map, es, true);
     }
@@ -429,8 +431,9 @@ public class Formulas {
             return this.readLineFromFile(name, fileName);
 
         } catch (Exception ex) {
+            System.out.println("fe1");
             try {
-                return this.readLineFromFile(name, "../" + fileName);
+                return this.readLineFromFile(name, "src/main/resources/" + fileName);
             } catch (Exception e) {
                 
             }

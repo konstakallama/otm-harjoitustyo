@@ -5,6 +5,8 @@
  */
 package domain.mapobject;
 
+import dao.EnemyDb;
+
 /**
  *
  * @author konstakallama

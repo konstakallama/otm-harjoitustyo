@@ -8,7 +8,7 @@ package domain.items.effects;
 import domain.gamemanager.CommandResult;
 import domain.mapobject.player.Player;
 import domain.mapobject.player.Spell;
-import domain.mapobject.player.SpellDb;
+import dao.SpellDb;
 import domain.support.MessageDb;
 
 /**

@@ -9,13 +9,14 @@ package ui;
  *
  * @author konstakallama
  */
+import dao.ScoreDao;
 import domain.gamemanager.AttackResult;
 import domain.gamemanager.AttackResultType;
 import domain.gamemanager.CommandResult;
 import domain.gamemanager.GameManager;
 import domain.mapobject.player.Inventory;
 import domain.items.InventoryItem;
-import domain.items.ItemDb;
+import dao.ItemDb;
 import domain.items.ItemType;
 import domain.map.Map;
 import domain.mapobject.player.Player;
@@ -31,9 +32,10 @@ import domain.map.Terrain;
 import domain.map.VisibilityStatus;
 import domain.mapobject.player.RangeType;
 import domain.mapobject.player.Spell;
-import domain.mapobject.player.SpellDb;
+import dao.SpellDb;
 import domain.support.Location;
 import domain.support.MessageDb;
+import java.sql.SQLException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -48,6 +50,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -55,11 +58,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class Main extends Application {
-    
+
     int testCounter = 0;
 
     ArrayList<Label> logs = new ArrayList<>();
-    
+//    /Users/konstakallama/otm-harjoitustyo/Roguelike/src/main/resources/data
     ScoreDao sd = new ScoreDao("data/Scores.txt");
 
     Label level = new Label();
@@ -82,7 +85,7 @@ public class Main extends Application {
 
     GameManager gm;
     PlayerCommandParser playerCommandParser = new PlayerCommandParser();
-    
+
     Stage primaryStage;
 
     public static void main(String[] args) {
@@ -92,10 +95,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.primaryStage = stage;
-        
-        this.mainMenu();
 
-//        this.newGame(primaryStage);
+        this.mainMenu();
 
         primaryStage.show();
     }
@@ -128,7 +129,6 @@ public class Main extends Application {
         }
         paintTile(map.getPlayer().getX() * pixelSize, map.getPlayer().getY() * pixelSize, "#64FE2E", drawer);
 
-//        drawCorridorStarts(drawer, map);
     }
 
     private void paintTile(int x, int y, String color, GraphicsContext drawer) {
@@ -154,7 +154,7 @@ public class Main extends Application {
 
         Label detailedMessage = new Label(msg);
         detailedMessage.setAlignment(Pos.CENTER);
-        
+
         Button backToMenu = new Button("Back to main menu");
         backToMenu.setOnMouseClicked((event) -> {
             this.mainMenu();
@@ -164,7 +164,6 @@ public class Main extends Application {
         grid.add(detailedMessage, 0, 1);
         grid.add(new Label(""), 0, 2);
         grid.add(backToMenu, 0, 3);
-        
 
         grid.setAlignment(Pos.CENTER);
         grid.setPrefSize(gm.getMapW() * pixelSize, gm.getMapH() * pixelSize);
@@ -198,14 +197,6 @@ public class Main extends Application {
 
     private void updateFloor() {
         floor.setText("Floor: " + gm.getMap().getFloor() + "   ");
-    }
-
-    private void addUpperLabelsToGrid(GridPane upperGrid) {
-        upperGrid.add(level, 1, 0);
-        upperGrid.add(turnCounter, 2, 0);
-        upperGrid.add(hp, 0, 0);
-        upperGrid.add(floor, 3, 0);
-        upperGrid.add(backToMap, 4, 0);
     }
 
     private void addUpperLabelsToHBox(HBox box) {
@@ -267,12 +258,12 @@ public class Main extends Application {
                     this.updateLog(cr.getLogMessage());
                     if (cr.getAttackResult().getAttacker().isEnemy() && cr.getAttackResult().getType() == AttackResultType.KILL) {
                         writeScore(cr.getAttackResult().getAttacker().getName());
-                        
+
                         gameOver(this.getGameOverMessage(cr.getAttackResult()));
                         break;
                     } else if (gm.getPlayer().getCurrentHP() <= 0 && gm.getPlayer().getStats().getCurrentStamina() <= 0) {
                         writeScore("hunger");
-                        
+
                         gameOver(starveGameOverMessage());
                         break;
                     }
@@ -489,7 +480,7 @@ public class Main extends Application {
         Label space5 = new Label("");
         Label space6 = new Label("");
 
-        box.getChildren().addAll(level, statHP, stamina, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel, space4, inventorySize, space6, space5, help);
+        box.getChildren().addAll(name, level, statHP, stamina, space1, weapon, armor, space3, str, con, intel, dex, space2, exp, toNextLevel, space4, inventorySize, space6, space5, help);
         box.setSpacing(5);
         box.setAlignment(Pos.CENTER);
         framework.setCenter(box);
@@ -926,11 +917,20 @@ public class Main extends Application {
             this.drawer.strokeRect(x + i, y + i, pixelSize - (i * 2), pixelSize - (i * 2));
         }
     }
-    
-    private void newGame(Stage primaryStage) {
+
+    private void newGame(PlayerStats playerStats, String name) {
+        try {
+            this.scene.setRoot(new Label(""));
+        } catch (Exception e) {
+
+        }
+
+        newGameInit();
+
+        this.framework = new BorderPane();
         framework.setMinSize(50 * pixelSize, 60 * pixelSize);
-        
-        this.gm = new GameManager(this.createPlayerStats(), this.createInventory());
+
+        this.gm = new GameManager(playerStats, this.createInventory(), name);
 
         mapCanvas = new Canvas(gm.getMapW() * this.pixelSize, gm.getMapH() * this.pixelSize);
         drawer = mapCanvas.getGraphicsContext2D();
@@ -950,6 +950,19 @@ public class Main extends Application {
         this.createLogs(5);
         addLogs(logGrid);
 
+        updateUpperGrid();
+
+        this.defaultButtonEvents();
+
+        gm.addEnemy();
+
+        SpellDb sdb = new SpellDb();
+
+//        gm.getPlayer().getStats().learnSpell(sdb.spellConverter("Fire", gm.getPlayer().getStats()));
+        this.updateSpellBox();
+
+        drawMap(drawer, gm.getMap());
+
         framework.setCenter(mapCanvas);
         framework.setTop(upperGrid);
         framework.setBottom(logGrid);
@@ -957,123 +970,240 @@ public class Main extends Application {
         scene = new Scene(framework);
         primaryStage.setScene(scene);
 
-        updateUpperGrid();
-
-        this.defaultButtonEvents();
-
-        gm.addEnemy();
-
-        drawMap(drawer, gm.getMap());
-
-        SpellDb sdb = new SpellDb();
-
-//        gm.getPlayer().getStats().learnSpell(sdb.spellConverter("Fire", gm.getPlayer().getStats()));
-        this.updateSpellBox();
-
         scene.setOnKeyPressed((event) -> {
             controls(event);
         });
         mapCanvas.setOnMouseClicked((event) -> {
             clickOnEnemy(event);
         });
+
     }
-    
-    private void mainMenu() {      
+
+    private void mainMenu() {
         VBox menuButtons = new VBox();
-        
+
         Button newGame = new Button("New Game");
         newGame.setOnMouseClicked((event) -> {
-            this.newGame(primaryStage);
+            this.characterCreation();
         });
-        
+
         Button scores = new Button("High Scores");
         scores.setOnMouseClicked((event) -> {
             scoreScreen();
         });
-        
+
         newGame.setMinWidth(100);
         scores.setMinWidth(100);
-        
-        
+
         menuButtons.setMinSize(50 * pixelSize, 60 * pixelSize);
         menuButtons.setAlignment(Pos.CENTER);
-        
+
         menuButtons.getChildren().add(newGame);
         menuButtons.getChildren().add(scores);
-        
+
         Scene mainMenuScene = new Scene(menuButtons);
-        
-        
-        
+
         primaryStage.setScene(mainMenuScene);
     }
 
     private void scoreScreen() {
-        
+
         ArrayList<Score> l = sd.getScores();
         Collections.sort(l);
-        
+
         VBox scores = new VBox();
         scores.setMinSize(50 * pixelSize, 60 * pixelSize);
         scores.setAlignment(Pos.CENTER);
-        
+
         Label lb = new Label("High Scores:");
         scores.getChildren().add(lb);
         scores.getChildren().add(new Label(""));
-        
+
         for (int i = 0; i < 10; i++) {
             if (i >= l.size()) {
                 break;
             }
-            
+
             Score c = l.get(i);
-            
+
             String s = (i + 1) + ": ";
-            
+
             s += "    Name: " + c.getName();
             s += ";    Floor: " + c.getFloor();
             s += ";    Turns: " + c.getTurn();
             s += ";    Player level: " + c.getLevel();
             s += ";    Killed by: " + c.getKilledBy();
-            
+
             scores.getChildren().add(new Label(s));
         }
-        
+
         if (l.isEmpty()) {
             lb.setText("No scores to display.");
         }
-        
+
         scores.getChildren().add(new Label(""));
         scores.getChildren().add(new Label(""));
-        
+
         Button backToMenu = new Button("Back to main menu");
         backToMenu.setOnMouseClicked((event) -> {
-            
+
 //            writeScoreTest();
-            
-            
             this.mainMenu();
         });
-        
+
         scores.getChildren().add(backToMenu);
-        
+
         Scene scoreScene = new Scene(scores);
-        
+
         primaryStage.setScene(scoreScene);
     }
 
-    private void writeScoreTest() {
-        Score s = new Score("wTest" + this.testCounter, 50 + this.testCounter, 150, 25, "monolith");
-        sd.writeScore(s);
-        this.testCounter++;
-        
-    }
 
     private void writeScore(String killedBy) {
         Score s = new Score(gm.getPlayer().getName(), gm.getMap().getFloor(), gm.getGmStats().getTurns(), gm.getPlayer().getStats().getLevel(), killedBy);
         sd.writeScore(s);
     }
-    
-    
+
+    private void characterCreation() {
+        CharCreationStats s = new CharCreationStats(6, 4);
+
+        Label pointsLeft = new Label("Ponits left: " + s.getInitialPoints());
+        Label help = new Label("Choose starting stats and a name for your character:");
+
+        GridPane stats = new GridPane();
+        Label str = new Label("Strength (1)");
+        Label con = new Label("Constitution (1)");
+        Label intel = new Label("Intelligence (1)");
+        Label dex = new Label("Dexterity (1)");
+
+        Button strP = new Button("+");
+        Button conP = new Button("+");
+        Button intP = new Button("+");
+        Button dexP = new Button("+");
+
+        strP.setOnMouseClicked((event) -> {
+            s.increaseStr();
+            str.setText("Strength (" + s.getStrength() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+        });
+
+        conP.setOnMouseClicked((event) -> {
+            s.increaseCon();
+            con.setText("Constitution (" + s.getConnstitution() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        intP.setOnMouseClicked((event) -> {
+            s.increaseInt();
+            intel.setText("Intelligence (" + s.getIntelligence() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        dexP.setOnMouseClicked((event) -> {
+            s.increaseDex();
+            dex.setText("Dexterity (" + s.getDexterity() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        Button strM = new Button("-");
+        Button conM = new Button("-");
+        Button intM = new Button("-");
+        Button dexM = new Button("-");
+
+        strM.setOnMouseClicked((event) -> {
+            s.decreaseStr();
+            str.setText("Strength (" + s.getStrength() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        conM.setOnMouseClicked((event) -> {
+            s.decreaseCon();
+            con.setText("Constitution (" + s.getConnstitution() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        intM.setOnMouseClicked((event) -> {
+            s.decreaseInt();
+            intel.setText("Intelligence (" + s.getIntelligence() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        dexM.setOnMouseClicked((event) -> {
+            s.decreaseDex();
+            dex.setText("Dexterity (" + s.getDexterity() + ")");
+            pointsLeft.setText("Points left: " + (s.getInitialPoints() - s.getPointsUsed()));
+
+        });
+
+        stats.add(str, 0, 0);
+        stats.add(con, 1, 0);
+        stats.add(intel, 2, 0);
+        stats.add(dex, 3, 0);
+
+        stats.add(strP, 0, 1);
+        stats.add(conP, 1, 1);
+        stats.add(intP, 2, 1);
+        stats.add(dexP, 3, 1);
+
+        stats.add(strM, 0, 2);
+        stats.add(conM, 1, 2);
+        stats.add(intM, 2, 2);
+        stats.add(dexM, 3, 2);
+
+        TextField nameField = new TextField();
+        nameField.setText("name");
+        
+        Button start = new Button("Start!");
+        start.setOnMouseClicked((event) -> {
+            if (nameField.getText().length() > 30) {
+                help.setText("The Name of your character must be less than 30 characters long.");
+            } else {
+                ItemDb idb = new ItemDb();
+                Weapon w = null;
+                Armor a = null;
+                try {
+                    w = (Weapon) idb.itemConverter("stick");
+                    a = (Armor) idb.itemConverter("clothes");
+                } catch (Exception ex) {
+                    
+                }
+                
+                PlayerStats ps = new PlayerStats(1, s.getStrength(), s.getConnstitution(), s.getIntelligence(), s.getDexterity(), w, a);
+                this.newGame(ps, nameField.getText());
+            }
+        });
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(help, new Label(""), nameField, new Label(""), stats, new Label(""), pointsLeft, new Label(""), start);
+        vbox.setAlignment(Pos.CENTER);
+        
+        vbox.setMinSize(50 * pixelSize, 60 * pixelSize);
+        
+        Scene charCreationScene = new Scene(vbox);
+
+        primaryStage.setScene(charCreationScene);
+
+    }
+
+    private void newGameInit() {
+        logs = new ArrayList<>();
+
+        level = new Label();
+        turnCounter = new Label();
+        hp = new Label();
+        floor = new Label();
+        stamina = new Label();
+        itemDb = new ItemDb();
+        backToMap = new Button("Open Inventory");
+        framework = new BorderPane();
+        menu = new Button("Menu");
+        status = UIStatus.MAP;
+    }
 
 }

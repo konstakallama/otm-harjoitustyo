@@ -21,7 +21,7 @@ public class Stun extends Effect {
     PlayerStats casterStats;
     MessageDb mdb = new MessageDb();
     
-    public Stun (int duration, PlayerStats casterStats, String name) {
+    public Stun(int duration, PlayerStats casterStats, String name) {
         super(name);
         this.duration = duration;
         this.casterStats = casterStats;

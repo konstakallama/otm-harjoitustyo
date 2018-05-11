@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject.player;
+package dao;
 
 import domain.items.effects.Freeze;
 import domain.items.effects.HealWound;
 import domain.items.effects.MagicDamage;
 import domain.items.effects.Stun;
 import domain.mapobject.Stats;
+import domain.mapobject.player.PlayerStats;
+import domain.mapobject.player.RangeType;
+import domain.mapobject.player.Spell;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -150,8 +153,9 @@ public class SpellDb {
             return this.readLineFromFileHelper(name, fileName);
 
         } catch (Exception ex) {
+            System.out.println("se1");
             try {
-                return this.readLineFromFileHelper(name, "../" + fileName);
+                return this.readLineFromFileHelper(name, "src/main/resources/" + fileName);
             } catch (Exception e) {
 
             }

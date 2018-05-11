@@ -5,6 +5,7 @@
  */
 package domain.items;
 
+import dao.ItemDb;
 import domain.items.effects.Effect;
 import domain.items.effects.NoEffect;
 

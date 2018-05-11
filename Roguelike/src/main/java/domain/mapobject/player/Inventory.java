@@ -9,7 +9,7 @@ package domain.mapobject.player;
  *
  * @author konstakallama
  */
-import domain.items.ItemDb;
+import dao.ItemDb;
 import domain.items.InventoryItem;
 import domain.items.MapItem;
 import java.util.*;
@@ -40,7 +40,7 @@ public class Inventory {
             return false;
         } else {
             this.items.add(item);
-            this.sort();
+//            this.sort();
             return true;
         }
     }

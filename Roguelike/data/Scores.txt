@@ -1,3 +1,0 @@
-Name	Floor	Turns	Level	Killed By
-player	3	276	3	slime
-player	5	304	3	wolf

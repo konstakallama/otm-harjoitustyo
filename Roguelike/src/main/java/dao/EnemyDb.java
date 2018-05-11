@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.mapobject;
+package dao;
 
 import domain.items.WeaponType;
 import java.io.IOException;
@@ -28,45 +28,45 @@ public class EnemyDb {
         return Integer.parseInt(this.readFromIndex(name, 9));
     }
 
-    double getExpScale(String name) {
+    public double getExpScale(String name) {
         return Double.parseDouble(this.readFromIndex(name, 10));
     }
 
-    int getBaseStr(String name) {
+    public int getBaseStr(String name) {
         return Integer.parseInt(this.readFromIndex(name, 1));
     }
 
-    double getStrScale(String name) {
+    public double getStrScale(String name) {
         return Double.parseDouble(this.readFromIndex(name, 2));
     }
 
-    int getBaseCon(String name) {
+    public int getBaseCon(String name) {
         return Integer.parseInt(this.readFromIndex(name, 3));
     }
 
-    double getConScale(String name) {
+    public double getConScale(String name) {
         return Double.parseDouble(this.readFromIndex(name, 4));
     }
 
-    int getBaseInt(String name) {
+    public int getBaseInt(String name) {
         return Integer.parseInt(this.readFromIndex(name, 5));
     }
 
-    double getIntScale(String name) {
+    public double getIntScale(String name) {
         return Double.parseDouble(this.readFromIndex(name, 6));
     }
 
-    int getBaseDex(String name) {
+    public int getBaseDex(String name) {
         return Integer.parseInt(this.readFromIndex(name, 7));
     }
 
-    double getDexScale(String name) {
+    public double getDexScale(String name) {
         return Double.parseDouble(this.readFromIndex(name, 8));
     }
 
     private String readFromIndexHelper(String name, int index, String filename) throws IOException {
 
-        List<String> l = Files.readAllLines(Paths.get(this.fileName));
+        List<String> l = Files.readAllLines(Paths.get(filename));
 
         for (String line : l) {
             String[] s = line.split("\t");
@@ -78,11 +78,11 @@ public class EnemyDb {
         throw new IOException();
     }
 
-    int getBaseHP(String name) {
+    public int getBaseHP(String name) {
         return Integer.parseInt(this.readFromIndex(name, 11));
     }
 
-    int getHPScale(String name) {
+    public int getHPScale(String name) {
         return Integer.parseInt(this.readFromIndex(name, 12));
     }
 
@@ -103,10 +103,10 @@ public class EnemyDb {
             return this.readFromIndexHelper(name, index, fileName);
 
         } catch (Exception ex) {
+            System.out.println("ee1");
             try {
-                return this.readFromIndexHelper(name, index, "../" + fileName);
+                return this.readFromIndexHelper(name, index, "src/main/resources/" + fileName);
             } catch (Exception e) {
-
             }
         }
 

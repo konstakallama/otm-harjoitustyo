@@ -1,0 +1,12 @@
+Name	Floor	Turns	Level	Killed By
+player	3	276	3	slime
+player	5	304	3	wolf
+player	0	173	3	goblin
+player	0	165	3	goblin
+player	6	210	3	orc
+player	0	139	2	slime
+player	1	198	3	slime
+player	4	91	2	bat
+player	2	184	2	goblin
+player	0	138	2	bat
+player	4	372	4	goblin

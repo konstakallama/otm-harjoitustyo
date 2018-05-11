@@ -28,6 +28,12 @@
     </properties>
 	
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -41,11 +47,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.0</version>
-				<configuration>
-				        <excludes>
-				            <exclude>ui/*</exclude>
-				        </excludes>
-				    </configuration>
+                <configuration>
+                    <excludes>
+                        <exclude>ui/*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>

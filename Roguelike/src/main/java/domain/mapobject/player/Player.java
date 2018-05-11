@@ -35,6 +35,13 @@ public class Player extends Moves {
         this.visionRange = 3;
     }
     
+    public Player(Map map, int x, int y, PlayerStats stats, Inventory inventory, String name) {
+        super(map, x, y, name);       
+        this.stats = stats;
+        this.inventory = inventory;
+        this.map.setPlayer(this);
+        this.visionRange = 3;
+    }
 //    public void newFloor(Map newMap, int startX, int startY) {
 //        this.map = newMap;
 //        this.x = startX;

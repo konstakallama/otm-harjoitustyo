@@ -12,7 +12,7 @@ import domain.mapobject.EnemyStats;
 import domain.mapobject.EnemyType;
 import domain.support.Formulas;
 import domain.mapobject.player.Inventory;
-import domain.items.ItemDb;
+import dao.ItemDb;
 import domain.support.Location;
 import domain.map.Map;
 import domain.map.MapGenerator;
@@ -46,6 +46,15 @@ public class GameManager {
         Location l = f.createPlayerStartLocation(map);
 
         this.p = new Player(this.map, l.getX(), l.getY(), stats, i);
+
+        this.gmStats = new GameManagerStatistics(f.getEnemySpawnInterval(map.getFloor()));
+    }
+    
+    public GameManager(PlayerStats stats, Inventory i, String name) {
+        this.map = m.createTestMap(mapW, mapH, 0);
+        Location l = f.createPlayerStartLocation(map);
+
+        this.p = new Player(this.map, l.getX(), l.getY(), stats, i, name);
 
         this.gmStats = new GameManagerStatistics(f.getEnemySpawnInterval(map.getFloor()));
     }

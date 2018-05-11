@@ -3,8 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain.items;
+package dao;
 
+import domain.items.Armor;
+import domain.items.InventoryItem;
+import domain.items.ItemType;
+import domain.items.MapItem;
+import domain.items.Weapon;
+import domain.items.WeaponType;
 import domain.items.effects.Heal;
 import domain.items.effects.StaminaHeal;
 import domain.items.effects.TeachSpell;
@@ -82,7 +88,7 @@ public class ItemDb {
         return new Armor(10, "über armor");
     }
 
-    String getDescription(String name) {
+    public String getDescription(String name) {
         String[] line = this.readLineFromFile(name);
 
         if (line[1].equals("Consumable")) {
@@ -224,10 +230,15 @@ public class ItemDb {
             return this.readLineFromFileHelper(name, fileName);
 
         } catch (Exception ex) {
+            System.out.println(fileName);
+            System.out.println("ie1");
+            String fn = "src/main/resources/" + fileName;
             try {
-                return this.readLineFromFileHelper(name, "../" + fileName);
+                
+                return this.readLineFromFileHelper(name, fn);
             } catch (Exception e) {
-
+                System.out.println(fn);
+                System.out.println("ie2");
             }
         }
 

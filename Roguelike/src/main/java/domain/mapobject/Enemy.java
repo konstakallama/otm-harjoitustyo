@@ -78,29 +78,31 @@ public class Enemy extends Moves {
     public AttackResult takeTurn() {
         AttackResult result = new AttackResult(AttackResultType.FAIL, 0, this, null);
 
-        if (!this.hasMoved) {
+        advanceCounters();
 
-            advanceCounters();
-
-            if (!this.stats.isStunned()) {
-                Direction pd = map.getPlayerDirection(x, y);
-                if (map.hasPlayer(x + pd.xVal(), y + pd.yVal())) {
-                    result = this.attack(pd);
-                } else {
-                    result = new AttackResult(AttackResultType.FAIL, 0, this, null);
-
-                    if (!this.stats.isFrozen()) {
-                        moveAi(pd);
-                    }
-
-                }
-            }
-
-        } else {
-            result = new AttackResult(AttackResultType.FAIL, 0, this, null);
+        if (this.hasMoved) {
+            this.hasMoved = true;
+            return result;
         }
+        
+        result = this.moveOnTurn();
 
         this.hasMoved = true;
+        return result;
+    }
+
+    private AttackResult moveOnTurn() {
+        AttackResult result = new AttackResult(AttackResultType.FAIL, 0, this, null);
+        if (!this.stats.isStunned()) {
+            Direction pd = map.getPlayerDirection(x, y);
+            if (map.hasPlayer(x + pd.xVal(), y + pd.yVal())) {
+                result = this.attack(pd);
+            } else {
+                if (!this.stats.isFrozen()) {
+                    moveAi(pd);
+                }
+            }
+        }
         return result;
     }
 
@@ -172,7 +174,6 @@ public class Enemy extends Moves {
         } else if (inCorridor(x + lastMoved.getOpposite().xVal(), y + lastMoved.getOpposite().yVal())) {
             this.move(this.lastMoved);
         } else if (nextToCorridor()) {
-//            System.out.println("*");
             this.move(this.corridorDir());
         } else {
             this.move(this.lastMoved);
@@ -442,7 +443,7 @@ public class Enemy extends Moves {
         this.stats.setStunned(true);
         this.stunCounter = turns;
     }
-    
+
     public boolean isStunned() {
         return this.stats.isStunned();
     }
@@ -450,6 +451,5 @@ public class Enemy extends Moves {
     public int getStunCounter() {
         return stunCounter;
     }
-
 
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui;
+package dao;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ui.Score;
+import java.sql.*;
 
 /**
  *
@@ -21,11 +23,12 @@ import java.util.logging.Logger;
  */
 public class ScoreDao {
 
-    String fileName;
+    private String fileName;
 
     public ScoreDao(String fileName) {
         this.fileName = fileName;
     }
+
 
     public ArrayList<Score> getScores() {
         ArrayList<Score> l = new ArrayList<>();
@@ -33,10 +36,13 @@ public class ScoreDao {
         try {
             l = readScores(fileName);
         } catch (Exception e) {
+            System.out.println("e1");
+            System.out.println(fileName);
             try {
-                l = readScores("../" + fileName);
+                l = readScores("src/main/resources/" + fileName);
             } catch (Exception ex) {
-
+                System.out.println("e2");
+                System.out.println("../" + fileName);
             }
         }
         return l;
@@ -56,36 +62,28 @@ public class ScoreDao {
 
     public void writeScore(Score s) {
         PrintWriter pw = null;
-        
+
         ArrayList<Score> l = this.getScores();
-        
-//        System.out.println("i");
-        
+
         try {
             pw = new PrintWriter(fileName);
         } catch (FileNotFoundException ex) {
-            
-//            System.out.println("c1");
-            
+
             try {
-                pw = new PrintWriter("../" + fileName);
+                pw = new PrintWriter("src/main/resources/" + fileName);
             } catch (FileNotFoundException e) {
-//                System.out.println("c2");
             }
         }
-        
+
         pw.println("Name\tFloor\tTurns\tLevel\tKilled By");
-        
+
         l.add(s);
-        
+
         for (Score score : l) {
-//            System.out.println(score);
-            pw.println(score.getName() + "\t" + score.getFloor() + "\t" + score.getTurn() + "\t" + score.getLevel() + "\t" + score.killedBy);
+            pw.println(score.getName() + "\t" + score.getFloor() + "\t" + score.getTurn() + "\t" + score.getLevel() + "\t" + score.getKilledBy());
         }
-        
-        
-        
-        
+
         pw.close();
     }
+
 }
