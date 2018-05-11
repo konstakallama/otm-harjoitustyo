@@ -28,7 +28,7 @@ public abstract class Effect {
     
     
     /**
-     * Applies the effect specified by this class to the Player p. Returns a CommandResult detailing the results of the event.
+     * Applies the effect specified by this class to the Player p. Returns a CommandResult detailing the results of the event. Defaults to doing nothing and returning a CommandResult where success = false.
      * @param p player to apply the effect to
      * @return a CommandResult detailing the results of the event.
      */
@@ -37,7 +37,7 @@ public abstract class Effect {
     }
     
     /**
-     * Applies the effect specified by this class to the Enemy e. Returns a CommandResult detailing the results of the event.
+     * Applies the effect specified by this class to the Enemy e. Returns a CommandResult detailing the results of the event. Defaults to doing nothing and returning a CommandResult where success = false.
      * @param e Enemy to apply the effect to
      * @return a CommandResult detailing the results of the event.
      */

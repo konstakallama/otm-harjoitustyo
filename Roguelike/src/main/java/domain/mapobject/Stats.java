@@ -24,6 +24,9 @@ public abstract class Stats {
     public Formulas f = new Formulas();
     public Weapon weapon;
     public Armor armor;
+    boolean frozen;
+    boolean stunned;
+    int wound;
 
     public Stats(int level, int str, int con, int intel, int dex, Weapon weapon, Armor armor) {
         this.level = level;
@@ -35,6 +38,9 @@ public abstract class Stats {
         this.damage = 0;
         this.weapon = weapon;
         this.armor = armor;
+        this.frozen = false;
+        this.stunned = false;
+        this.wound = 0;
     }
 
     public int getLevel() {
@@ -95,6 +101,7 @@ public abstract class Stats {
      */
     public boolean takeDamage(int dmg) {
         this.damage += dmg;
+        this.wound = dmg;
         if (this.damage > this.getMaxHP()) {
             this.damage = this.getMaxHP();
         }
@@ -110,6 +117,7 @@ public abstract class Stats {
             return false;
         }
         this.damage -= amount;
+        this.wound = 0;
         if (this.damage < 0) {
             this.damage = 0;
         }
@@ -163,6 +171,26 @@ public abstract class Stats {
      */
     public void increaseDex() {
         dex++;
+    }
+
+    public boolean isFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
+    }
+
+    public boolean isStunned() {
+        return stunned;
+    }
+
+    public void setStunned(boolean stunned) {
+        this.stunned = stunned;
+    }
+
+    public int getWound() {
+        return wound;
     }
     
     public abstract int getCurrentHP();

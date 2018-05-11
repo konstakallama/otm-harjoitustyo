@@ -21,8 +21,8 @@ import java.util.logging.Logger;
  * @author konstakallama
  */
 public class EnemyDb {
-    String fileName = "data/Enemies.kek";
-    
+
+    String fileName = "data/Enemies.txt";
 
     public int getBaseExp(String name) {
         return Integer.parseInt(this.readFromIndex(name, 9));
@@ -63,21 +63,19 @@ public class EnemyDb {
     double getDexScale(String name) {
         return Double.parseDouble(this.readFromIndex(name, 8));
     }
-    
-    private String readFromIndex(String name, int index) {
-        try {
-            List<String> l = Files.readAllLines(Paths.get(this.fileName));
-            
-            for (String line : l) {
-                String[] s = line.split("\t");
-                if (s[0].equals(name)) {
-                    return (s[index]);
-                }               
-            }      
-        } catch (IOException ex) {
-            
-        }           
-        return "";
+
+    private String readFromIndexHelper(String name, int index, String filename) throws IOException {
+
+        List<String> l = Files.readAllLines(Paths.get(this.fileName));
+
+        for (String line : l) {
+            String[] s = line.split("\t");
+            if (s[0].equals(name)) {
+                return (s[index]);
+            }
+        }
+
+        throw new IOException();
     }
 
     int getBaseHP(String name) {
@@ -87,7 +85,7 @@ public class EnemyDb {
     int getHPScale(String name) {
         return Integer.parseInt(this.readFromIndex(name, 12));
     }
-    
+
     public WeaponType getWeaponType(String name) {
         if (this.readFromIndex(name, 13).equals("Sword")) {
             return WeaponType.SWORD;
@@ -96,7 +94,22 @@ public class EnemyDb {
         } else if (this.readFromIndex(name, 13).equals("Axe")) {
             return WeaponType.AXE;
         }
-        
+
+        return null;
+    }
+
+    private String readFromIndex(String name, int index) {
+        try {
+            return this.readFromIndexHelper(name, index, fileName);
+
+        } catch (Exception ex) {
+            try {
+                return this.readFromIndexHelper(name, index, "../" + fileName);
+            } catch (Exception e) {
+
+            }
+        }
+
         return null;
     }
 

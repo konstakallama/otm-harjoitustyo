@@ -29,6 +29,7 @@ import domain.map.Room;
 import domain.mapobject.player.PlayerStats;
 import domain.map.Terrain;
 import domain.map.VisibilityStatus;
+import domain.mapobject.player.RangeType;
 import domain.mapobject.player.Spell;
 import domain.mapobject.player.SpellDb;
 import domain.support.Location;
@@ -54,8 +55,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class Main extends Application {
+    
+    int testCounter = 0;
 
     ArrayList<Label> logs = new ArrayList<>();
+    
+    ScoreDao sd = new ScoreDao("data/Scores.txt");
 
     Label level = new Label();
     Label turnCounter = new Label();
@@ -75,65 +80,22 @@ public class Main extends Application {
 
     static int pixelSize = 12;
 
-    int xCorrect;
-    int yCorrect;
-
     GameManager gm;
     PlayerCommandParser playerCommandParser = new PlayerCommandParser();
+    
+    Stage primaryStage;
 
     public static void main(String[] args) {
         launch(Main.class);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage stage) throws Exception {
+        this.primaryStage = stage;
+        
+        this.mainMenu();
 
-        this.gm = new GameManager(this.createPlayerStats(), this.createInventory());
-
-        mapCanvas = new Canvas(gm.getMapW() * this.pixelSize, gm.getMapH() * this.pixelSize);
-        drawer = mapCanvas.getGraphicsContext2D();
-
-        HBox statusBox = new HBox();
-        this.addUpperLabelsToHBox(statusBox);
-
-        spellBox = new HBox();
-        spellBox.setMinHeight(30);
-        updateSpellBox();
-
-        VBox upperGrid = new VBox();
-        upperGrid.getChildren().addAll(statusBox, spellBox);
-
-        GridPane logGrid = new GridPane();
-
-        this.createLogs(5);
-        addLogs(logGrid);
-
-        framework.setCenter(mapCanvas);
-        framework.setTop(upperGrid);
-        framework.setBottom(logGrid);
-
-        scene = new Scene(framework);
-        primaryStage.setScene(scene);
-
-        updateUpperGrid();
-
-        this.defaultButtonEvents();
-
-        gm.addEnemy();
-
-        drawMap(drawer, gm.getMap());
-
-        SpellDb sdb = new SpellDb();
-
-//        gm.getPlayer().getStats().learnSpell(sdb.spellConverter("Fire", gm.getPlayer().getStats()));
-        this.updateSpellBox();
-
-        scene.setOnKeyPressed((event) -> {
-            controls(event);
-        });
-        mapCanvas.setOnMouseClicked((event) -> {
-            clickOnEnemy(event);
-        });
+//        this.newGame(primaryStage);
 
         primaryStage.show();
     }
@@ -192,9 +154,17 @@ public class Main extends Application {
 
         Label detailedMessage = new Label(msg);
         detailedMessage.setAlignment(Pos.CENTER);
+        
+        Button backToMenu = new Button("Back to main menu");
+        backToMenu.setOnMouseClicked((event) -> {
+            this.mainMenu();
+        });
 
         grid.add(goText, 0, 0);
         grid.add(detailedMessage, 0, 1);
+        grid.add(new Label(""), 0, 2);
+        grid.add(backToMenu, 0, 3);
+        
 
         grid.setAlignment(Pos.CENTER);
         grid.setPrefSize(gm.getMapW() * pixelSize, gm.getMapH() * pixelSize);
@@ -296,9 +266,13 @@ public class Main extends Application {
                 if (cr.hasLogMessage()) {
                     this.updateLog(cr.getLogMessage());
                     if (cr.getAttackResult().getAttacker().isEnemy() && cr.getAttackResult().getType() == AttackResultType.KILL) {
+                        writeScore(cr.getAttackResult().getAttacker().getName());
+                        
                         gameOver(this.getGameOverMessage(cr.getAttackResult()));
                         break;
                     } else if (gm.getPlayer().getCurrentHP() <= 0 && gm.getPlayer().getStats().getCurrentStamina() <= 0) {
+                        writeScore("hunger");
+                        
                         gameOver(starveGameOverMessage());
                         break;
                     }
@@ -443,7 +417,7 @@ public class Main extends Application {
         Label level = new Label("Level " + gm.getPlayer().getStats().getLevel());
         Label weapon = new Label("Equipped Weapon: " + gm.getPlayer().getStats().getWeapon().getName());
         Label armor = new Label("Equipped Armor: " + gm.getPlayer().getStats().getArmor().getName());
-        Label statHP = new Label("HP: " + gm.getPlayer().getCurrentHP() + "/" + gm.getPlayer().getMaxHP());
+        Label statHP = new Label("HP: " + gm.getPlayer().getCurrentHP() + "/" + gm.getPlayer().getMaxHP() + ". Wounded for " + gm.getPlayer().getStats().getWound() + " ponits.");
         Label stamina = new Label("Stamina: " + gm.getPlayer().getStats().getCurrentStamina() + "/" + gm.getPlayer().getStats().getMaxStamina());
         Label str = new Label("Strength: " + gm.getPlayer().getStats().getStr());
         Label con = new Label("Constitution: " + gm.getPlayer().getStats().getCon());
@@ -637,7 +611,9 @@ public class Main extends Application {
     }
 
     private String hpHelp() {
-        return "Your current and maximum hp. If your hp reaches 0, you die.";
+        return "Your current and maximum hp. If your hp reaches 0, you die.\n"
+                + "Wound is the most recent damage you have suffered.\n"
+                + "Any healing will set the wound to 0 and any new damage will replace the existing wound.";
     }
 
     private String expHelp() {
@@ -786,12 +762,27 @@ public class Main extends Application {
                 if (this.status == UIStatus.TARGETING) {
                     int x = (int) Math.floor(event.getX() / pixelSize);
                     int y = (int) Math.floor(event.getY() / pixelSize);
+                    Location l = new Location(x, y);
 
 //                    System.out.println("x: " + x);
 //                    System.out.println("y: " + y);
 //                    System.out.println(gm.getPlayer().getLocation());
                     if (gm.getMap().hasEnemy(x, y) && gm.getMap().getVisibility(x, y) == VisibilityStatus.IN_RANGE && s.inRange(gm.getPlayer().getLocation(), new Location(x, y))) {
                         CommandResult cr = s.useOnEnemy(gm.getMap().getEnemy(x, y));
+                        if (cr.isSuccess()) {
+                            this.updateLog(cr.getLogMessage());
+                            if (cr.getAttackResult().isLevelUp()) {
+                                this.levelUpScreen();
+                            }
+                            ArrayList<CommandResult> results = gm.playCommand(new PlayerCommand(PlayerCommandType.WAIT));
+                            this.parseCommandResults(results);
+                            if (this.status == UIStatus.TARGETING) {
+                                this.closeMenu();
+                            }
+
+                        }
+                    } else if (s.getRangeType() == RangeType.SELF && gm.getPlayer().getLocation().equals(l)) {
+                        CommandResult cr = s.useOnPlayer(gm.getPlayer());
                         if (cr.isSuccess()) {
                             this.updateLog(cr.getLogMessage());
                             if (cr.getAttackResult().isLevelUp()) {
@@ -906,36 +897,6 @@ public class Main extends Application {
         framework.setCenter(l);
     }
 
-    private void mouseCalibration() {
-        this.status = UIStatus.CALIBRATION;
-
-        this.updateLog("Please click the palyer.");
-
-        this.mapCanvas.setOnMouseClicked((event) -> {
-            int x = (int) Math.floor(event.getX() / 10);
-            int y = (int) Math.floor(event.getY() / 10);
-
-            this.xCorrect = gm.getPlayer().getX() - x;
-            this.yCorrect = gm.getPlayer().getY() - y;
-
-            this.closeMenu();
-        });
-    }
-
-    private int correct(int og) {
-        int r = roundTo5(og);
-        return og - (r / 5);
-    }
-
-    private int roundTo5(int og) {
-        int rm = og % 5;
-        if (rm < 2) {
-            return (og / 5) * 5;
-        } else {
-            return ((og / 5) * 5) + 5;
-        }
-    }
-
     private void clickOnEnemy(MouseEvent event) {
         int x = (int) Math.floor(event.getX() / pixelSize);
         int y = (int) Math.floor(event.getY() / pixelSize);
@@ -960,10 +921,159 @@ public class Main extends Application {
 
     private void paintThickBox(int x, int y, String color, int thickness) {
         this.drawer.setStroke(Paint.valueOf(color));
-        
+
         for (int i = 0; i < thickness; i++) {
             this.drawer.strokeRect(x + i, y + i, pixelSize - (i * 2), pixelSize - (i * 2));
         }
     }
+    
+    private void newGame(Stage primaryStage) {
+        framework.setMinSize(50 * pixelSize, 60 * pixelSize);
+        
+        this.gm = new GameManager(this.createPlayerStats(), this.createInventory());
+
+        mapCanvas = new Canvas(gm.getMapW() * this.pixelSize, gm.getMapH() * this.pixelSize);
+        drawer = mapCanvas.getGraphicsContext2D();
+
+        HBox statusBox = new HBox();
+        this.addUpperLabelsToHBox(statusBox);
+
+        spellBox = new HBox();
+        spellBox.setMinHeight(30);
+        updateSpellBox();
+
+        VBox upperGrid = new VBox();
+        upperGrid.getChildren().addAll(statusBox, spellBox);
+
+        GridPane logGrid = new GridPane();
+
+        this.createLogs(5);
+        addLogs(logGrid);
+
+        framework.setCenter(mapCanvas);
+        framework.setTop(upperGrid);
+        framework.setBottom(logGrid);
+
+        scene = new Scene(framework);
+        primaryStage.setScene(scene);
+
+        updateUpperGrid();
+
+        this.defaultButtonEvents();
+
+        gm.addEnemy();
+
+        drawMap(drawer, gm.getMap());
+
+        SpellDb sdb = new SpellDb();
+
+//        gm.getPlayer().getStats().learnSpell(sdb.spellConverter("Fire", gm.getPlayer().getStats()));
+        this.updateSpellBox();
+
+        scene.setOnKeyPressed((event) -> {
+            controls(event);
+        });
+        mapCanvas.setOnMouseClicked((event) -> {
+            clickOnEnemy(event);
+        });
+    }
+    
+    private void mainMenu() {      
+        VBox menuButtons = new VBox();
+        
+        Button newGame = new Button("New Game");
+        newGame.setOnMouseClicked((event) -> {
+            this.newGame(primaryStage);
+        });
+        
+        Button scores = new Button("High Scores");
+        scores.setOnMouseClicked((event) -> {
+            scoreScreen();
+        });
+        
+        newGame.setMinWidth(100);
+        scores.setMinWidth(100);
+        
+        
+        menuButtons.setMinSize(50 * pixelSize, 60 * pixelSize);
+        menuButtons.setAlignment(Pos.CENTER);
+        
+        menuButtons.getChildren().add(newGame);
+        menuButtons.getChildren().add(scores);
+        
+        Scene mainMenuScene = new Scene(menuButtons);
+        
+        
+        
+        primaryStage.setScene(mainMenuScene);
+    }
+
+    private void scoreScreen() {
+        
+        ArrayList<Score> l = sd.getScores();
+        Collections.sort(l);
+        
+        VBox scores = new VBox();
+        scores.setMinSize(50 * pixelSize, 60 * pixelSize);
+        scores.setAlignment(Pos.CENTER);
+        
+        Label lb = new Label("High Scores:");
+        scores.getChildren().add(lb);
+        scores.getChildren().add(new Label(""));
+        
+        for (int i = 0; i < 10; i++) {
+            if (i >= l.size()) {
+                break;
+            }
+            
+            Score c = l.get(i);
+            
+            String s = (i + 1) + ": ";
+            
+            s += "    Name: " + c.getName();
+            s += ";    Floor: " + c.getFloor();
+            s += ";    Turns: " + c.getTurn();
+            s += ";    Player level: " + c.getLevel();
+            s += ";    Killed by: " + c.getKilledBy();
+            
+            scores.getChildren().add(new Label(s));
+        }
+        
+        if (l.isEmpty()) {
+            lb.setText("No scores to display.");
+        }
+        
+        scores.getChildren().add(new Label(""));
+        scores.getChildren().add(new Label(""));
+        
+        Button backToMenu = new Button("Back to main menu");
+        backToMenu.setOnMouseClicked((event) -> {
+            
+//            writeScoreTest();
+            
+            
+            this.mainMenu();
+        });
+        
+        scores.getChildren().add(backToMenu);
+        
+        Scene scoreScene = new Scene(scores);
+        
+        primaryStage.setScene(scoreScene);
+    }
+
+    private void writeScoreTest() {
+        Score s = new Score("wTest" + this.testCounter, 50 + this.testCounter, 150, 25, "monolith");
+        sd.writeScore(s);
+        this.testCounter++;
+        
+    }
+
+    private void writeScore(String killedBy) {
+        Score s = new Score(gm.getPlayer().getName(), gm.getMap().getFloor(), gm.getGmStats().getTurns(), gm.getPlayer().getStats().getLevel(), killedBy);
+        sd.writeScore(s);
+    }
+    
+    
 
 }

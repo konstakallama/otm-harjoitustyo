@@ -90,6 +90,11 @@ public class Spell {
         this.turnsInCooldown = this.cooldown;
         return this.effect.applyEffectToEnemy(e);
     }
+    
+    public CommandResult useOnPlayer(Player p) {
+        this.turnsInCooldown = this.cooldown;
+        return this.effect.applyEffectToPlayer(p);
+    }
 
     public int getTurnsInCooldown() {
         return turnsInCooldown;

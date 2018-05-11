@@ -22,9 +22,12 @@ iron axe	Weapon	0	Axe	6	0.55	7	0	0	0	0
 steel axe	Weapon	0	Axe	9	0.45	9	0	0	0	0
 silver axe	Weapon	0	Axe	12	0.6	12	0	0	0	0
 clothes	Armor	0	0	0	0	0	1	0	0	0
-leather armor	Armor	0	0	0	0	0	3	0	0	1
-iron armor	Armor	0	0	0	0	0	6	0	0	4
-elven armor	Armor	0	0	0	0	0	8	0	0	2
-heavy armor	Armor	0	0	0	0	0	13	0	0	7
-glass armor	Armor	0	0	0	0	0	10	0	0	3
+leather armor	Armor	0	0	0	0	0	2	0	0	1
+iron armor	Armor	0	0	0	0	0	4	0	0	4
+elven armor	Armor	0	0	0	0	0	6	0	0	2
+heavy armor	Armor	0	0	0	0	0	10	0	0	7
+glass armor	Armor	0	0	0	0	0	8	0	0	3
 stick	Weapon	0	Sword	1	0.8	0	0	0	0	0
+freeze tome	Consumable	0	0	0	0	0	0	TeachSpell	Freeze	0
+stun tome	Consumable	0	0	0	0	0	0	TeachSpell	Stun	0
+heal wound tome	Consumable	0	0	0	0	0	0	TeachSpell	Heal Wound	0

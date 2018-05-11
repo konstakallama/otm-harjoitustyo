@@ -523,11 +523,11 @@ public class MapGenerator {
 //        this.addItem(m, "atma weapon");
 //        this.addItem(m, "über armor");
         
+        
         double random = r.nextDouble();
         
-        if (r.nextDouble() < 0.3 && this.fireTomesCreated < 7) {
-            this.addItem(m, "fire tome");
-            this.fireTomesCreated++;
+        if (r.nextDouble() < 0.3) {
+            addRandomSpell(m);
         }
         
         if (r.nextDouble() < 0.1 && this.swordIndex < this.swords.length) {
@@ -554,9 +554,23 @@ public class MapGenerator {
             if (r.nextDouble() < 0.8) {
                 this.addItem(m, "apple");
             }
-            if (r.nextDouble() < 0.6) {
+            if (r.nextDouble() < 0.4) {
                 this.addItem(m, "potion");
             }
+        }
+    }
+
+    private void addRandomSpell(Map m) {
+        double d = r.nextDouble();
+        
+        if (d < 0.25) {
+            this.addItem(m, "fire tome");
+        } else if (d < 0.5) {
+            this.addItem(m, "freeze tome");
+        } else if (d < 0.75) {
+            this.addItem(m, "stun tome");
+        } else if (d < 1) {
+            this.addItem(m, "heal wound tome");
         }
     }
 

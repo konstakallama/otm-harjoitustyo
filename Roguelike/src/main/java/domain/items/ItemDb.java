@@ -24,12 +24,12 @@ import java.util.logging.Logger;
  */
 public class ItemDb {
 
-    String fileName = "data/Items.kek";
+    String fileName = "data/Items.txt";
 
     public InventoryItem itemConverter(MapItem item) throws Exception {
         return this.itemConverter(item.getName());
     }
-    
+
     public InventoryItem itemConverter(String itemName) throws Exception {
         String[] line = this.readLineFromFile(itemName);
 
@@ -61,7 +61,7 @@ public class ItemDb {
     public Weapon createEnemyTestWeapon() {
         return new Weapon(1, 0.6, WeaponType.SWORD, "enemy test weapon");
     }
-    
+
     public Weapon createEnemyTestWeapon(WeaponType wt) {
         return new Weapon(1, 0.6, wt, "enemy test weapon");
     }
@@ -94,11 +94,7 @@ public class ItemDb {
         } else if (line[1].equals("Other")) {
             return getOtherDescription(line);
         }
-        
-        
-        
-        
-        
+
 //        if (name.equals("test item")) {
 //            return "Type: other";
 //        } else if (name.equals("potion")) {
@@ -129,7 +125,6 @@ public class ItemDb {
 //                    + "\tPower: 4\n"
 //                    + "\tAccuracy: 70%";
 //        }
-
         return "";
     }
 
@@ -145,21 +140,19 @@ public class ItemDb {
         return this.readLineFromFile(name)[index];
     }
 
-    private String[] readLineFromFile(String name) {
-        try {
-            List<String> l = Files.readAllLines(Paths.get(this.fileName));
-            
-            for (String line : l) {
-                String[] s = line.split("\t");
-                if (s[0].equals(name)) {
-                    return (s);
-                }
+    private String[] readLineFromFileHelper(String name, String filename) throws IOException {
+
+        List<String> l = Files.readAllLines(Paths.get(filename));
+
+        for (String line : l) {
+            String[] s = line.split("\t");
+            if (s[0].equals(name)) {
+                return (s);
             }
-                     
-        } catch (IOException ex) {
         }
         
-        return null;
+        throw new IOException();
+
     }
 
     private InventoryItem convertConsumable(String[] line) throws Exception {
@@ -205,25 +198,40 @@ public class ItemDb {
             return "Type: consumable\n"
                     + "Effect: teaches the spell " + line[9] + ".";
         }
-        
+
         return "";
     }
 
     private String getWeaponDescription(String[] line) {
-        return "Type: " + line[3] +  "\n"
-                    + "Damage: " + line[4] +  "\n"
-                    + "Hit chance: " + Math.round(Double.parseDouble(line[5]) * 100) +  "%\n"
-                    + "Requires " + line[6] +  " strength";
+        return "Type: " + line[3] + "\n"
+                + "Damage: " + line[4] + "\n"
+                + "Hit chance: " + Math.round(Double.parseDouble(line[5]) * 100) + "%\n"
+                + "Requires " + line[6] + " strength";
     }
 
     private String getArmorDescription(String[] line) {
         return "Type: armor\n"
-                    + "Defence: " + line[7] + "\n"
-                    + "Dex penalty: " + line[10];
+                + "Defence: " + line[7] + "\n"
+                + "Dex penalty: " + line[10];
     }
 
     private String getOtherDescription(String[] line) {
         return "Type: other";
+    }
+
+    private String[] readLineFromFile(String name) {
+        try {
+            return this.readLineFromFileHelper(name, fileName);
+
+        } catch (Exception ex) {
+            try {
+                return this.readLineFromFileHelper(name, "../" + fileName);
+            } catch (Exception e) {
+
+            }
+        }
+
+        return null;
     }
 
 }

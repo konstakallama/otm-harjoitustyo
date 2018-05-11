@@ -23,7 +23,8 @@ public class Enemy extends Moves {
     boolean hasMoved;
     Direction lastMoved;
     Location movingTowards;
-    
+    int freezeCounter;
+    int stunCounter;
 
     public Enemy(int x, int y, Map map, EnemyStats stats, boolean visible) {
         this(x, y, stats.getType().getName(), map, stats, visible);
@@ -36,6 +37,8 @@ public class Enemy extends Moves {
         this.hasMoved = false;
         this.lastMoved = randomDirection();
         this.movingTowards = null;
+        this.freezeCounter = 0;
+        this.stunCounter = 0;
     }
 
     public EnemyType getType() {
@@ -56,29 +59,43 @@ public class Enemy extends Moves {
     public boolean isEnemy() {
         return true;
     }
+
     /**
      * Removes the Enemy from the map.
      */
     public void die() {
         map.removeEnemy(x, y);
     }
+
     /**
-     * Has the Enemy take it's turn. The turn is only taken if hasMoved is false. If it is next to the player, it will attack the player; otherwise it will move according to moveAi(). Returns an AttackResult detailing the results of a possible attack.
+     * Has the Enemy take it's turn. The turn is only taken if hasMoved is
+     * false. If it is next to the player, it will attack the player; otherwise
+     * it will move according to moveAi(). Returns an AttackResult detailing the
+     * results of a possible attack.
+     *
      * @return an AttackResult detailing the results of a possible attack.
      */
     public AttackResult takeTurn() {
-        AttackResult result;
+        AttackResult result = new AttackResult(AttackResultType.FAIL, 0, this, null);
 
         if (!this.hasMoved) {
-            Direction pd = map.getPlayerDirection(x, y);
-            if (map.hasPlayer(x + pd.xVal(), y + pd.yVal())) {
-                result = this.attack(pd);
-            } else {
-                result = new AttackResult(AttackResultType.FAIL, 0, this, null);
 
-                moveAi(pd);
+            advanceCounters();
 
+            if (!this.stats.isStunned()) {
+                Direction pd = map.getPlayerDirection(x, y);
+                if (map.hasPlayer(x + pd.xVal(), y + pd.yVal())) {
+                    result = this.attack(pd);
+                } else {
+                    result = new AttackResult(AttackResultType.FAIL, 0, this, null);
+
+                    if (!this.stats.isFrozen()) {
+                        moveAi(pd);
+                    }
+
+                }
             }
+
         } else {
             result = new AttackResult(AttackResultType.FAIL, 0, this, null);
         }
@@ -90,14 +107,19 @@ public class Enemy extends Moves {
     private void randomMove() {
         this.move(this.randomDirection());
     }
-/**
- * Sets hasMoved to false, allowing the enemy to take a new turn th next time takeTurn is called.
- */
+
+    /**
+     * Sets hasMoved to false, allowing the enemy to take a new turn th next
+     * time takeTurn is called.
+     */
     public void reset() {
         this.hasMoved = false;
     }
+
     /**
-     * Attacks the tile next to the Enemy's location in direction d. Returns an AttackResult detailing the results of the attack.
+     * Attacks the tile next to the Enemy's location in direction d. Returns an
+     * AttackResult detailing the results of the attack.
+     *
      * @param d
      * @return an AttackResult detailing the results of the attack.
      */
@@ -111,8 +133,11 @@ public class Enemy extends Moves {
         }
         return new AttackResult(AttackResultType.FAIL, 0, this, null);
     }
+
     /**
-     * Moves the enemy 1 tile in direction d using map.moveEnemy(). Returns true if the move is successful.
+     * Moves the enemy 1 tile in direction d using map.moveEnemy(). Returns true
+     * if the move is successful.
+     *
      * @param d
      * @return true if the move is successful.
      */
@@ -152,7 +177,7 @@ public class Enemy extends Moves {
         } else {
             this.move(this.lastMoved);
         }
-        
+
         if (!inRoom) {
             this.movingTowards = null;
         }
@@ -301,10 +326,10 @@ public class Enemy extends Moves {
             this.move(pd);
         }
     }
-    
+
     private void moveTowards(Location l) {
         Direction pd = this.getDirectionTowards(l);
-        
+
         if (map.isOccupied(x + pd.xVal(), y + pd.yVal())) {
             Direction spd = (getSecondaryDirectionTowards(l, pd));
             if (map.isOccupied(x + spd.xVal(), y + spd.yVal())) {
@@ -321,9 +346,10 @@ public class Enemy extends Moves {
             this.move(pd);
         }
     }
-    
+
     /**
      * Returns the direction in which the distance to l is the shortest.
+     *
      * @param l
      * @return the direction in which the distance to l is the shortest.
      */
@@ -384,5 +410,46 @@ public class Enemy extends Moves {
             }
         }
     }
+
+    public void freeze(int turns) {
+        this.stats.setFrozen(true);
+        this.freezeCounter = turns;
+    }
+
+    public boolean isFrozen() {
+        return this.stats.isFrozen();
+    }
+
+    public int getFreezeCounter() {
+        return freezeCounter;
+    }
+
+    private void advanceCounters() {
+        this.freezeCounter--;
+        if (this.freezeCounter <= 0) {
+            this.stats.setFrozen(false);
+            this.freezeCounter = 0;
+        }
+
+        this.stunCounter--;
+        if (this.stunCounter <= 0) {
+            this.stats.setStunned(false);
+            this.stunCounter = 0;
+        }
+    }
+
+    public void stun(int turns) {
+        this.stats.setStunned(true);
+        this.stunCounter = turns;
+    }
+    
+    public boolean isStunned() {
+        return this.stats.isStunned();
+    }
+
+    public int getStunCounter() {
+        return stunCounter;
+    }
+
 
 }

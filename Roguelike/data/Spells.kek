@@ -1,2 +1,0 @@
-Name	Effect	Power	Accauracy	Cooldown	Range	RangeType	TargetsSelf	IsAoE
-Fire	MagicDamage	4	0.7	6	4	Circle	FALSE	FALSE

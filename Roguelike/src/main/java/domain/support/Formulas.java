@@ -38,12 +38,14 @@ public class Formulas {
 
     Random r = new Random();
     SpellDb sdb = new SpellDb();
-    String fileName = "data/EncounterProbabilities.kek";
+    String fileName = "data/EncounterProbabilities.txt";
     String lastFloor = "20";
     ItemDb itemDb = new ItemDb();
     EnemyDb enemyDb = new EnemyDb();
+
     /**
      * Returns the maximum hp for an enemy of the given type and constitution.
+     *
      * @param type
      * @param con
      * @return the maximum hp for an enemy of the given type and constitution.
@@ -51,41 +53,59 @@ public class Formulas {
     public int getEnemyMaxHP(EnemyType type, int con) {
         return 7 + (3 * con);
     }
+
     /**
      * Returns the maximum hp for a player with the given constitution.
+     *
      * @param con
-     * @return 
+     * @return
      */
     public int getPlayerMaxHP(int con) {
         return 7 + con * this.getHpPerCon();
 
     }
+
     /**
-     * Returns the full exp required for a player of the given level to reach the next level.
+     * Returns the full exp required for a player of the given level to reach
+     * the next level.
+     *
      * @param currentLevel
-     * @return the full exp required for a player of the given level to reach the next level.
+     * @return the full exp required for a player of the given level to reach
+     * the next level.
      */
     public int expToNextLevel(int currentLevel) {
         return 10 + currentLevel;
     }
+
     /**
-     * Returns true if a regular attack from the owner of atkStats hits the owner of defStats. This is random with the chance of formulas.hitProb() to be true.
+     * Returns true if a regular attack from the owner of atkStats hits the
+     * owner of defStats. This is random with the chance of formulas.hitProb()
+     * to be true.
+     *
      * @param atkStats attacker's stats
      * @param defStats attack target's stats
-     * @return true if a regular attack from the owner of atkStats hits the owner of defStats.
+     * @return true if a regular attack from the owner of atkStats hits the
+     * owner of defStats.
      */
     public boolean attackHits(Stats atkStats, Stats defStats) {
         return r.nextDouble() < this.hitProb(atkStats, defStats);
     }
+
     /**
-     * Returns the probability of a regular attack from the owner of atkStats hitting the owner of defStats.
+     * Returns the probability of a regular attack from the owner of atkStats
+     * hitting the owner of defStats.
+     *
      * @param atkStats attacker's stats
      * @param defStats attack target's stats
-     * @return the probability of a regular attack from the owner of atkStats hitting the owner of defStats.
+     * @return the probability of a regular attack from the owner of atkStats
+     * hitting the owner of defStats.
      */
     public double hitProb(Stats atkStats, Stats defStats) {
+        if (defStats.isFrozen() || defStats.isStunned()) {
+            return 1.0;
+        }
         double hit = (atkStats.getWeapon().getHit() + (0.05 * (atkStats.getDex() - defStats.getDex())));
-        
+
         if (weaponTriangleAdvantage(atkStats, defStats)) {
             hit += 0.15;
         } else if (weaponTriangleAdvantage(defStats, atkStats)) {
@@ -104,9 +124,12 @@ public class Formulas {
 //    public boolean damageCalculation(Stats atkStats, Stats defStats) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //    }
-    
     /**
-     * Does the damage calculations for a regular attack from the player against the given Enemy, assuming the attack hits. If the enemy dies, it will be removed from the map and the player will gain exp. Returns an AttackResult detailing the result of the attack.
+     * Does the damage calculations for a regular attack from the player against
+     * the given Enemy, assuming the attack hits. If the enemy dies, it will be
+     * removed from the map and the player will gain exp. Returns an
+     * AttackResult detailing the result of the attack.
+     *
      * @param player
      * @param enemy
      * @return an AttackResult detailing the result of the attack.
@@ -133,8 +156,13 @@ public class Formulas {
 
         return result;
     }
+
     /**
-     * Does the damage calculations for a regular attack from a given Enemy against the player, assuming the attack hits. If the player dies, this will have to be dealt with after calling this method. Returns an AttackResult detailing the result of the attack.
+     * Does the damage calculations for a regular attack from a given Enemy
+     * against the player, assuming the attack hits. If the player dies, this
+     * will have to be dealt with after calling this method. Returns an
+     * AttackResult detailing the result of the attack.
+     *
      * @param enemy
      * @param player
      * @return an AttackResult detailing the result of the attack.
@@ -156,24 +184,32 @@ public class Formulas {
         }
         return result;
     }
+
     /**
      * Returns the rate at which enemies spawn on a given floor.
+     *
      * @param floor
      * @return the rate at which enemies spawn on a given floor.
      */
     public int getEnemySpawnInterval(int floor) {
         return 30 - Math.min(floor, 20);
     }
+
     /**
-     * Returns a random starting location for the player on the given map using formulas.createRandomFreeLocation().
+     * Returns a random starting location for the player on the given map using
+     * formulas.createRandomFreeLocation().
+     *
      * @param map
      * @return a random starting location for the player on the given map.
      */
     public Location createPlayerStartLocation(Map map) {
         return this.createRandomFreeLocation(map);
     }
+
     /**
-     * Returns a random location on the map which is inside a room, not on top of an enemy or the player, not on stairs, and not on an item.
+     * Returns a random location on the map which is inside a room, not on top
+     * of an enemy or the player, not on stairs, and not on an item.
+     *
      * @param map
      * @return a random free location on the map.
      */
@@ -187,15 +223,19 @@ public class Formulas {
         }
         return new Location(x, y);
     }
+
     /**
-     * Returns a random free location on the map which is not in the same room the player is in.
+     * Returns a random free location on the map which is not in the same room
+     * the player is in.
+     *
      * @param map
-     * @return a random free location on the map which is not in the same room the player is in.
+     * @return a random free location on the map which is not in the same room
+     * the player is in.
      */
     public Location createEnemySpawnLocation(Map map) {
         int x = r.nextInt(50);
         int y = r.nextInt(50);
-        
+
         Room room = map.getPlayerRoom();
 
         while (map.isOccupied(x, y) || map.getTerrain(x, y) == Terrain.CORRIDOR || map.getTerrain(x, y) == Terrain.STAIRS || room.isInside(new Location(x, y))) {
@@ -204,42 +244,62 @@ public class Formulas {
         }
         return new Location(x, y);
     }
+
     /**
-     * Returns the amount of damage a regular attack from the owner of atkStats would do to the owner of defStats, should it hit.
+     * Returns the amount of damage a regular attack from the owner of atkStats
+     * would do to the owner of defStats, should it hit.
+     *
      * @param atkStats
      * @param defStats
-     * @return the amount of damage a regular attack from the owner of atkStats would do to the owner of defStats.
+     * @return the amount of damage a regular attack from the owner of atkStats
+     * would do to the owner of defStats.
      */
     public int getRegularAttackDamage(Stats atkStats, Stats defStats) {
         return Math.max(0, atkStats.getStr() + atkStats.getWeapon().getAtk() - defStats.getArmor().getDef());
     }
+
     /**
-     * Returns the maximum amount of stamina for a player with the given amount of constitution.
+     * Returns the maximum amount of stamina for a player with the given amount
+     * of constitution.
+     *
      * @param con
-     * @return the maximum amount of stamina for a player with the given amount of constitution.
+     * @return the maximum amount of stamina for a player with the given amount
+     * of constitution.
      */
     public int getMaxStamina(int con) {
 //        return Integer.MAX_VALUE;
         return 450 + con * this.getStaminaPerCon();
     }
+
     /**
-     * Returns the amount of stamina a single point of constitution will increase the player's maximum stamina by.
-     * @return the amount of stamina a single point of constitution will increase the player's maximum stamina by.
+     * Returns the amount of stamina a single point of constitution will
+     * increase the player's maximum stamina by.
+     *
+     * @return the amount of stamina a single point of constitution will
+     * increase the player's maximum stamina by.
      */
     public int getStaminaPerCon() {
         return 50;
     }
+
     /**
-     * Returns the amount of hp a single point of constitution will increase the player's maximum hp by.
-     * @return the amount of hp a single point of constitution will increase the player's maximum hp by.
+     * Returns the amount of hp a single point of constitution will increase the
+     * player's maximum hp by.
+     *
+     * @return the amount of hp a single point of constitution will increase the
+     * player's maximum hp by.
      */
     public int getHpPerCon() {
         return 3;
     }
+
     /**
-     * Returns the amount of spellbook slots a player with the given intelligence will have.
+     * Returns the amount of spellbook slots a player with the given
+     * intelligence will have.
+     *
      * @param i
-     * @return the amount of spellbook slots a player with the given intelligence will have.
+     * @return the amount of spellbook slots a player with the given
+     * intelligence will have.
      */
     public int getMaxSpellbookSlots(int i) {
         if (i < 6) {
@@ -254,8 +314,13 @@ public class Formulas {
             return 5;
         }
     }
+
     /**
-     * Does the damage calculations for a magic attack of the specified power from the player against the given Enemy, assuming the attack hits. If the enemy dies, it will be removed from the map and the player will gain exp. Returns an AttackResult detailing the result of the attack.
+     * Does the damage calculations for a magic attack of the specified power
+     * from the player against the given Enemy, assuming the attack hits. If the
+     * enemy dies, it will be removed from the map and the player will gain exp.
+     * Returns an AttackResult detailing the result of the attack.
+     *
      * @param playerStats the stats of the player casting the spell
      * @param e the target enemy
      * @param power the power of the spell
@@ -264,10 +329,10 @@ public class Formulas {
      */
     public AttackResult magicDamageCalculation(PlayerStats playerStats, Enemy e, int power, String spellName) {
         EnemyStats enemyStats = e.getStats();
-        
+
         int dmg = getMagicDamage(playerStats, enemyStats, power);
         AttackResult result;
-        
+
         e.getStats().takeDamage(dmg);
 
         if (enemyStats.isDead()) {
@@ -281,30 +346,43 @@ public class Formulas {
             result = new AttackResult(AttackResultType.HIT, dmg, null, e, (this.getSpellToHit(playerStats, enemyStats, spellName)));
         }
 
-        return result;      
+        return result;
     }
+
     /**
-     * Returns true if a spell with the given name cast by the given player hits the given enemy. This is random with a chance of formulas.getSpellToHit to be true.
+     * Returns true if a spell with the given name cast by the given player hits
+     * the given enemy. This is random with a chance of formulas.getSpellToHit
+     * to be true.
+     *
      * @param casterStats
      * @param stats
      * @param spellName
-     * @return true if a spell with the given name cast by the given player hits the given enemy.
+     * @return true if a spell with the given name cast by the given player hits
+     * the given enemy.
      */
     public boolean spellHits(PlayerStats casterStats, EnemyStats stats, String spellName) {
         return (r.nextDouble() < this.getSpellToHit(casterStats, stats, spellName));
     }
+
     /**
-     * Returns the probability that a spell with the given name cast by the given player hits the given enemy.
+     * Returns the probability that a spell with the given name cast by the
+     * given player hits the given enemy.
+     *
      * @param casterStats
      * @param stats
      * @param spellName
-     * @return the probability that a spell with the given name cast by the given player hits the given enemy.
+     * @return the probability that a spell with the given name cast by the
+     * given player hits the given enemy.
      */
     public double getSpellToHit(PlayerStats casterStats, EnemyStats stats, String spellName) {
+        if (stats.isFrozen() || stats.isStunned()) {
+            return 1.0;
+        }
+
         Spell s = this.sdb.spellConverter(spellName, casterStats);
-        
+
         double hit = (s.getAccuracy() + (0.05 * (casterStats.getInt() - stats.getInt())));
-        
+
         if (hit >= 1.0) {
             return 1.0;
         } else if (hit <= 0) {
@@ -320,18 +398,18 @@ public class Formulas {
 
     public Enemy createRandomEnemy(Map map, Location l, int enemiesCreated) {
         String[] firstLine = null;
-        
+
         try {
             firstLine = Files.readAllLines(Paths.get(this.fileName)).get(0).split("\t");
         } catch (IOException ex) {
-            
+
         }
-        
-        String[] line = this.readLineFromFile(map.getFloor() + "");
-        double random = r.nextDouble();       
+
+        String[] line = this.readLineFromFileWrapper(map.getFloor() + "");
+        double random = r.nextDouble();
         double d = 0;
         EnemyType et = null;
-        
+
         for (int i = 1; i < firstLine.length; i++) {
             d += Double.parseDouble(line[i]);
             if (random < d) {
@@ -339,32 +417,43 @@ public class Formulas {
                 break;
             }
         }
-        
-        int level = enemiesCreated / 20;
+
+        int level = enemiesCreated / 5;
         EnemyStats es = new EnemyStats(level, et, itemDb.createEnemyTestWeapon(enemyDb.getWeaponType(et.getName())), itemDb.createEnemyTestArmor());
-        
+
         return new Enemy(l.getX(), l.getY(), map, es, true);
     }
-    
-    private String[] readLineFromFile(String name) {
+
+    private String[] readLineFromFileWrapper(String name) {
         try {
-            List<String> l = Files.readAllLines(Paths.get(this.fileName));
-            
-//            System.out.println("name: " + name);
-            
-            for (String line : l) {
-                String[] s = line.split("\t");
-                if (s[0].equals(name)) {
-                    return (s);
-                } else if (s[0].equals(lastFloor)) {
-                    return s;
-                }
+            return this.readLineFromFile(name, fileName);
+
+        } catch (Exception ex) {
+            try {
+                return this.readLineFromFile(name, "../" + fileName);
+            } catch (Exception e) {
+                
             }
-                     
-        } catch (IOException ex) {
         }
-        
+
         return null;
+    }
+
+    private String[] readLineFromFile(String name, String filename) throws Exception {
+
+        List<String> l = Files.readAllLines(Paths.get(filename));
+
+//            System.out.println("name: " + name);
+        for (String line : l) {
+            String[] s = line.split("\t");
+            if (s[0].equals(name)) {
+                return (s);
+            } else if (s[0].equals(lastFloor)) {
+                return s;
+            }
+        }
+
+        throw new Exception("Error");
     }
 
     private boolean weaponTriangleAdvantage(Stats atkStats, Stats defStats) {
@@ -372,6 +461,5 @@ public class Formulas {
         WeaponType dw = defStats.getWeapon().getType();
         return (aw == WeaponType.SWORD && dw == WeaponType.AXE) || (aw == WeaponType.LANCE && dw == WeaponType.SWORD) || (aw == WeaponType.AXE && dw == WeaponType.LANCE);
     }
-
 
 }
