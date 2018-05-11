@@ -42,14 +42,7 @@ public class SpellDb {
             return createHealWound(line, s);
         }
 
-//        if (name.equals("Fire")) {
-//            return this.createFire(s);
-//        }
         return null;
-    }
-
-    private Spell createFire(PlayerStats s) {
-        return new Spell("Fire", 6, new MagicDamage(4, s, "Fire"), 4, 0.7);
     }
 
     public String getHelp(String spellName) {
@@ -70,10 +63,6 @@ public class SpellDb {
                 + "Cooldown: " + (Integer.parseInt(line[4]) - 1) + " turns";
     }
 
-    private String readIndexFromFile(String name, int index) {
-        return this.readLineFromFile(name)[index];
-    }
-
     private String[] readLineFromFileHelper(String name, String filename) throws IOException {
         List<String> l = Files.readAllLines(Paths.get(filename));
 
@@ -89,8 +78,6 @@ public class SpellDb {
     }
 
     private Spell cerateOffensiveSpell(String[] line, PlayerStats s) {
-
-//        String name, int cooldown, Effect effect, int range, double accuracy, boolean targetsSelf, boolean isAoE, RangeType rangeType
         if (line[6].equals("Circle")) {
             return new Spell(line[0], Integer.parseInt(line[4]), new MagicDamage(Integer.parseInt(line[2]), s, line[0]), Integer.parseInt(line[5]), Double.parseDouble(line[3]), Boolean.valueOf(line[7]), Boolean.valueOf(line[8]), RangeType.CIRCLE);
         }
@@ -153,7 +140,6 @@ public class SpellDb {
             return this.readLineFromFileHelper(name, fileName);
 
         } catch (Exception ex) {
-            System.out.println("se1");
             try {
                 return this.readLineFromFileHelper(name, "src/main/resources/" + fileName);
             } catch (Exception e) {

@@ -62,7 +62,6 @@ public class Main extends Application {
     int testCounter = 0;
 
     ArrayList<Label> logs = new ArrayList<>();
-//    /Users/konstakallama/otm-harjoitustyo/Roguelike/src/main/resources/data
     ScoreDao sd = new ScoreDao("data/Scores.txt");
 
     Label level = new Label();
@@ -219,18 +218,6 @@ public class Main extends Application {
 
     private String getGameOverMessage(AttackResult result) {
         return "You were killed on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + " by a " + result.getAttacker() + ".";
-    }
-
-    private PlayerStats createPlayerStats() {
-        return this.createTestPlayerStats();
-    }
-
-    public PlayerStats createTestPlayerStats() {
-        try {
-            return new PlayerStats(2, 2, 2, 2, 2, (Weapon) itemDb.itemConverter("stick"), (Armor) itemDb.itemConverter("clothes"));
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     private Inventory createInventory() {
@@ -628,21 +615,6 @@ public class Main extends Application {
         return "You starved to death on turn " + gm.getGmStats().getTurns() + " on floor " + gm.getMap().getFloor() + ".";
     }
 
-    private void drawCorridorStarts(GraphicsContext drawer, Map map) {
-        System.out.println("***");
-        for (Room r : map.getRooms()) {
-            System.out.println("r: " + r);
-            for (Location l : r.getCorridorStarts()) {
-                if (l != null) {
-                    paintTile(l.getX() * pixelSize, l.getY() * pixelSize, "blue", drawer);
-//                    System.out.println(l);
-                }
-
-            }
-        }
-
-    }
-
     private void discardScreen() {
         this.status = UIStatus.MENU;
 
@@ -755,9 +727,6 @@ public class Main extends Application {
                     int y = (int) Math.floor(event.getY() / pixelSize);
                     Location l = new Location(x, y);
 
-//                    System.out.println("x: " + x);
-//                    System.out.println("y: " + y);
-//                    System.out.println(gm.getPlayer().getLocation());
                     if (gm.getMap().hasEnemy(x, y) && gm.getMap().getVisibility(x, y) == VisibilityStatus.IN_RANGE && s.inRange(gm.getPlayer().getLocation(), new Location(x, y))) {
                         CommandResult cr = s.useOnEnemy(gm.getMap().getEnemy(x, y));
                         if (cr.isSuccess()) {
@@ -882,9 +851,6 @@ public class Main extends Application {
         for (int i = gm.getGmStats().getLogHistory().size() - 1; i >= 0; i--) {
             l.setText(l.getText() + "\n" + gm.getGmStats().getLogHistory().get(i));
         }
-//        for (String s : gm.getGmStats().getLogHistory()) {
-//            l.setText(l.getText() + "\n" + s);
-//        }
         framework.setCenter(l);
     }
 
@@ -894,7 +860,6 @@ public class Main extends Application {
 
         if (gm.getMap().hasEnemy(x, y)) {
             this.updateLog(mdb.getSeeEnemyMsg(gm.getMap().getEnemy(x, y), gm.getPlayer().getStats().getInt()) + ". " + gm.getMap().getEnemy(x, y).getStats().toString());
-//            System.out.println(gm.getMap().getEnemy(x, y).getStats().toString());
         }
     }
 
@@ -958,7 +923,6 @@ public class Main extends Application {
 
         SpellDb sdb = new SpellDb();
 
-//        gm.getPlayer().getStats().learnSpell(sdb.spellConverter("Fire", gm.getPlayer().getStats()));
         this.updateSpellBox();
 
         drawMap(drawer, gm.getMap());
@@ -980,6 +944,7 @@ public class Main extends Application {
     }
 
     private void mainMenu() {
+        this.status = UIStatus.MAIN_MENU;
         VBox menuButtons = new VBox();
 
         Button newGame = new Button("New Game");
@@ -1047,7 +1012,6 @@ public class Main extends Application {
         Button backToMenu = new Button("Back to main menu");
         backToMenu.setOnMouseClicked((event) -> {
 
-//            writeScoreTest();
             this.mainMenu();
         });
 

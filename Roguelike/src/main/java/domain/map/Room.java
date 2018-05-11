@@ -182,27 +182,18 @@ public class Room {
      */
     public ArrayList<Location> getCorridorStarts() {
         ArrayList<Location> starts = new ArrayList<>();
-        
-//        System.out.println("c:");
-        
+                
         for (Corridor c : this.corridors) {
-//            System.out.println("c: " + c);
             if (this.isNextTo(c.getStart())) {
-//                System.out.println("cs: " + c.getStart());
                 starts.add(c.getStart());
             } else if (this.isNextTo(c.getEnd())) {
-//                System.out.println("ce: " + c.getEnd());
                 starts.add(c.getEnd());
             }
         }
-//        System.out.println("a:");
         for (Corridor c : this.arrivingCorridors) {
-//            System.out.println("c: " + c);
             if (this.isNextTo(c.getStart())) {
-//                System.out.println("as: " + c.getStart());
                 starts.add(c.getStart());
             } else if (this.isNextTo(c.getEnd())) {
-//                System.out.println("ae: " + c.getEnd());
                 starts.add(c.getEnd());
             }
         }
@@ -219,7 +210,6 @@ public class Room {
      * @return 
      */
     public boolean isNextTo(Location l) {
-//        System.out.println(l);
         
         
         Direction d = Direction.DOWN;

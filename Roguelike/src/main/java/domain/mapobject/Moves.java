@@ -27,22 +27,4 @@ public abstract class Moves extends MapObject {
         return true;
     }
 
-//    public boolean move(Direction d) {
-//        if (this.map.moveEnemy(x, y, d)) {
-//            this.x += d.xVal();
-//            this.y += d.yVal();
-//            return true;
-//        }
-//        return false;   
-//    }
-
-//    public boolean attack(Direction d) {
-//        if (map.getEnemy(x + d.xVal(), y + d.yVal()).hasHP()) {
-//            if (f.attackHits(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats())) {
-//                f.damageCalculation(this.stats, map.getEnemy(x + d.xVal(), y + d.yVal()).getStats());
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 }

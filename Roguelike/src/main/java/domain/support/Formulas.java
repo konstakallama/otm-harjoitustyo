@@ -405,7 +405,6 @@ public class Formulas {
             try {
                 firstLine = Files.readAllLines(Paths.get("src/main/resources/" + this.fileName)).get(0).split("\t");
             } catch (IOException ex1) {
-                Logger.getLogger(Formulas.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
 
@@ -421,7 +420,7 @@ public class Formulas {
                 break;
             }
         }
-        EnemyStats es = new EnemyStats(enemiesCreated / 5, et, itemDb.createEnemyTestWeapon(enemyDb.getWeaponType(et.getName())), itemDb.createEnemyTestArmor());
+        EnemyStats es = new EnemyStats(enemiesCreated / 10, et, itemDb.createEnemyTestWeapon(enemyDb.getWeaponType(et.getName())), itemDb.createEnemyTestArmor());
 
         return new Enemy(l.getX(), l.getY(), map, es, true);
     }
@@ -431,7 +430,6 @@ public class Formulas {
             return this.readLineFromFile(name, fileName);
 
         } catch (Exception ex) {
-            System.out.println("fe1");
             try {
                 return this.readLineFromFile(name, "src/main/resources/" + fileName);
             } catch (Exception e) {
@@ -446,7 +444,6 @@ public class Formulas {
 
         List<String> l = Files.readAllLines(Paths.get(filename));
 
-//            System.out.println("name: " + name);
         for (String line : l) {
             String[] s = line.split("\t");
             if (s[0].equals(name)) {

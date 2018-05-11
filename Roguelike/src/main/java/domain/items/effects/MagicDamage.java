@@ -30,10 +30,6 @@ public class MagicDamage extends Effect {
         this.casterStats = casterStats;
     }
 
-//    public MagicDamage(int power, String name) {
-//        super(name);
-//        this.power = power;
-//    }
 
     public int getPower() {
         return power;
@@ -64,9 +60,5 @@ public class MagicDamage extends Effect {
         return new CommandResult(true, true, mdb.getAttackWithSpellMsg(this.sourceName, ar), ar);
     }
 
-    @Override
-    public CommandResult applyEffectToPlayer(Player p) {
-        return super.applyEffectToPlayer(p); //To change body of generated methods, choose Tools | Templates.
-    }
     
 }

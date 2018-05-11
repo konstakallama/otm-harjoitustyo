@@ -40,7 +40,6 @@ public class Inventory {
             return false;
         } else {
             this.items.add(item);
-//            this.sort();
             return true;
         }
     }

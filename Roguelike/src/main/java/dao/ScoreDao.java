@@ -36,13 +36,9 @@ public class ScoreDao {
         try {
             l = readScores(fileName);
         } catch (Exception e) {
-            System.out.println("e1");
-            System.out.println(fileName);
             try {
                 l = readScores("src/main/resources/" + fileName);
             } catch (Exception ex) {
-                System.out.println("e2");
-                System.out.println("../" + fileName);
             }
         }
         return l;

@@ -201,10 +201,6 @@ public class GameManager {
         map.addEnemy(l.getX(), l.getY(), e);
     }
 
-    private Enemy createEnemy(int x, int y) {
-        return this.createTestEnemy(x, y);
-    }
-
     public Enemy createTestEnemy(int x, int y) {
         int i = this.gmStats.getEnemiesCreated() / 20;
         

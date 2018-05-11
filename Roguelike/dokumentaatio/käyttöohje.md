@@ -4,7 +4,9 @@ Lataa tiedosto Roguelike.jar
 
 ## HYVIN TÄRKEÄÄ – data-kansio
 
-Pelin voi jar:in voi suorittaa ainoastaan, jos se suoritetaan samasta paikasta, missä sijaitsee [data-kansio](https://github.com/konstakallama/otm-harjoitustyo/tree/master/Roguelike/src/main/resources/data), joka sisältää tiedostot Items.txt, Enemies.txt, Spells.txt, EncounterProbabilities.txt js Scores.txt.
+Pelin jar:in voi suorittaa ainoastaan, jos se suoritetaan samasta kansiosta, jossa sijaitsee [data-kansio](https://github.com/konstakallama/otm-harjoitustyo/tree/master/Roguelike/src/main/resources/data), joka sisältää tiedostot Items.txt, Enemies.txt, Spells.txt, EncounterProbabilities.txt js Scores.txt.
+
+Tämä on toisaalta erittäin kömpelöä ja epätoivottavaa, mutta ainakin pelin moddaaminen onnistuu nyt näiden parametrien osalta erittäin helposti.
 
 
 ## Pelin käynnistäminen

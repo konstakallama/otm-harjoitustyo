@@ -446,7 +446,7 @@ public class MapGenerator {
     }
 
     private void addItems(Map m) {      
-        if (r.nextDouble() < 0.3) {
+        if (r.nextDouble() < 0.4) {
             addRandomSpell(m);
         }      
         addWeapons(m);
@@ -454,7 +454,7 @@ public class MapGenerator {
             if (r.nextDouble() < 0.8) {
                 this.addItem(m, "apple");
             }
-            if (r.nextDouble() < 0.4) {
+            if (r.nextDouble() < 0.5) {
                 this.addItem(m, "potion");
             }
         }
@@ -462,11 +462,11 @@ public class MapGenerator {
 
     private void addRandomSpell(Map m) {
         double d = r.nextDouble();      
-        if (d < 0.25) {
+        if (d < 0.4) {
             this.addItem(m, "fire tome");
-        } else if (d < 0.5) {
+        } else if (d < 0.7) {
             this.addItem(m, "freeze tome");
-        } else if (d < 0.75) {
+        } else if (d < 0.8) {
             this.addItem(m, "stun tome");
         } else if (d < 1) {
             this.addItem(m, "heal wound tome");

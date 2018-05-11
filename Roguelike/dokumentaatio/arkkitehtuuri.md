@@ -47,3 +47,5 @@ Tämä toiminnallisuus on hyvin myöhään (ja hyvin kiireellä) toteutettu, eli
 Graafinen käyttöliittymä on toteutettu kokonaan Main-luokassa, joka onkin erittäin suuri ja vaikeasti luettavissa. Käyttöliittymä on muutenkin hyvin yksinkertainen eikä kovin visuaalisesti miellyttävä.
 
 Pelissä oleva tallennus sekä tietojen luku kohdistuu tiedostoihin eikä tietokantoihin. Lisäksi peli vaatii nykymuodossaan näiden tiedostojen sijaitsevan samassa kansiossa kuin mistä pelin jar suoritetaan.
+
+JavaDocia ja testejä ei ole tuotettu aivan koko ohjelmalle.

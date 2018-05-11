@@ -103,7 +103,6 @@ public class EnemyDb {
             return this.readFromIndexHelper(name, index, fileName);
 
         } catch (Exception ex) {
-            System.out.println("ee1");
             try {
                 return this.readFromIndexHelper(name, index, "src/main/resources/" + fileName);
             } catch (Exception e) {

@@ -42,12 +42,6 @@ public class Player extends Moves {
         this.map.setPlayer(this);
         this.visionRange = 3;
     }
-//    public void newFloor(Map newMap, int startX, int startY) {
-//        this.map = newMap;
-//        this.x = startX;
-//        this.y = startY;
-//        this.map.setPlayer(this);
-//    }
     /**
      * Attacks the Enemy in d, if there is one. Returns an AttackResult determining the outcome of the attack.
      * @param d

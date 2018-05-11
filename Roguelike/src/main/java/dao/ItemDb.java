@@ -52,10 +52,6 @@ public class ItemDb {
         throw new Exception("Item not found");
     }
 
-    private InventoryItem testItemConverter() {
-        return new InventoryItem(0, ItemType.OTHER, "test item");
-    }
-
     public Weapon createTestWeapon() {
         return new Weapon(3, 0.75, WeaponType.SWORD, "test weapon");
     }
@@ -84,9 +80,6 @@ public class ItemDb {
         return new Weapon(100, 1.00, WeaponType.SWORD, "atma weapon");
     }
 
-    private InventoryItem createUberArmor() {
-        return new Armor(10, "über armor");
-    }
 
     public String getDescription(String name) {
         String[] line = this.readLineFromFile(name);
@@ -101,49 +94,7 @@ public class ItemDb {
             return getOtherDescription(line);
         }
 
-//        if (name.equals("test item")) {
-//            return "Type: other";
-//        } else if (name.equals("potion")) {
-//            return "Type: consumable\n"
-//                    + "Effect: heals 5 hp";
-//        } else if (name.equals("atma weapon")) {
-//            return "Type: sword\n"
-//                    + "Damage: 100\n"
-//                    + "Hit chance: 100%\n"
-//                    + "Requires 0 strength";
-//        } else if (name.equals("über armor")) {
-//            return "Type: armor\n"
-//                    + "Defence: 10";
-//        } else if (name.equals("test weapon")) {
-//            return "Type: sword\n"
-//                    + "Damage: 3\n"
-//                    + "Hit chance: 75%\n"
-//                    + "Requires 0 strength";
-//        } else if (name.equals("test armor")) {
-//            return "Type: armor\n"
-//                    + "Defence: 1";
-//        } else if (name.equals("apple")) {
-//            return "Type: consumable\n"
-//                    + "Effect: heals 75 stamina";
-//        } else if (name.equals("fire tome")) {
-//            return "Type: consumable\n"
-//                    + "Effect: teaches the spell Fire\n"
-//                    + "\tPower: 4\n"
-//                    + "\tAccuracy: 70%";
-//        }
         return "";
-    }
-
-    private InventoryItem createApple() {
-        return new InventoryItem(0, ItemType.CONSUMABLE, "apple", new StaminaHeal(75, "apple"));
-    }
-
-    private InventoryItem createFireTome() {
-        return new InventoryItem(0, ItemType.CONSUMABLE, "fire tome", new TeachSpell("fire tome", "Fire"));
-    }
-
-    private String readIndexFromFile(String name, int index) {
-        return this.readLineFromFile(name)[index];
     }
 
     private String[] readLineFromFileHelper(String name, String filename) throws IOException {
@@ -230,15 +181,11 @@ public class ItemDb {
             return this.readLineFromFileHelper(name, fileName);
 
         } catch (Exception ex) {
-            System.out.println(fileName);
-            System.out.println("ie1");
             String fn = "src/main/resources/" + fileName;
             try {
                 
                 return this.readLineFromFileHelper(name, fn);
             } catch (Exception e) {
-                System.out.println(fn);
-                System.out.println("ie2");
             }
         }
 

@@ -7,7 +7,7 @@ Eri luokkia oli tarkoitus testata erillisillä testiluokilla, mutta jostain syys
 
 ### Testauskattavuus
 
-Käyttöliittymäkerrosta lukuunottamatta sovelluksen testauksen rivikattavuus on 79% ja haarautumakattavuus 75%.
+Käyttöliittymäkerrosta lukuunottamatta sovelluksen testauksen rivikattavuus on 72% ja haarautumakattavuus 71%.
 
 Aivan kaikkea ei ole testattu, ainakin getterit ja setterit sekä osa MapGeneratorin sisäisesti käyttämistä metodeista ja tietorakenteista on testaamatta.
 

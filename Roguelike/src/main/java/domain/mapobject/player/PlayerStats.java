@@ -17,14 +17,12 @@ import java.util.ArrayList;
 public class PlayerStats extends Stats {
     int staminaDmg;
     private ArrayList<Spell> spells;
-//    private Player owner;
 
     public PlayerStats(int level, int str, int con, int intel, int dex, Weapon weapon, Armor armor) {
         super(level, str, con, intel, dex, weapon, armor);
         staminaDmg = 0;
         this.spells = new ArrayList<>();
         
-//        this.owner = player;
     }
 
     @Override

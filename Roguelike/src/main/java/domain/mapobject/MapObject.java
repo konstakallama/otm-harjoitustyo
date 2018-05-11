@@ -72,6 +72,5 @@ public abstract class MapObject {
         return this.getName();
     }
     
-//    public abstract Stats getStats();
     public abstract boolean isVisible();
 }
