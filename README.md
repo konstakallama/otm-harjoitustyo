@@ -1,6 +1,6 @@
 # Roguelike
 
-Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyseessä on yksinkertainen roguelike-tyylinen peli, joka on siis vuonna 1980 julkaistun [rogue-pelin](https://en.wikipedia.org/wiki/Rogue_%28video_game%29) innoittama.
+Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyseessä on yksinkertainen roguelike-tyylinen peli, joka on siis vuonna 1980 julkaistun [rogue-pelin](https://en.wikipedia.org/wiki/Rogue_%28video_game%29) innoittama. Suoritettava .jar-tiedosto löytyy releases-välilehdeltä.
 
 
 ## Dokumentaatio
@@ -22,6 +22,8 @@ Kurssilla Ohjelmistotekniikan menetelmät toteutettava ohjelmointiprojekti. Kyse
 [Viikko 6](https://github.com/konstakallama/otm-harjoitustyo/releases/tag/v0.2-alpha)
 
 [Viikko 7 (Loppupalautus)](https://github.com/konstakallama/otm-harjoitustyo/releases/tag/v1.0)
+
+[v1.1](https://github.com/konstakallama/otm-harjoitustyo/releases/tag/v1.1)
 
 
 ## Komentorivitoiminnot
@@ -52,11 +54,6 @@ mvn package
 
 generoi hakemistoon _target_ suoritettavan jar-tiedoston _Roguelike-1.0-SNAPSHOT.jar_
 
-## HYVIN TÄRKEÄÄ – data-kansio
-
-Pelin jar:in voi suorittaa ainoastaan, jos se suoritetaan samasta kansiosta, jossa sijaitsee [data-kansio](https://github.com/konstakallama/otm-harjoitustyo/tree/master/Roguelike/src/main/resources/data), joka sisältää tiedostot Items.txt, Enemies.txt, Spells.txt, EncounterProbabilities.txt js Scores.txt.
-
-Tämä on toisaalta erittäin kömpelöä ja epätoivottavaa, mutta ainakin pelin moddaaminen onnistuu nyt näiden parametrien osalta erittäin helposti.
 
 ### JavaDoc
 
