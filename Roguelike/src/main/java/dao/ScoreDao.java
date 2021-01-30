@@ -75,6 +75,11 @@ public class ScoreDao {
             l = Files.readAllLines(Paths.get("Scores.txt"));
             return readScores2(l);
         } catch (Exception e) {
+            try {
+                l = Files.readAllLines(Paths.get("data/Scores.txt"));
+                return readScores2(l);
+            } catch (IOException ex) {
+            }
         }
         //List<String> l = Files.readAllLines(Paths.get(fn));
         String[] lines = fr.readAllLines();
@@ -93,10 +98,7 @@ public class ScoreDao {
 
         ArrayList<Score> l = this.scores;
 
-        File file = new File("Scores.txt");
-        if (!file.exists() && !writeIfMissing) {
-            return;
-        }
+        
 
 //        String s = "";
 //        try {
@@ -129,8 +131,34 @@ public class ScoreDao {
 //                }
 //            }
 //        }
+
+        File file1 = new File("Scores.txt");
+        File file2 = new File("data/Scores.txt");
+        
+        if (!writeIfMissing) {
+            if (!file1.exists()) {
+                if (!file2.exists()) {
+                    return;
+                } else {
+                    try {
+                        pw = new PrintWriter("data/Scores.txt");
+                    } catch (FileNotFoundException ex) {
+                    }
+                }
+            } else {
+                try {
+                    pw = new PrintWriter("Scores.txt");
+                } catch (FileNotFoundException ex) {
+                }
+            }
+        } else {
+            try {
+                pw = new PrintWriter("Scores.txt");
+            } catch (FileNotFoundException ex) {
+            }
+        }
+
         try {
-            pw = new PrintWriter("Scores.txt");
             pw.println("Name" + sep + "Floor" + sep + "Turns" + sep + "Level" + sep + "Killed By");
             for (Score score : l) {
                 pw.println(score.getName() + sep + score.getFloor() + sep + score.getTurn() + sep + score.getLevel() + sep + score.getKilledBy());
