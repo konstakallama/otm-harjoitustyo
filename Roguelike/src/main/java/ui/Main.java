@@ -57,12 +57,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import dao.FileReader;
+
 public class Main extends Application {
 
     int testCounter = 0;
 
     ArrayList<Label> logs = new ArrayList<>();
-    ScoreDao sd = new ScoreDao("data/Scores.txt");
+    ScoreDao sd = new ScoreDao();
 
     Label level = new Label();
     Label turnCounter = new Label();
@@ -143,7 +145,7 @@ public class Main extends Application {
         level.setText("Level: " + gm.getPlayer().getStats().getLevel() + "   ");
     }
 
-    private void gameOver(String msg) {
+    private void gameOver(String msg, String killedBy) {
         this.status = UIStatus.GAME_OVER;
 
         GridPane grid = new GridPane();
@@ -170,6 +172,8 @@ public class Main extends Application {
         menu.setDisable(true);
 
         this.framework.setCenter(grid);
+
+        this.writeScore(killedBy);
     }
 
     private void updateLog(String newMessage) {
@@ -225,7 +229,7 @@ public class Main extends Application {
     }
 
     public Inventory createTestInventory() {
-        return new Inventory(20);
+        return new Inventory(50);
     }
 
     private void inventoryScreen() {
@@ -244,14 +248,10 @@ public class Main extends Application {
                 if (cr.hasLogMessage()) {
                     this.updateLog(cr.getLogMessage());
                     if (cr.getAttackResult().getAttacker().isEnemy() && cr.getAttackResult().getType() == AttackResultType.KILL) {
-                        writeScore(cr.getAttackResult().getAttacker().getName());
-
-                        gameOver(this.getGameOverMessage(cr.getAttackResult()));
+                        gameOver(this.getGameOverMessage(cr.getAttackResult()), cr.getAttackResult().getAttacker().getName());
                         break;
                     } else if (gm.getPlayer().getCurrentHP() <= 0 && gm.getPlayer().getStats().getCurrentStamina() <= 0) {
-                        writeScore("hunger");
-
-                        gameOver(starveGameOverMessage());
+                        gameOver(starveGameOverMessage(), "starvation");
                         break;
                     }
                 }
@@ -565,19 +565,19 @@ public class Main extends Application {
     }
 
     private String strHelp() {
-        return "Strength increases the amount of damage you deal with weapons.\nWeapons also require a certain amount of strength to be equipped.";
+        return "Strength increases the amount of damage you deal with weapons.";
     }
 
     private String conHelp() {
-        return "Constitution increases your maximum HP and stamina.";
+        return "Constitution increases your maximum HP and stamina.\nWeapons also require a certain amount of constitution to be equipped.";
     }
 
     private String intHelp() {
-        return "Intelligence increases the damage you do with spells as well as the chance to hit with a spell.\nYou also gain new spellbook slots (up to 5) as your intelligence increases.";
+        return "Intelligence increases the damage you do with spells\nas well as the chance to hit with a spell.\nYou also gain new spellbook slots (up to 5) as your intelligence increases.";
     }
 
     private String dexHelp() {
-        return "Dexterity increases your chance to hit with and evede attacks.";
+        return "Dexterity increases your chance to hit with and evade attacks.";
     }
 
     private String nameHelp() {
@@ -585,13 +585,13 @@ public class Main extends Application {
     }
 
     private String levelHelp() {
-        return "Your current level.\nYou gain 1 point in a stat of your choice at each level up and 1 point in each stat every 5 levels.";
+        return "Your current level.\nYou gain 1 point in a stat of your choice at each level up and\nan additional 1 point in each stat every 5 levels.";
     }
 
     private String hpHelp() {
         return "Your current and maximum hp. If your hp reaches 0, you die.\n"
                 + "Wound is the most recent damage you have suffered.\n"
-                + "Any healing will set the wound to 0 and any new damage will replace the existing wound.";
+                + "Any healing will set the wound to 0.\nAny new damage will replace the existing wound.";
     }
 
     private String expHelp() {
@@ -814,7 +814,7 @@ public class Main extends Application {
                         if (gm.getPlayer().getStats().getCurrentStamina() == 0) {
                             this.updateLog("You are starving! You will take 1 damage each turn unless you eat something.");
                             if (gm.getPlayer().getStats().isDead()) {
-                                this.gameOver(this.starveGameOverMessage());
+                                this.gameOver(this.starveGameOverMessage(), "starvation");
                             }
                         }
                     }
@@ -858,8 +858,12 @@ public class Main extends Application {
         int x = (int) Math.floor(event.getX() / pixelSize);
         int y = (int) Math.floor(event.getY() / pixelSize);
 
-        if (gm.getMap().hasEnemy(x, y)) {
-            this.updateLog(mdb.getSeeEnemyMsg(gm.getMap().getEnemy(x, y), gm.getPlayer().getStats().getInt()) + ". " + gm.getMap().getEnemy(x, y).getStats().toString());
+        if (gm.getMap().getVisibility(x, y) == VisibilityStatus.IN_RANGE) {
+            if (gm.getMap().hasEnemy(x, y)) {
+                this.updateLog(mdb.getSeeEnemyMsg(gm.getMap().getEnemy(x, y), gm.getPlayer().getStats().getInt()) + ". " + gm.getMap().getEnemy(x, y).getStats().toString());
+            } else if (gm.getMap().hasPlayer(x, y)) {
+                this.updateLog("You see: " + gm.getPlayer().getName() + ". " + gm.getPlayer().getStats().toString());
+            }
         }
     }
 
@@ -973,7 +977,7 @@ public class Main extends Application {
 
     private void scoreScreen() {
 
-        ArrayList<Score> l = sd.getScores();
+        ArrayList<Score> l = sd.getScoresFromMemory();
         Collections.sort(l);
 
         VBox scores = new VBox();
@@ -1022,10 +1026,9 @@ public class Main extends Application {
         primaryStage.setScene(scoreScene);
     }
 
-
     private void writeScore(String killedBy) {
         Score s = new Score(gm.getPlayer().getName(), gm.getMap().getFloor(), gm.getGmStats().getTurns(), gm.getPlayer().getStats().getLevel(), killedBy);
-        sd.writeScore(s);
+        sd.writeScore(s, false);
     }
 
     private void characterCreation() {
@@ -1121,8 +1124,16 @@ public class Main extends Application {
         stats.add(dexM, 3, 2);
 
         TextField nameField = new TextField();
-        nameField.setText("name");
-        
+
+        FileReader nc = new FileReader("data/Enemies.txt");
+        String defName = "name";
+//        try {
+//            defName = nc.readTest();
+//        } catch (Exception e) {         
+//        }
+//        
+        nameField.setText(defName);
+
         Button start = new Button("Start!");
         start.setOnMouseClicked((event) -> {
             if (nameField.getText().length() > 30) {
@@ -1135,9 +1146,9 @@ public class Main extends Application {
                     w = (Weapon) idb.itemConverter("stick");
                     a = (Armor) idb.itemConverter("clothes");
                 } catch (Exception ex) {
-                    
+
                 }
-                
+
                 PlayerStats ps = new PlayerStats(1, s.getStrength(), s.getConnstitution(), s.getIntelligence(), s.getDexterity(), w, a);
                 this.newGame(ps, nameField.getText());
             }
@@ -1146,9 +1157,9 @@ public class Main extends Application {
         VBox vbox = new VBox();
         vbox.getChildren().addAll(help, new Label(""), nameField, new Label(""), stats, new Label(""), pointsLeft, new Label(""), start);
         vbox.setAlignment(Pos.CENTER);
-        
+
         vbox.setMinSize(50 * pixelSize, 60 * pixelSize);
-        
+
         Scene charCreationScene = new Scene(vbox);
 
         primaryStage.setScene(charCreationScene);

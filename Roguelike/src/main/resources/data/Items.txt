@@ -1,33 +1,33 @@
-Name	Type	Weight	WeaponType	WeaponAtk	WeaponHit	WeaponStrReq	ArmorDef	ConsumableEffect	EffectParameter	ArmorDexPenalty
-test item	Other	0	0	0	0	0	0	0	0	0
-potion	Consumable	0	0	0	0	0	0	Heal	5	0
-apple	Consumable	0	0	0	0	0	0	StaminaHeal	75	0
-test weapon	Weapon	0	Sword	3	0.75	0	0	0	0	0
-atma weapon	Weapon	0	Sword	100	1	0	0	0	0	0
-enemy test weapon	Weapon	0	Sword	1	0.6	0	0	0	0	0
-test armor	Armor	0	0	0	0	0	1	0	0	0
-über armor	Armor	0	0	0	0	0	100	0	0	0
-enemy test armor	Armor	0	0	0	0	0	0	0	0	0
-fire tome	Consumable	0	0	0	0	0	0	TeachSpell	Fire	0
-bronze sword	Weapon	0	Sword	2	0.75	1	0	0	0	0
-iron sword	Weapon	0	Sword	4	0.7	5	0	0	0	0
-steel sword	Weapon	0	Sword	7	0.6	7	0	0	0	0
-silver sword	Weapon	0	Sword	10	0.75	10	0	0	0	0
-bronze lance	Weapon	0	Lance	3	0.7	2	0	0	0	0
-iron lance	Weapon	0	Lance	5	0.65	6	0	0	0	0
-steel lance	Weapon	0	Lance	8	0.55	8	0	0	0	0
-silver lance	Weapon	0	Lance	11	0.7	11	0	0	0	0
-bronze axe	Weapon	0	Axe	4	0.6	3	0	0	0	0
-iron axe	Weapon	0	Axe	6	0.55	7	0	0	0	0
-steel axe	Weapon	0	Axe	9	0.45	9	0	0	0	0
-silver axe	Weapon	0	Axe	12	0.6	12	0	0	0	0
-clothes	Armor	0	0	0	0	0	1	0	0	0
-leather armor	Armor	0	0	0	0	0	2	0	0	1
-iron armor	Armor	0	0	0	0	0	4	0	0	4
-elven armor	Armor	0	0	0	0	0	6	0	0	2
-heavy armor	Armor	0	0	0	0	0	10	0	0	7
-glass armor	Armor	0	0	0	0	0	8	0	0	3
-stick	Weapon	0	Sword	1	0.8	0	0	0	0	0
-freeze tome	Consumable	0	0	0	0	0	0	TeachSpell	Freeze	0
-stun tome	Consumable	0	0	0	0	0	0	TeachSpell	Stun	0
-heal wound tome	Consumable	0	0	0	0	0	0	TeachSpell	Heal Wound	0
+Name,Type,Weight,WeaponType,WeaponAtk,WeaponHit,WeaponStrReq,ArmorDef,ConsumableEffect,EffectParameter,ArmorDexPenalty
+test item,Other,0,0,0,0,0,0,0,0,0
+potion,Consumable,0,0,0,0,0,0,Heal,33,0
+apple,Consumable,0,0,0,0,0,0,StaminaHeal,20,0
+test weapon,Weapon,0,Sword,3,0.75,0,0,0,0,0
+atma weapon,Weapon,0,Sword,100,1,0,0,0,0,0
+enemy test weapon,Weapon,0,Sword,1,0.6,0,0,0,0,0
+test armor,Armor,0,0,0,0,0,1,0,0,0
+über armor,Armor,0,0,0,0,0,100,0,0,0
+enemy test armor,Armor,0,0,0,0,0,0,0,0,0
+fire tome,Consumable,0,0,0,0,0,0,TeachSpell,Fire,0
+bronze sword,Weapon,0,Sword,2,0.75,2,0,0,0,0
+iron sword,Weapon,0,Sword,4,0.7,5,0,0,0,0
+steel sword,Weapon,0,Sword,7,0.6,7,0,0,0,0
+silver sword,Weapon,0,Sword,10,0.75,8,0,0,0,0
+bronze lance,Weapon,0,Lance,3,0.7,3,0,0,0,0
+iron lance,Weapon,0,Lance,5,0.65,6,0,0,0,0
+steel lance,Weapon,0,Lance,8,0.55,8,0,0,0,0
+silver lance,Weapon,0,Lance,11,0.7,9,0,0,0,0
+bronze axe,Weapon,0,Axe,4,0.6,4,0,0,0,0
+iron axe,Weapon,0,Axe,6,0.55,7,0,0,0,0
+steel axe,Weapon,0,Axe,9,0.45,9,0,0,0,0
+silver axe,Weapon,0,Axe,12,0.6,10,0,0,0,0
+clothes,Armor,0,0,0,0,0,1,0,0,0
+leather armor,Armor,0,0,0,0,0,2,0,0,2
+iron armor,Armor,0,0,0,0,0,3,0,0,5
+elven armor,Armor,0,0,0,0,0,4,0,0,3
+heavy armor,Armor,0,0,0,0,0,6,0,0,8
+glass armor,Armor,0,0,0,0,0,5,0,0,4
+stick,Weapon,0,Sword,1,0.8,0,0,0,0,0
+freeze tome,Consumable,0,0,0,0,0,0,TeachSpell,Freeze,0
+stun tome,Consumable,0,0,0,0,0,0,TeachSpell,Stun,0
+heal wound tome,Consumable,0,0,0,0,0,0,TeachSpell,Heal Wound,0

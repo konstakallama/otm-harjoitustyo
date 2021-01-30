@@ -111,7 +111,7 @@ public class Enemy extends Moves {
     }
 
     /**
-     * Sets hasMoved to false, allowing the enemy to take a new turn th next
+     * Sets hasMoved to false, allowing the enemy to take a new turn the next
      * time takeTurn is called.
      */
     public void reset() {
@@ -154,6 +154,8 @@ public class Enemy extends Moves {
     }
 
     private void moveAi(Direction pd) {
+//        moveTowardsPlayer(pd);
+//        return;
         boolean inRoom = false;
         if (seesPlayer()) {
             moveTowardsPlayer(pd);

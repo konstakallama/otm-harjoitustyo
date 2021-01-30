@@ -29,7 +29,7 @@ public class MessageDb {
     }
 
     public String getKillWithSpellMsg(String spellName, AttackResult ar) {
-        return "You cast " + spellName + " and kill the " + ar.getTarget().getName() + " earning " + ar.getExpGained() + " exp (" + (Math.round(ar.getToHit() * 100)) + " % to hit).";
+        return "You cast " + spellName + " on the " + ar.getTarget() + " dealing " + ar.getDamageDealt() + " damage and killing it, earning " + ar.getExpGained() + " exp (" + (Math.round(ar.getToHit() * 100)) + " % to hit).";
     }
 
     public String getSpellLearnedMsg(String spellName) {

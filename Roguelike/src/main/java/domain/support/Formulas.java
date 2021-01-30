@@ -21,6 +21,7 @@ import domain.items.Weapon;
 import domain.items.WeaponType;
 import domain.map.Room;
 import dao.EnemyDb;
+import dao.FileReader;
 import domain.mapobject.player.Spell;
 import dao.SpellDb;
 import java.io.IOException;
@@ -74,7 +75,8 @@ public class Formulas {
      * the next level.
      */
     public int expToNextLevel(int currentLevel) {
-        return 10 + currentLevel;
+        int lc = (int) Math.round(Math.floor(Math.log(currentLevel)));
+        return 10 + (currentLevel * lc);
     }
 
     /**
@@ -398,17 +400,22 @@ public class Formulas {
 
     public Enemy createRandomEnemy(Map map, Location l, int enemiesCreated) {
         String[] firstLine = null;
+        FileReader fr = new FileReader(fileName);
+        
+        firstLine = fr.readLineByName("Floor");
 
-        try {
-            firstLine = Files.readAllLines(Paths.get(this.fileName)).get(0).split("\t");
-        } catch (IOException ex) {
-            try {
-                firstLine = Files.readAllLines(Paths.get("src/main/resources/" + this.fileName)).get(0).split("\t");
-            } catch (IOException ex1) {
-            }
-        }
+//        try {
+//            firstLine = Files.readAllLines(Paths.get(this.fileName)).get(0).split("\t");
+//        } catch (IOException ex) {
+//            try {
+//                firstLine = Files.readAllLines(Paths.get("src/main/resources/" + this.fileName)).get(0).split("\t");
+//            } catch (IOException ex1) {
+//            }
+//        }
 
-        String[] line = this.readLineFromFileWrapper(map.getFloor() + "");
+        
+        String[] line = fr.readLineByName(Math.min(map.getFloor(), 19) + "");
+        //String[] line = this.readLineFromFileWrapper(Math.min(map.getFloor(), 19) + "");
         double random = r.nextDouble();
         double d = 0;
         EnemyType et = null;
@@ -425,36 +432,36 @@ public class Formulas {
         return new Enemy(l.getX(), l.getY(), map, es, true);
     }
 
-    private String[] readLineFromFileWrapper(String name) {
-        try {
-            return this.readLineFromFile(name, fileName);
+//    private String[] readLineFromFileWrapper(String name) {
+//        try {
+//            return this.readLineFromFile(name, fileName);
+//
+//        } catch (Exception ex) {
+//            try {
+//                return this.readLineFromFile(name, "src/main/resources/" + fileName);
+//            } catch (Exception e) {
+//                
+//            }
+//        }
+//
+//        return null;
+//    }
 
-        } catch (Exception ex) {
-            try {
-                return this.readLineFromFile(name, "src/main/resources/" + fileName);
-            } catch (Exception e) {
-                
-            }
-        }
-
-        return null;
-    }
-
-    private String[] readLineFromFile(String name, String filename) throws Exception {
-
-        List<String> l = Files.readAllLines(Paths.get(filename));
-
-        for (String line : l) {
-            String[] s = line.split("\t");
-            if (s[0].equals(name)) {
-                return (s);
-            } else if (s[0].equals(lastFloor)) {
-                return s;
-            }
-        }
-
-        throw new Exception("Error");
-    }
+//    private String[] readLineFromFile(String name, String filename) throws Exception {
+//
+//        List<String> l = Files.readAllLines(Paths.get(filename));
+//
+//        for (String line : l) {
+//            String[] s = line.split("\t");
+//            if (s[0].equals(name)) {
+//                return (s);
+//            } else if (s[0].equals(lastFloor)) {
+//                return s;
+//            }
+//        }
+//
+//        throw new Exception("Error");
+//    }
 
     private boolean weaponTriangleAdvantage(Stats atkStats, Stats defStats) {
         WeaponType aw = atkStats.getWeapon().getType();

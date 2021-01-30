@@ -22,6 +22,7 @@ public class Room {
     private ArrayList<Corridor> corridors;
     private ArrayList<Corridor> arrivingCorridors;
     private ArrayList<Room> connected;
+    private ArrayList<Location> corridorStarts;
 
     public Room(Location location, int w, int h) {
         this.location = location;
@@ -30,6 +31,7 @@ public class Room {
         this.corridors = new ArrayList<>();
         this.arrivingCorridors = new ArrayList<>();
         this.connected = new ArrayList<>();
+        this.corridorStarts = null;
     }
 
     public Location getLocation() {
@@ -181,6 +183,10 @@ public class Room {
      * @return 
      */
     public ArrayList<Location> getCorridorStarts() {
+        if (this.corridorStarts != null) {
+            return this.corridorStarts;
+        }
+        
         ArrayList<Location> starts = new ArrayList<>();
                 
         for (Corridor c : this.corridors) {
@@ -235,5 +241,61 @@ public class Room {
 
     public ArrayList<Corridor> getArrivingCorridors() {
         return arrivingCorridors;
+    }
+
+    public void setCorridorStarts(ArrayList<Location> corridorStarts) {
+        this.corridorStarts = corridorStarts;
+    }
+    
+    public ArrayList<Location> getEdges() {
+        ArrayList<Location> e = new ArrayList();
+        Location l = this.getNW();
+        l.move(Direction.UP);
+        e.add(l);
+        while (l.getX() <= this.getNE().getX()) {
+            l = l.locInDir(Direction.RIGHT);
+            e.add(l);
+        }
+        while (l.getY() <= this.getSE().getY()) {
+            l = l.locInDir(Direction.DOWN);
+            e.add(l);
+        }
+        while (l.getX() >= this.getSW().getX()) {
+            l = l.locInDir(Direction.LEFT);
+            e.add(l);
+        }
+        while (l.getY() >= this.getNW().getY()) {
+            l = l.locInDir(Direction.UP);
+            e.add(l);
+        } 
+
+        return e;
+    }
+
+    ArrayList<Location> getSurroundings() {
+        ArrayList<Location> sr = new ArrayList<>();
+        Location l = new Location(this.getNW().getX() - 1, this.getNW().getY() - 1);
+        
+        while (l.getX() < this.getNE().getX() + 1) {
+            l = l.locInDir(Direction.RIGHT);
+            sr.add(l);
+        }
+        
+        while (l.getY() < this.getSE().getY() + 1) {
+            l = l.locInDir(Direction.DOWN);
+            sr.add(l);
+        }
+        
+        while (l.getX() > this.getSW().getX() - 1) {
+            l = l.locInDir(Direction.LEFT);
+            sr.add(l);
+        }
+        
+        while (l.getY() > this.getNW().getY() - 1) {
+            l = l.locInDir(Direction.UP);
+            sr.add(l);
+        }
+        
+        return(sr);  
     }
 }

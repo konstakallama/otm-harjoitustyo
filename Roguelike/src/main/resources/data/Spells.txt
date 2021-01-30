@@ -1,7 +1,7 @@
-Name	Effect	Power	Accauracy	Cooldown	Range	RangeType	TargetsSelf	IsAoE
-Fire	MagicDamage	4	0.7	6	4	Circle	FALSE	FALSE
-Freeze	Freeze	6	0.85	8	3	Circle	FALSE	FALSE
-Stun	Stun	3	0.6	11	3	Circle	FALSE	FALSE
-Explosion	MagicDamage	10	0.75	26	1	Circle	FALSE	TRUE
-Ultima	MagicDamage	20	0.9	16	5	Circle	FALSE	TRUE
-Heal Wound	HealWound	0	1	6	0	Self	TRUE	FALSE
+Name,Effect,Power,Accauracy,Cooldown,Range,RangeType,TargetsSelf,IsAoE
+Fire,MagicDamage,2,0.6,6,4,Circle,FALSE,FALSE
+Freeze,Freeze,6,0.85,8,3,Circle,FALSE,FALSE
+Stun,Stun,3,0.6,11,3,Circle,FALSE,FALSE
+Explosion,MagicDamage,10,0.75,26,1,Circle,FALSE,TRUE
+Ultima,MagicDamage,20,0.9,16,5,Circle,FALSE,TRUE
+Heal Wound,HealWound,0,1,20,0,Self,TRUE,FALSE

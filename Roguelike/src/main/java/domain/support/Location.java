@@ -111,6 +111,41 @@ public class Location {
         return a;
     }
     
+    public Direction getClosestDir(Location to) {
+        int fromX = this.x;
+        int fromY = this.y;
+        int toX = to.getX();
+        int toY = to.getY();
+        
+        if (Math.abs(fromX - toX) >= Math.abs(fromY - toY)) {
+            if (fromX - toX < 0) {
+                return Direction.RIGHT;
+            } else {
+                return Direction.LEFT;
+            }
+        } else {
+            if (fromY - toY < 0) {
+                return Direction.DOWN;
+            } else if (fromY - toY > 0) {
+                return Direction.UP;
+            } else {
+                return Direction.NONE;
+            }
+        }
+    }
+    
+    /**
+     * Moves this location amount tiles into direction d.
+     * @param d 
+     * @param amount 
+     */
+    public void move(Direction d, int amount) {
+        for (int i = 0; i < amount; i++) {
+            this.move(d);
+        }
+    }
+    
+    
     
     
 }

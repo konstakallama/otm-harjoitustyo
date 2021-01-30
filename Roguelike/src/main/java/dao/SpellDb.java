@@ -28,9 +28,12 @@ import java.util.List;
 public class SpellDb {
 
     String fileName = "data/Spells.txt";
+    FileReader fr = new FileReader(fileName);
 
     public Spell spellConverter(String name, PlayerStats s) {
         String[] line = this.readLineFromFile(name);
+//        System.out.println("n: " + name);
+//        System.out.println("l0: " + line[0]);
 
         if (line[1].equals("MagicDamage")) {
             return cerateOffensiveSpell(line, s);
@@ -132,21 +135,20 @@ public class SpellDb {
 
     private Spell createHealWound(String[] line, PlayerStats s) {
         return new Spell(line[0], Integer.parseInt(line[4]), new HealWound(line[0]), Integer.parseInt(line[5]), Double.parseDouble(line[3]), Boolean.valueOf(line[7]), Boolean.valueOf(line[8]), RangeType.SELF);
-
     }
 
     private String[] readLineFromFile(String name) {
-        try {
-            return this.readLineFromFileHelper(name, fileName);
-
-        } catch (Exception ex) {
-            try {
-                return this.readLineFromFileHelper(name, "src/main/resources/" + fileName);
-            } catch (Exception e) {
-
-            }
-        }
-
-        return null;
+        return fr.readLineByName(name);
+        
+//        try {
+//            return this.readLineFromFileHelper(name, fileName);
+//        } catch (Exception ex) {
+//            try {
+//                return this.readLineFromFileHelper(name, "src/main/resources/" + fileName);
+//            } catch (Exception e) {
+//            }
+//        }
+//
+//        return null;
     }
 }

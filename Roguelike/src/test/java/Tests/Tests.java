@@ -242,7 +242,7 @@ public class Tests {
 
     @Test
     public void healHeals() {
-        Heal h = new Heal(5, "heal");
+        Heal h = new Heal(50, "heal");
         p.getStats().takeDamage(5);
 
         assertTrue(h.applyEffectToPlayer(p).isSuccess());
@@ -271,7 +271,7 @@ public class Tests {
 
     @Test
     public void staminaHeal() {
-        StaminaHeal h = new StaminaHeal(50, "sheal");
+        StaminaHeal h = new StaminaHeal(10, "sheal");
         p.getStats().setStaminaDmg(51);
 
         assertTrue(h.applyEffectToPlayer(p).isSuccess());

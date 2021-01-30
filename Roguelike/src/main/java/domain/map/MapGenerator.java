@@ -4,6 +4,7 @@ import domain.items.MapItem;
 import domain.support.Formulas;
 import domain.support.Direction;
 import domain.support.Location;
+import domain.support.MapGenerator2Parameters;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,11 +20,11 @@ public class MapGenerator {
     Random r = new Random();
     Formulas f = new Formulas();
     int fireTomesCreated = 0;
-    String[] swords = {"bronze sword", "iron sword", "steel sword", "silver sword"};
+    String[] swords = {"bronze sword", "iron sword", "silver sword"};
     int swordIndex = 0;
-    String[] lances = {"bronze lance", "iron lance", "steel lance", "silver lance"};
+    String[] lances = {"bronze lance", "iron lance", "silver lance"};
     int lanceIndex = 0;
-    String[] axes = {"bronze axe", "iron axe", "steel axe", "silver axe"};
+    String[] axes = {"bronze axe", "iron axe", "silver axe"};
     int axeIndex = 0;
     String[] armor = {"leather armor", "iron armor", "elven armor", "heavy armor", "glass armor"};
     int armorIndex = 0;
@@ -39,11 +40,56 @@ public class MapGenerator {
      * @return a new randomly generated map.
      */
     public Map createTestMap(int w, int h, int floor) {
-        Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
+        //Map m = createTestTerrain(w, h, floor, 4 + r.nextInt(Math.min(floor / 3 + 1, 4)), 1);
+        Map m = this.createMg2Map(w, h, floor);
         this.addStairs(m);
         this.addItems(m);
+        //System.out.println("ic");
+        //this.addItem(m, "freeze tome");
 
         return m;
+    }
+
+    private Map createMg2Map(int w, int h, int floor) {
+        MapGenerator2 mg2 = new MapGenerator2();
+        //maxW, maxH, steps, minRoomW, minRoomH, maxRoomW, maxRoomH, minCorridorLen, maxCorridorLen, roomChance, connectDistance
+        double rc = 0.9 - ((floor % 4) * 0.1);
+        MapGenerator2Parameters par = new MapGenerator2Parameters(50, 50, 50 + (floor * 5), 3, 3, 10, 10, 4, 10, rc, 5);
+        Map m = mg2.createMap(par);
+        m.setFloor(floor);
+        return m;
+    }
+
+//    private Map findCorridorStarts(Map m) {
+//        for (Room r : m.getRooms()) {
+//            ArrayList<Location> cs = new ArrayList<>();
+//            for (Location l : r.getEdges()) {
+//                if (!this.outOfBounds(l, m.getMapW(), m.getMapH())) {
+//                    if (m.getTerrain(l.getX(), l.getY()) == Terrain.CORRIDOR) {
+//                        cs.add(l);
+//                    }
+//                }
+//
+//            }
+//            r.setCorridorStarts(cs);
+//        }
+//        return m;
+//    }
+    private boolean outOfBounds(Location a, int w, int h) {
+        int x = a.getX();
+        int y = a.getY();
+
+        if (x < 0) {
+            return true;
+        } else if (x >= w) {
+            return true;
+        } else if (y < 0) {
+            return true;
+        } else if (y >= h) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -445,28 +491,34 @@ public class MapGenerator {
         return l;
     }
 
-    private void addItems(Map m) {      
-        if (r.nextDouble() < 0.4) {
-            addRandomSpell(m);
-        }      
+    private void addItems(Map m) {
+        int fl = m.getFloor();
+        double sd = 0;
+        if (fl > 0) {
+            sd = Math.max(0.01 * fl * Math.log(fl), 0);
+        }
+        if (r.nextDouble() < 0.5 - sd) {
+                addRandomSpell(m);
+        }
+
         addWeapons(m);
         for (int i = 0; i < 2; i++) {
-            if (r.nextDouble() < 0.8) {
+            if (r.nextDouble() < 0.3) {
                 this.addItem(m, "apple");
             }
-            if (r.nextDouble() < 0.5) {
+            if (r.nextDouble() < 0.3) {
                 this.addItem(m, "potion");
             }
         }
     }
 
     private void addRandomSpell(Map m) {
-        double d = r.nextDouble();      
-        if (d < 0.4) {
+        double d = r.nextDouble();
+        if (d < 0.3) {
             this.addItem(m, "fire tome");
         } else if (d < 0.7) {
             this.addItem(m, "freeze tome");
-        } else if (d < 0.8) {
+        } else if (d < 0.85) {
             this.addItem(m, "stun tome");
         } else if (d < 1) {
             this.addItem(m, "heal wound tome");
@@ -474,19 +526,19 @@ public class MapGenerator {
     }
 
     private void addWeapons(Map m) {
-        if (r.nextDouble() < 0.1 && this.swordIndex < this.swords.length) {
+        if (r.nextDouble() < 0.15 && this.swordIndex < this.swords.length) {
             this.addItem(m, this.swords[swordIndex]);
             this.swordIndex++;
-        }       
-        if (r.nextDouble() < 0.1 && this.lanceIndex < this.lances.length) {
+        }
+        if (r.nextDouble() < 0.15 && this.lanceIndex < this.lances.length) {
             this.addItem(m, this.lances[lanceIndex]);
             this.lanceIndex++;
-        }       
-        if (r.nextDouble() < 0.1 && this.axeIndex < this.axes.length) {
+        }
+        if (r.nextDouble() < 0.15 && this.axeIndex < this.axes.length) {
             this.addItem(m, this.axes[axeIndex]);
             this.axeIndex++;
-        }        
-        if (r.nextDouble() < 0.1 && this.armorIndex < this.armor.length) {
+        }
+        if (r.nextDouble() < 0.15 && this.armorIndex < this.armor.length && m.getFloor() > 2) {
             this.addItem(m, this.armor[armorIndex]);
             this.armorIndex++;
         }

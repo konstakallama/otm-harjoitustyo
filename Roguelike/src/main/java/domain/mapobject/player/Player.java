@@ -32,7 +32,7 @@ public class Player extends Moves {
         this.stats = stats;
         this.inventory = inventory;
         this.map.setPlayer(this);
-        this.visionRange = 3;
+        this.visionRange = 4;
     }
     
     public Player(Map map, int x, int y, PlayerStats stats, Inventory inventory, String name) {

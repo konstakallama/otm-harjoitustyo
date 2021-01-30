@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 public class ItemDb {
 
     String fileName = "data/Items.txt";
+    FileReader fr = new FileReader(fileName);
 
     public InventoryItem itemConverter(MapItem item) throws Exception {
         return this.itemConverter(item.getName());
@@ -73,13 +74,12 @@ public class ItemDb {
     }
 
     public InventoryItem createPotion() {
-        return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(5, "potion"));
+        return new InventoryItem(0, ItemType.CONSUMABLE, "potion", new Heal(33, "potion"));
     }
 
     public InventoryItem createAtmaWeapon() {
         return new Weapon(100, 1.00, WeaponType.SWORD, "atma weapon");
     }
-
 
     public String getDescription(String name) {
         String[] line = this.readLineFromFile(name);
@@ -107,7 +107,7 @@ public class ItemDb {
                 return (s);
             }
         }
-        
+
         throw new IOException();
 
     }
@@ -147,10 +147,10 @@ public class ItemDb {
     private String getConsumableDescription(String[] line) {
         if (line[8].equals("Heal")) {
             return "Type: consumable\n"
-                    + "Effect: heals " + line[9] + " hp";
+                    + "Effect: heals " + line[9] + "% of your\nmax hp, rounded down.";
         } else if (line[8].equals("StaminaHeal")) {
             return "Type: consumable\n"
-                    + "Effect: heals " + line[9] + " stamina";
+                    + "Effect: heals " + line[9] + "% of your\nmax stamina, rounded down.";
         } else if (line[8].equals("TeachSpell")) {
             return "Type: consumable\n"
                     + "Effect: teaches the spell " + line[9] + ".";
@@ -163,7 +163,7 @@ public class ItemDb {
         return "Type: " + line[3] + "\n"
                 + "Damage: " + line[4] + "\n"
                 + "Hit chance: " + Math.round(Double.parseDouble(line[5]) * 100) + "%\n"
-                + "Requires " + line[6] + " strength";
+                + "Requires " + line[6] + " constitution";
     }
 
     private String getArmorDescription(String[] line) {
@@ -178,12 +178,16 @@ public class ItemDb {
 
     private String[] readLineFromFile(String name) {
         try {
+            return fr.readLineByName(name);
+        } catch (Exception e) {
+        }
+        try {
             return this.readLineFromFileHelper(name, fileName);
 
         } catch (Exception ex) {
             String fn = "src/main/resources/" + fileName;
             try {
-                
+
                 return this.readLineFromFileHelper(name, fn);
             } catch (Exception e) {
             }

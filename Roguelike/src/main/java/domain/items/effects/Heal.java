@@ -33,8 +33,9 @@ public class Heal extends Effect {
 
     @Override
     public CommandResult applyEffectToPlayer(Player p) {
-        boolean success = p.getStats().heal(amount);
-        return new CommandResult(success, true, mdb.getItemHealMsg(amount, this.sourceName));
+        int am = (int) Math.round(Math.floor(this.amount * 0.01 * p.getStats().getMaxHP()));
+        boolean success = p.getStats().heal(am);
+        return new CommandResult(success, true, mdb.getItemHealMsg(am, this.sourceName));
     }
     
 }

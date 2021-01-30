@@ -66,6 +66,11 @@ public class EnemyType {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "EnemyType{" + "baseExp=" + baseExp + ", expScale=" + expScale + ", baseStr=" + baseStr + ", strScale=" + strScale + ", baseCon=" + baseCon + ", conScale=" + conScale + ", baseInt=" + baseInt + ", intScale=" + intScale + ", baseDex=" + baseDex + ", dexScale=" + dexScale + ", name=" + name + ", e=" + e + '}';
+    }
     
     
 }

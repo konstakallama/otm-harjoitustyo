@@ -116,6 +116,10 @@ public class Map {
     public int getFloor() {
         return floor;
     }
+
+    public void setFloor(int floor) {
+        this.floor = floor;
+    }
     /**
      * Adds an item to x, y. Overwrites any item previously in x, y.
      * @param x
@@ -442,6 +446,10 @@ public class Map {
      * @return the VisibilityStatus of x, y.
      */
     public VisibilityStatus getVisibility(int x, int y) {
+        //return VisibilityStatus.IN_RANGE;
+        if(outOfBounds(x, y)) {
+            return VisibilityStatus.UNKNOWN;
+        }
         return visibility[x][y];
     }
 
@@ -486,6 +494,10 @@ public class Map {
             return new Room(new Location(0, 0), 0, 0);
         }
         return this.insideWhichRoom(this.player.getLocation());
+    }
+
+    private boolean outOfBounds(int x, int y) {
+        return (x < 0 || x >= this.mapW || y < 0 || y >= this.mapH);
     }
 
 }

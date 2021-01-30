@@ -5,8 +5,10 @@
  */
 package dao;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -24,62 +26,127 @@ import java.sql.*;
 public class ScoreDao {
 
     private String fileName;
+    private String sep = ",";
+    private FileReader fr;
+    private ArrayList<Score> scores;
 
     public ScoreDao(String fileName) {
         this.fileName = fileName;
+        fr = new FileReader(fileName);
     }
 
+    public ScoreDao() {
+        this.fileName = "data/Scores.txt";
+        this.fr = new FileReader(fileName);
+        this.scores = this.getScores();
+    }
+
+    public ArrayList<Score> getScoresFromMemory() {
+        return this.scores;
+    }
 
     public ArrayList<Score> getScores() {
         ArrayList<Score> l = new ArrayList<>();
+        l = readScores(fileName);
 
-        try {
-            l = readScores(fileName);
-        } catch (Exception e) {
-            try {
-                l = readScores("src/main/resources/" + fileName);
-            } catch (Exception ex) {
+//        try {
+//            l = readScores(fileName);
+//        } catch (Exception e) {
+//            try {
+//                l = readScores("src/main/resources/" + fileName);
+//            } catch (Exception ex) {
+//            }
+//        }
+        if (l.isEmpty()) {
+            FileReader fr2 = new FileReader("data/test.txt");
+            String[] lines = fr2.readAllLines();
+            for (int i = 1; i < lines.length; i++) {
+                String[] s = lines[i].split(sep);
+                l.add(new Score(s[0], Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), s[4]));
             }
         }
         return l;
     }
 
-    private ArrayList<Score> readScores(String filename) throws IOException {
-        List<String> l = Files.readAllLines(Paths.get(filename));
+    private ArrayList<Score> readScores(String fn) {
         ArrayList<Score> sl = new ArrayList<>();
+        List<String> l = new ArrayList<>();
+        try {
+            l = Files.readAllLines(Paths.get("Scores.txt"));
+            return readScores2(l);
+        } catch (Exception e) {
+        }
+        //List<String> l = Files.readAllLines(Paths.get(fn));
+        String[] lines = fr.readAllLines();
 
-        for (int i = 1; i < l.size(); i++) {
-            String line = l.get(i);
-            String[] s = line.split("\t");
+        for (int i = 1; i < lines.length; i++) {
+            String[] s = lines[i].split(sep);
             sl.add(new Score(s[0], Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), s[4]));
         }
         return sl;
     }
 
-    public void writeScore(Score s) {
+    public void writeScore(Score s, boolean writeIfMissing) {
+        this.scores.add(s);
+        //System.out.println(s);
         PrintWriter pw = null;
 
-        ArrayList<Score> l = this.getScores();
+        ArrayList<Score> l = this.scores;
 
+        File file = new File("Scores.txt");
+        if (!file.exists() && !writeIfMissing) {
+            return;
+        }
+
+//        String s = "";
+//        try {
+//            //InputStream inputStream = classLoader.getResourceAsStream(filename);
+//        
+//        
+//        
+//        ClassLoader cl = getClass().getClassLoader();
+//        String fn = "data/Scores.txt";
+//        
+//            try {
+//                //pw = new PrintWriter(new File(cl.getResource(fn).getPath()));
+//                pw = new PrintWriter(cl.getResource(fn).getPath());
+//                System.out.println("*");
+//            } catch (Exception ex) {
+//            }
+//        } catch (Exception ex) {
+//        }
+//        try {
+//            pw = new PrintWriter(fileName);
+//        } catch (FileNotFoundException ex) {
+//
+//            try {
+//                pw = new PrintWriter("src/main/resources/" + fileName);
+//            } catch (FileNotFoundException e) {
+//                try {
+//                    pw = new PrintWriter("Scores.txt");
+//                } catch (Exception e2) {
+//
+//                }
+//            }
+//        }
         try {
-            pw = new PrintWriter(fileName);
-        } catch (FileNotFoundException ex) {
-
-            try {
-                pw = new PrintWriter("src/main/resources/" + fileName);
-            } catch (FileNotFoundException e) {
+            pw = new PrintWriter("Scores.txt");
+            pw.println("Name" + sep + "Floor" + sep + "Turns" + sep + "Level" + sep + "Killed By");
+            for (Score score : l) {
+                pw.println(score.getName() + sep + score.getFloor() + sep + score.getTurn() + sep + score.getLevel() + sep + score.getKilledBy());
             }
+            pw.close();
+        } catch (Exception e) {
         }
+    }
 
-        pw.println("Name\tFloor\tTurns\tLevel\tKilled By");
-
-        l.add(s);
-
-        for (Score score : l) {
-            pw.println(score.getName() + "\t" + score.getFloor() + "\t" + score.getTurn() + "\t" + score.getLevel() + "\t" + score.getKilledBy());
+    private ArrayList<Score> readScores2(List<String> l) {
+        ArrayList<Score> sl = new ArrayList<>();
+        for (int i = 1; i < l.size(); i++) {
+            String[] s = l.get(i).split(sep);
+            sl.add(new Score(s[0], Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), s[4]));
         }
-
-        pw.close();
+        return sl;
     }
 
 }

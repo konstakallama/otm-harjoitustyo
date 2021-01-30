@@ -23,6 +23,13 @@ import java.util.logging.Logger;
 public class EnemyDb {
 
     String fileName = "data/Enemies.txt";
+    FileReader fr;
+
+    public EnemyDb() {
+        fr = new FileReader(fileName);
+    }
+    
+    
 
     public int getBaseExp(String name) {
         return Integer.parseInt(this.readFromIndex(name, 9));
@@ -99,17 +106,19 @@ public class EnemyDb {
     }
 
     private String readFromIndex(String name, int index) {
-        try {
-            return this.readFromIndexHelper(name, index, fileName);
-
-        } catch (Exception ex) {
-            try {
-                return this.readFromIndexHelper(name, index, "src/main/resources/" + fileName);
-            } catch (Exception e) {
-            }
-        }
-
-        return null;
+        return this.fr.readFromIndex(name, index);
+//        try {
+//            return this.fr.readFromIndex(name, index);
+//        } catch (Exception ey) {
+//            try {
+//                return this.readFromIndexHelper(name, index, fileName);
+//            } catch (Exception ex) {
+//                try {
+//                    return this.readFromIndexHelper(name, index, "src/main/resources/" + fileName);
+//                } catch (Exception e) {
+//                }
+//            }
+//        }
+//        return null;
     }
-
 }

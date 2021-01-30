@@ -161,7 +161,7 @@ public class GameManager {
         }
         if (result.getType() == AttackResultType.KILL) {
             this.gmStats.increaseEnemiesKilled();
-            r = ("You kill the " + result.getTarget().getName() + " and gain " + result.getExpGained() + " exp");
+            r = ("You hit the " + result.getTarget().getName() + " and kill it, earning " + result.getExpGained() + " exp");
         }
         r += this.getToHitMessage(result) + ".";
 

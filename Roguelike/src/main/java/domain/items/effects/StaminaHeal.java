@@ -27,8 +27,9 @@ public class StaminaHeal extends Effect {
         if (p.getStats().getStaminaDmg() <= 0) {
             return new CommandResult(false);
         }
-        p.getStats().increaseStamina(amount);
-        return new CommandResult(true, true, mdb.getItemStaminaHealMsg(amount, this.sourceName));
+        int am = (int) Math.round(Math.floor(this.amount * 0.01 * p.getStats().getMaxStamina()));
+        p.getStats().increaseStamina(am);
+        return new CommandResult(true, true, mdb.getItemStaminaHealMsg(am, this.sourceName));
     }
     
 }

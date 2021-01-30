@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * @author konstakallama
  */
 public class PlayerStats extends Stats {
+
     int staminaDmg;
     private ArrayList<Spell> spells;
 
@@ -22,16 +23,19 @@ public class PlayerStats extends Stats {
         super(level, str, con, intel, dex, weapon, armor);
         staminaDmg = 0;
         this.spells = new ArrayList<>();
-        
+
     }
 
     @Override
     public int getMaxHP() {
         return f.getPlayerMaxHP(con);
     }
-    
+
     /**
-     * Has the player gain the specified amount of exp. If the player levels up, the method returns true and leftover exp is carried over to count towards the next level.
+     * Has the player gain the specified amount of exp. If the player levels up,
+     * the method returns true and leftover exp is carried over to count towards
+     * the next level.
+     *
      * @param gain
      * @return True if the player levels up.
      */
@@ -44,16 +48,20 @@ public class PlayerStats extends Stats {
         this.exp += gain;
         return false;
     }
+
     /**
      * Returns the player's current hp.
+     *
      * @return the player's current hp.
      */
     @Override
     public int getCurrentHP() {
         return this.getMaxHP() - this.damage;
     }
+
     /**
-     * Increases the player's level by one. If the new level is a multiple of 5, all stats will increase by 1.
+     * Increases the player's level by one. If the new level is a multiple of 5,
+     * all stats will increase by 1.
      */
     public void levelUp() {
         this.increaseLevel();
@@ -65,21 +73,28 @@ public class PlayerStats extends Stats {
         }
 
     }
+
     /**
-     * Returns the full exp required to reach the next level using Formulas.expToNextLevel().
-     * @return 
+     * Returns the full exp required to reach the next level using
+     * Formulas.expToNextLevel().
+     *
+     * @return
      */
     public int expToNextLevel() {
         return f.expToNextLevel(this.level);
     }
+
     /**
-     * Equips the given weapon, removes it from the given inventory and adds the old weapon to the given inventory. Assumes that the given inventory contains the given weapon. Returns true if the equip is successful.
+     * Equips the given weapon, removes it from the given inventory and adds the
+     * old weapon to the given inventory. Assumes that the given inventory
+     * contains the given weapon. Returns true if the equip is successful.
+     *
      * @param w Weapon to equip. Should be contained in Inventory i.
      * @param i Inventory to remove w from and add old weapon to.
      * @return true if the equip is successful.
      */
     public boolean equipWeapon(Weapon w, Inventory i) {
-        if (str < w.getStrRec()) {
+        if (con < w.getStrRec()) {
             return false;
         }
         Weapon oldW = this.weapon;
@@ -90,13 +105,20 @@ public class PlayerStats extends Stats {
         }
         return true;
     }
+
     /**
-     * Equips the given armor, removes it from the given inventory and adds the old armor to the given inventory. Assumes that the given inventory contains the given armor. Returns true if the equip is successful.
+     * Equips the given armor, removes it from the given inventory and adds the
+     * old armor to the given inventory. Assumes that the given inventory
+     * contains the given armor. Returns true if the equip is successful.
+     *
      * @param a Armor to equip. Should be contained in Inventory i.
      * @param i Inventory to remove a from and add old armor to.
      * @return true if the equip is successful.
      */
     public boolean equipArmor(Armor a, Inventory i) {
+        if (dex <= a.getDexPenalty()) {
+            return false;
+        }
         Armor oldA = this.armor;
         this.armor = a;
         i.removeItem(a);
@@ -105,8 +127,10 @@ public class PlayerStats extends Stats {
         }
         return true;
     }
+
     /**
      * Returns the player's current stamina.
+     *
      * @return the player's current stamina.
      */
     public int getCurrentStamina() {
@@ -116,8 +140,10 @@ public class PlayerStats extends Stats {
     public void setStaminaDmg(int stamina) {
         this.staminaDmg = stamina;
     }
+
     /**
-     * Decreases the player's current stamina by 1. Stamina will not be lowered to lower than 0.
+     * Decreases the player's current stamina by 1. Stamina will not be lowered
+     * to lower than 0.
      */
     public void decreaseStamina() {
         this.staminaDmg++;
@@ -125,9 +151,12 @@ public class PlayerStats extends Stats {
             this.staminaDmg = this.getMaxStamina();
         }
     }
+
     /**
-     * Increases the player's stamina by the given amount. Stamina will not be increased higher than the max stamina.
-     * @param amount 
+     * Increases the player's stamina by the given amount. Stamina will not be
+     * increased higher than the max stamina.
+     *
+     * @param amount
      */
     public void increaseStamina(int amount) {
         staminaDmg -= amount;
@@ -135,11 +164,11 @@ public class PlayerStats extends Stats {
             staminaDmg = 0;
         }
     }
-    
+
     public int getMaxStamina() {
         return f.getMaxStamina(con);
     }
-    
+
     @Override
     public void increaseCon() {
         con++;
@@ -150,19 +179,24 @@ public class PlayerStats extends Stats {
     public int getStaminaDmg() {
         return staminaDmg;
     }
-    
+
     public int getMaxSpellbookSlots() {
         return f.getMaxSpellbookSlots(intel);
     }
+
     /**
      * Returns the amount of empty spellbook slots the player has.
+     *
      * @return the amount of empty spellbook slots the player has.
      */
     public int getFreeSpellBookSlots() {
         return this.getMaxSpellbookSlots() - this.spells.size();
     }
+
     /**
-     * Adds the given spell to the player's list of spells if he has a free spellbook slot. Returns true if the spell is learned.
+     * Adds the given spell to the player's list of spells if he has a free
+     * spellbook slot. Returns true if the spell is learned.
+     *
      * @param s Spell to learn
      * @return true if the spell is learned.
      */
@@ -173,10 +207,13 @@ public class PlayerStats extends Stats {
         }
         return false;
     }
+
     /**
-     * Removes the given Spell from the player's list of spells. Returns true if the remove is successful.
+     * Removes the given Spell from the player's list of spells. Returns true if
+     * the remove is successful.
+     *
      * @param s
-     * @return 
+     * @return
      */
     public boolean forgetSpell(Spell s) {
         return this.spells.remove(s);
@@ -185,6 +222,7 @@ public class PlayerStats extends Stats {
     public ArrayList<Spell> getSpells() {
         return spells;
     }
+
     /**
      * Reduces the cooldown counter for all the player's spells by 1.
      */
@@ -197,6 +235,12 @@ public class PlayerStats extends Stats {
     @Override
     public int getDex() {
         return Math.max(dex - armor.getDexPenalty(), 1);
+    }
+
+    @Override
+    public String toString() {
+        return "Stats: {" + "Str:" + this.getStr() + "; " + "Con:" + this.getCon() + "; " + "Int:" + this.getInt() + "; " + "Dex:" + this.getDex() + "; " + "W: " + this.getWeapon().getName() + "; " + "A: " + this.getArmor().getName() + '}';
+
     }
 
 }
