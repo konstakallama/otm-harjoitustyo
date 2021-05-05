@@ -44,3 +44,7 @@ Pelin käynnistyessä aukeaa main menu, josta pääsee uuden pelin aloittamisen 
 	* Menu: M
 	* Inventory: I tai Tab
 	* Discard: Q
+
+## Tallentaminen
+
+Jar-formaatin rajoituksista ja tekijän laiskuudeta johtuen pelaajan pisteet tallentuvat pysyvästi ainoastaan, jos pelin kanssa samaan kansioon luo etukäteen tyhjän "scores.txt"-tiedoston. Onnistuu esimerkiksi notepadillä.
